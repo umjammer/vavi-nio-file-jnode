@@ -32,7 +32,7 @@ public class FatEntriesFactory {
         FatRecord v = new FatRecord();
 
         if (index > FatDirectory.MAXENTRIES)
-            log.log(Level.DEBUG, "Full Directory: invalid index " + index);
+            log.log(Level.TRACE, "Full Directory: invalid index " + index);
 
         for (i = index;; ) {
                 /*
@@ -45,7 +45,7 @@ public class FatEntriesFactory {
                 entry = null;
                 return false;
             } catch (IOException ex) {
-                log.log(Level.DEBUG, "cannot read entry " + i);
+                log.log(Level.TRACE, "cannot read entry " + i);
                 i++;
                 continue;
             }

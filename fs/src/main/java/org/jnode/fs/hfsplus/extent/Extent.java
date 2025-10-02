@@ -65,7 +65,7 @@ public class Extent {
     private ByteBuffer buffer;
 
     public Extent(HFSPlusParams params) {
-        log.log(Level.DEBUG, "Create B-Tree extent file.");
+        log.log(Level.TRACE, "Create B-Tree extent file.");
         btnd = new NodeDescriptor(0, 0, NodeDescriptor.BT_HEADER_NODE, 0, 3);
         //
         int totalNodes = params.getExtentClumpSize() / params.getExtentNodeSize();
@@ -78,7 +78,7 @@ public class Extent {
     }
 
     public Extent(HfsPlusFileSystem fs) throws IOException {
-        log.log(Level.DEBUG, "Load B-Tree extent overflow file.");
+        log.log(Level.TRACE, "Load B-Tree extent overflow file.");
         this.fs = fs;
         SuperBlock sb = fs.getVolumeHeader();
         extentFile = sb.getExtentsFile();
@@ -89,12 +89,12 @@ public class Extent {
             extentFile.read(fs, 0, buffer);
             buffer.rewind();
             byte[] data = ByteBufferUtils.toArray(buffer);
-            log.log(Level.DEBUG, "Load extent node descriptor.");
+            log.log(Level.TRACE, "Load extent node descriptor.");
             btnd = new NodeDescriptor(data, 0);
-            log.log(Level.DEBUG, btnd.toString());
-            log.log(Level.DEBUG, "Load extent header record.");
+            log.log(Level.TRACE, btnd.toString());
+            log.log(Level.TRACE, "Load extent header record.");
             bthr = new BTHeaderRecord(data, NodeDescriptor.BT_NODE_DESCRIPTOR_LENGTH);
-            log.log(Level.DEBUG, bthr.toString());
+            log.log(Level.TRACE, bthr.toString());
         }
     }
 
@@ -141,7 +141,7 @@ public class Extent {
                 return node.getOverflowExtents(key);
 
             } else {
-                log.log(Level.INFO, String.format("Node %d wasn't a leaf or index: %s\n%s", nodeNumber, nd, NumberUtils.hex(data)));
+                log.log(Level.INFO, "Node %d wasn't a leaf or index: %s\n%s".formatted(nodeNumber, nd, NumberUtils.hex(data)));
                 return new ExtentDescriptor[0];
             }
 

@@ -73,7 +73,7 @@ public class FatChain {
 
     private void setStartCluster(int value) {
         if ((value < 0) || (value > fat.size()))
-            throw new IllegalArgumentException("illegal head: " + value);
+            throw new IllegalArgumentException("illegal head: " + value + " / " + fat.size());
 
         head = value;
 

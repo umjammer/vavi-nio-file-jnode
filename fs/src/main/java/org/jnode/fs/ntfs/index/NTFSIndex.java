@@ -67,7 +67,7 @@ public final class NTFSIndex {
         if (indexRootAttribute == null) {
             indexRootAttribute = (IndexRootAttribute) 
                     fileRecord.findAttributesByTypeAndName(NTFSAttribute.Types.INDEX_ROOT, attributeName).next();
-            log.log(Level.DEBUG, "getIndexRootAttribute: " + indexRootAttribute);
+            log.log(Level.TRACE, "getIndexRootAttribute: " + indexRootAttribute);
         }
         return indexRootAttribute;
     }
@@ -159,7 +159,7 @@ public final class NTFSIndex {
     }
 
     public Iterator<IndexEntry> iterator() {
-        log.log(Level.DEBUG, "iterator");
+        log.log(Level.TRACE, "iterator");
         return new FullIndexEntryIterator();
     }
 
@@ -180,9 +180,9 @@ public final class NTFSIndex {
          * Initialize this instance.
          */
         public FullIndexEntryIterator() {
-            log.log(Level.DEBUG, "FullIndexEntryIterator");
+            log.log(Level.TRACE, "FullIndexEntryIterator");
             currentIterator = getIndexRootAttribute().iterator();
-            log.log(Level.DEBUG, "currentIterator=" + currentIterator);
+            log.log(Level.TRACE, "currentIterator=" + currentIterator);
             readNextEntry();
         }
 
@@ -212,7 +212,7 @@ public final class NTFSIndex {
                     // Read it
                     nextEntry = currentIterator.next();
                     if (nextEntry.hasSubNodes()) {
-                        log.log(Level.DEBUG, "next has subnode");
+                        log.log(Level.TRACE, "next has subnode");
                         subNodeEntries.add(nextEntry);
                     }
                     if (!nextEntry.isLastIndexEntryInSubnode()) {
@@ -224,11 +224,11 @@ public final class NTFSIndex {
                 // Do we have subnodes to iterate over?
                 if (subNodeEntries.isEmpty()) {
                     // No, we're done
-                    log.log(Level.DEBUG, "end of list");
+                    log.log(Level.TRACE, "end of list");
                     return;
                 }
 
-                log.log(Level.DEBUG, "hasNext: read next indexblock");
+                log.log(Level.TRACE, "hasNext: read next indexblock");
                 final IndexEntry entry = subNodeEntries.get();
                 final IndexRoot indexRoot = getIndexRootAttribute().getRoot();
                 final IndexBlock indexBlock;

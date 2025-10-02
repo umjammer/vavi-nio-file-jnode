@@ -205,9 +205,9 @@ public abstract class AbstractFSDirectory extends AbstractFSObject implements FS
      * yet initialized (constructed).
      */
     protected final void checkEntriesLoaded() {
-        log.log(Level.DEBUG, "<<< BEGIN checkEntriesLoaded >>>");
+        log.log(Level.TRACE, "<<< BEGIN checkEntriesLoaded >>>");
         if (!isEntriesLoaded()) {
-            log.log(Level.DEBUG, "checkEntriesLoaded : loading");
+            log.log(Level.TRACE, "checkEntriesLoaded : loading");
             try {
                 if (canRead()) {
                     entries = readEntries();
@@ -215,7 +215,7 @@ public abstract class AbstractFSDirectory extends AbstractFSObject implements FS
                     // the next time, we will call checkEntriesLoaded()
                     // we will retry to load entries
                     entries = FSEntryTable.EMPTY_TABLE;
-                    log.log(Level.DEBUG, "checkEntriesLoaded : can't read, using EMPTY_TABLE");
+                    log.log(Level.TRACE, "checkEntriesLoaded : can't read, using EMPTY_TABLE");
                 }
                 resetDirty();
             } catch (IOException e) {
@@ -225,7 +225,7 @@ public abstract class AbstractFSDirectory extends AbstractFSObject implements FS
                 entries = FSEntryTable.EMPTY_TABLE;
             }
         }
-        log.log(Level.DEBUG, "<<< END checkEntriesLoaded >>>");
+        log.log(Level.TRACE, "<<< END checkEntriesLoaded >>>");
     }
 
     /**

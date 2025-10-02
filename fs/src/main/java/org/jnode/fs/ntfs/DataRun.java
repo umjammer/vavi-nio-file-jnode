@@ -211,7 +211,7 @@ public final class DataRun implements DataRunInterface {
 
         final long reqLastVcn = vcn + nrClusters - 1;
 
-        log.log(Level.DEBUG, "me:" + myFirstVcn + "-" + myLastVcn + ", req:" + vcn + "-" + reqLastVcn);
+        log.log(Level.TRACE, "me:" + myFirstVcn + "-" + myLastVcn + ", req:" + vcn + "-" + reqLastVcn);
 
         if ((vcn > myLastVcn) || (myFirstVcn > reqLastVcn)) {
             // Not my region
@@ -234,9 +234,9 @@ public final class DataRun implements DataRunInterface {
             actCluster = getCluster() + vcnDelta;
         }
 
-        if (log.isLoggable(Level.DEBUG)) {
-            log.log(Level.DEBUG, "cluster=" + cluster + ", length=" + length + ", dstOffset=" + dstOffset);
-            log.log(Level.DEBUG, "cnt=" + count + ", actclu=" + actCluster + ", actdstoff=" + actDstOffset);
+        if (log.isLoggable(Level.TRACE)) {
+            log.log(Level.TRACE, "cluster=" + cluster + ", length=" + length + ", dstOffset=" + dstOffset);
+            log.log(Level.TRACE, "cnt=" + count + ", actclu=" + actCluster + ", actdstoff=" + actDstOffset);
         }
 
         // Zero the area
@@ -276,7 +276,7 @@ public final class DataRun implements DataRunInterface {
 
     @Override
     public String toString() {
-        return String.format("[%s-run vcn:%d-%d cluster:%d]", isSparse() ? "sparse" : "data", getFirstVcn(),
+        return "[%s-run vcn:%d-%d cluster:%d]".formatted(isSparse() ? "sparse" : "data", getFirstVcn(),
                              getLastVcn(), getCluster());
     }
 }

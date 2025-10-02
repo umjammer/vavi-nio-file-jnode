@@ -247,15 +247,6 @@ public abstract class AbstractDatagramSocketImpl extends DatagramSocketImpl {
     }
 
     /**
-     * @see java.lang.Object#finalize()
-     */
-    @Override
-    protected void finalize() throws Throwable {
-        close();
-        super.finalize();
-    }
-
-    /**
      * Gets the device used to send/receive packets.
      */
     protected Device getDevice() {

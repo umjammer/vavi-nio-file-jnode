@@ -114,7 +114,7 @@ public class LogFile {
         // Read in any open log client records
         int logClientCount = restartArea.getLogClients();
         if (logClientCount != RestartArea.LOGFILE_NO_CLIENT) {
-            log.log(Level.INFO, String.format("Found %d open log clients", logClientCount));
+            log.log(Level.INFO, "Found %d open log clients".formatted(logClientCount));
 
             int logClientOffset = restartAreaOffset + restartArea.getClientArrayOffset();
             LogClientRecord logClientRecord = new LogClientRecord(logFileBuffer, logClientOffset);
@@ -178,8 +178,8 @@ public class LogFile {
                 if (pageHeader.getLastLsnOrFileOffset() < lastLsn ||
                     pageHeader.getLastLsnOrFileOffset() - lastLsn > 0x8000) {
                     // This page doesn't seem to continue on from the last page, so reset the offsets
-                    log.log(Level.INFO, String.format("$LogFile discontinuous at 0x%x [%d -> %d]", offset, lastLsn,
-                        pageHeader.getLastLsnOrFileOffset()));
+                    log.log(Level.INFO, "$LogFile discontinuous at 0x%x [%d -> %d]".formatted(
+                            offset, lastLsn, pageHeader.getLastLsnOrFileOffset()));
                     recordOffset = 0;
                     lastRecordLength = 0;
                 }

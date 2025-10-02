@@ -98,7 +98,7 @@ public class FatFileSystem extends AbstractFileSystem<FatRootDirectory> {
 
     @Override
     public String toString() {
-        return String.format("FAT File System: %s", fat);
+        return "FAT File System: %s".formatted(fat);
     }
 
     @Override

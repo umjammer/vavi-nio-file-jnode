@@ -105,7 +105,7 @@ public class NodeDescriptor {
     }
 
     public final String toString() {
-        return String.format("nd[FLink:  %d BLink: %d Kind: %d height: %d #rec: %d]", getFLink(), getBLink(),
+        return "nd[FLink:  %d BLink: %d Kind: %d height: %d #rec: %d]".formatted(getFLink(), getBLink(),
             getKind(), getHeight(), getNumRecords());
     }
 

@@ -246,6 +246,7 @@ public class NumberUtils {
      * @return the text for of the size
      * @deprecated use toDecimalByte() or toBinaryByte() instead
      */
+    @Deprecated
     public static String size(long v) {
         for (SizeUnit unit : SizeUnit.values()) {
             if ((v < 1024) && (v >= 0)) {

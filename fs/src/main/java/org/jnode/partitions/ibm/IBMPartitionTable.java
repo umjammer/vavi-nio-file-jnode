@@ -167,37 +167,37 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
         }
 
         if (LittleEndian.getUInt16(bootSector, 510) != 0xaa55) {
-            log.log(Level.DEBUG, "No aa55 magic");
+            log.log(Level.TRACE, "No aa55 magic");
             return false;
         }
 
         if (LittleEndian.getUInt16(bootSector, 428) == 0x5678) {
             // Matches the AAP MBR extra signature, probably a valid partition table
-            log.log(Level.DEBUG, "Has AAP MBR extra signature");
+            log.log(Level.TRACE, "Has AAP MBR extra signature");
             return true;
         }
 
         if (LittleEndian.getUInt16(bootSector, 380) == 0xa55a) {
             // Matches the AST/NEC MBR extra signature, probably a valid partition table
-            log.log(Level.DEBUG, "Has AST/NEC MBR extra signature");
+            log.log(Level.TRACE, "Has AST/NEC MBR extra signature");
             return true;
         }
 
         if (LittleEndian.getUInt16(bootSector, 252) == 0x55aa) {
             // Matches the Disk Manager MBR extra signature, probably a valid partition table
-            log.log(Level.DEBUG, "Has Disk Manager MBR extra signature");
+            log.log(Level.TRACE, "Has Disk Manager MBR extra signature");
             return true;
         }
 
         if (LittleEndian.getUInt32(bootSector, 2) == 0x4c57454e) {
-            // Matches the NEWLDR MBR extra signature, probably a valid partition table
-            log.log(Level.DEBUG, "Has NEWLDR MBR extra signature");
+            // Matches the TRACE MBR extra signature, probably a valid partition table
+            log.log(Level.TRACE, "Has NEWLDR MBR extra signature");
             return true;
         }
 
         if (LittleEndian.getUInt32(bootSector, 6) == 0x4f4c494c) {
             // Matches the LILO signature, probably a valid partition table
-            log.log(Level.DEBUG, "Has LILO signature");
+            log.log(Level.TRACE, "Has LILO signature");
             return true;
         }
 
@@ -206,7 +206,7 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             //   "\r\nMissing operating system\r\n\u0000\r\nMaster Boot Record Error\r\n\u0000\r\nPress a key.\r\n\u0000"
             //   "\r\nManglende operativ system\r\n\u0000\r\nFeil i hovedoppstartsposten\r\n\u0000\r\nTrykk en tast"
 
-            log.log(Level.DEBUG, "Has HP boot code signature");
+            log.log(Level.TRACE, "Has HP boot code signature");
             return true;
         }
 
@@ -313,7 +313,7 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
         }
 
         // Nothing matched, fall back to validating any specified partition entries
-        log.log(Level.DEBUG, "Checking partitions");
+        log.log(Level.TRACE, "Checking partitions");
         List<IBMPartitionTableEntry> entries = new ArrayList<>();
         for (int partitionNumber = 0; partitionNumber < TABLE_SIZE; partitionNumber++) {
             IBMPartitionTableEntry partition = new IBMPartitionTableEntry(null, bootSector, partitionNumber);

@@ -72,7 +72,7 @@ public class Extent {
 
     @Override
     public String toString() {
-        return String.format("Extent: blockindex:%d count:%d start(low:%d high:%d)", getBlockIndex(), getBlockCount(),
+        return "Extent: blockindex:%d count:%d start(low:%d high:%d)".formatted(getBlockIndex(), getBlockCount(),
                              getStartLow(), getStartHigh());
     }
 }

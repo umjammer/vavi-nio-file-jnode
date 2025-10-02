@@ -155,8 +155,8 @@ public class LzvnForkCompression implements HfsPlusCompression {
         do {
             switch (jmpTo) {
                 case LZVN_CASE_TABLE:
-                    log.log(Level.DEBUG, String
-                        .format("caseTable[%d]", LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]));
+                    log.log(Level.DEBUG,
+                        "caseTable[%d]".formatted(LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]));
 
                     switch (LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]) {
                         case 0:

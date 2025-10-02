@@ -117,7 +117,7 @@ public class AttributeKey extends AbstractKey {
 
     @Override
     public String toString() {
-        return String.format("[length: %d, file-id: %d, attribute-name: '%s']", getKeyLength(), getFileId().getId(),
+        return "[length: %d, file-id: %d, attribute-name: '%s']".formatted(getKeyLength(), getFileId().getId(),
             getAttributeName());
     }
 }

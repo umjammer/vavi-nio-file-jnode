@@ -51,6 +51,7 @@ public class PC98PartitionTableType implements PartitionTableType {
         return "pc98";
     }
 
+    // TODO out source
     private static final String[] iplSignatures = {
         "IPL1", "Linux 98", "GRUB/98 "
     };
@@ -58,26 +59,26 @@ public class PC98PartitionTableType implements PartitionTableType {
     // works don't touch
     @Override
     public boolean supports(byte[] bootSector, BlockDeviceAPI devApi) {
-logger.log(Level.DEBUG, "bootSector: \n" + StringUtil.getDump(bootSector));
+logger.log(Level.TRACE, "bootSector: \n" + StringUtil.getDump(bootSector));
         if (bootSector.length < 0x400) {
-logger.log(Level.DEBUG, String.format("Not enough data for detection: %04x/%04x", bootSector.length, 0x400));
+logger.log(Level.TRACE, "Not enough data for detection: %04x/%04x".formatted(bootSector.length, 0x400));
             return false;
         }
 
         if (LittleEndian.getUInt16(bootSector, 510) != 0xaa55) {
-logger.log(Level.DEBUG, String.format("No aa55 magic: %04x", LittleEndian.getUInt16(bootSector, 510)));
+logger.log(Level.TRACE, "No aa55 magic: %04x".formatted(LittleEndian.getUInt16(bootSector, 510)));
             return false;
         }
 
         if (Arrays.stream(iplSignatures).noneMatch(s ->
             new String(bootSector, 4, s.length(), StandardCharsets.US_ASCII).equals(s)
         )) {
-logger.log(Level.DEBUG, "no matching signature is found: " + new String(bootSector, 4, 4, StandardCharsets.US_ASCII));
+logger.log(Level.TRACE, "no matching signature is found: " + new String(bootSector, 4, 4, StandardCharsets.US_ASCII));
             return false;
         }
 
         if (new String(bootSector, 0x36, 3, StandardCharsets.US_ASCII).equals("FAT")) {
-logger.log(Level.DEBUG, "strings FAT is found, this partition might be for AT");
+logger.log(Level.TRACE, "strings FAT is found, this partition might be for AT");
             return false;
         }
 

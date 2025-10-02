@@ -68,7 +68,6 @@ public class ExtentIndex {
 
     @Override
     public String toString() {
-        return String.format(
-                "ExtentIndex: blockindex:%d leaf(low:%d high:%d)", getBlockIndex(), getLeafLow(), getLeafHigh());
+        return "ExtentIndex: blockindex:%d leaf(low:%d high:%d)".formatted(getBlockIndex(), getLeafLow(), getLeafHigh());
     }
 }

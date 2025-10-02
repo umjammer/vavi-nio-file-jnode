@@ -147,7 +147,7 @@ public class Ext2DirectoryRecord {
         String name = "";
         if (getINodeNr() != 0) {
             name = new String(data, offset + 8, getNameLen(), Ext2FileSystem.ENTRY_NAME_CHARSET);
-            log.log(Level.DEBUG, "Ext2DirectoryRecord(): iNode=" + getINodeNr() + ", name=" + name);
+            log.log(Level.TRACE, "Ext2DirectoryRecord(): iNode=" + getINodeNr() + ", name=" + name);
         }
         return name;
     }

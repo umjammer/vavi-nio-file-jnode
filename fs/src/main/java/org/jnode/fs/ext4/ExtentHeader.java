@@ -193,7 +193,6 @@ public class ExtentHeader {
 
     @Override
     public String toString() {
-        return String.format(
-                "ExtentHeader: depth:%d entries:%d/%d", getDepth(), getEntryCount(), getMaximumEntryCount());
+        return "ExtentHeader: depth:%d entries:%d/%d".formatted(getDepth(), getEntryCount(), getMaximumEntryCount());
     }
 }

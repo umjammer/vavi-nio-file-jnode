@@ -97,7 +97,7 @@ public class NTFSVolume {
      * @throws IOException when an error occurs
      */
     public void readClusters(long firstCluster, byte[] dst, int dstOffset, int nrClusters) throws IOException {
-        log.log(Level.DEBUG, "readClusters(" + firstCluster + ", " + nrClusters + ") " + (readClustersCount++));
+        log.log(Level.TRACE, "readClusters(" + firstCluster + ", " + nrClusters + ") " + (readClustersCount++));
         final int clusterSize = getClusterSize();
         final long clusterOffset = firstCluster * clusterSize;
         api.read(clusterOffset, ByteBuffer.wrap(dst, dstOffset, nrClusters * clusterSize));

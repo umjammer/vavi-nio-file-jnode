@@ -28,7 +28,7 @@ public class RawPartitionTableEntry implements PartitionTableEntry {
      * Creates a new entry.
      */
     public RawPartitionTableEntry() {
-logger.log(Level.DEBUG, "virtual raw partition");
+logger.log(Level.TRACE, "virtual raw partition");
     }
 
     @Override

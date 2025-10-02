@@ -214,7 +214,7 @@ public class Ext2FileSystem extends AbstractFileSystem<Ext2Entry> {
             superblock.setWTime(Ext2Utils.encodeDate(new Date()));
         }
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy");
-        log.log(Level.DEBUG, " superblock: " + "\n" + "  #Mount: " + superblock.getMntCount() + "\n" + "  #MaxMount: "
+        log.log(Level.TRACE, " superblock: " + "\n" + "  #Mount: " + superblock.getMntCount() + "\n" + "  #MaxMount: "
             + superblock.getMaxMntCount() + "\n" + "  Last mount time: "
             + sdf.format(Ext2Utils.decodeDate(superblock.getMTime()).getTime()) + "\n" + "  Last write time: "
             + sdf.format(Ext2Utils.decodeDate(superblock.getWTime()).getTime()) + "\n" + "  #blocks: "
@@ -412,7 +412,7 @@ public class Ext2FileSystem extends AbstractFileSystem<Ext2Entry> {
         //  the block will be put in the cache only once in the second
         //  synchronized block
         ByteBuffer data = ByteBuffer.allocate(blockSize);
-        log.log(Level.DEBUG, "Reading block " + nr + " (offset: " + nr * blockSize + ") from disk");
+        log.log(Level.TRACE, "Reading block " + nr + " (offset: " + nr * blockSize + ") from disk");
         getApi().read(nr * blockSize, data);
 
         // synchronize again
@@ -561,7 +561,7 @@ public class Ext2FileSystem extends AbstractFileSystem<Ext2Entry> {
 
         Long key = iNodeNr;
 
-        log.log(Level.DEBUG, "iNodeCache size: " + inodeCache.size());
+        log.log(Level.TRACE, "iNodeCache size: " + inodeCache.size());
 
         synchronized (inodeCache) {
             // check if the inode is already in the cache

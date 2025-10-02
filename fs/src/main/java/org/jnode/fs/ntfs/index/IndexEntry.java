@@ -110,7 +110,7 @@ public final class IndexEntry extends NTFSStructure {
 
     @Override
     public String toString() {
-        return String.format("index-entry:[flags: %d size:%d content-size:%d]", getIndexFlags(), getSize(),
+        return "index-entry:[flags: %d size:%d content-size:%d]".formatted(getIndexFlags(), getSize(),
             getContentSize());
     }
 }

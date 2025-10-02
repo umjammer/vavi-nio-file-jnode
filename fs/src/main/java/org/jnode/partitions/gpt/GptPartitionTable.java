@@ -20,20 +20,23 @@
 
 package org.jnode.partitions.gpt;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import java.lang.System.Logger.Level;
-import java.lang.System.Logger;
 import org.jnode.driver.Device;
 import org.jnode.partitions.PartitionTable;
 import org.jnode.partitions.ibm.IBMPartitionTable;
 import org.jnode.partitions.ibm.IBMPartitionTableEntry;
 import org.jnode.partitions.ibm.IBMPartitionTypes;
 import org.jnode.util.LittleEndian;
+
+import static java.lang.System.getLogger;
+
 
 /**
  * The main GPT partition table class.
@@ -42,14 +45,14 @@ import org.jnode.util.LittleEndian;
  */
 public class GptPartitionTable implements PartitionTable<GptPartitionTableEntry> {
 
+    /** My logger */
+    private static final Logger logger = getLogger(GptPartitionTable.class.getName());
+
     /** The detected block size. */
     private final int blockSize;
 
     /** The partition entries */
     private final List<GptPartitionTableEntry> partitions = new ArrayList<>();
-
-    /** My logger */
-    private static final Logger log = System.getLogger(GptPartitionTable.class.getName());
 
     /**
      * Create a new instance
@@ -65,12 +68,12 @@ public class GptPartitionTable implements PartitionTable<GptPartitionTableEntry>
             int entrySize = (int) LittleEndian.getUInt32(first16KiB, blockSize + 0x54);
 
             for (int partitionNumber = 0; partitionNumber < entries; partitionNumber++) {
-                log.log(Level.DEBUG, "try part " + partitionNumber);
+                logger.log(Level.DEBUG, "try part " + partitionNumber);
 
                 int offset = blockSize * 2 + (partitionNumber * entrySize);
                 GptPartitionTableEntry entry = new GptPartitionTableEntry(this, first16KiB, offset, blockSize);
 
-                log.log(Level.DEBUG, entry);
+                logger.log(Level.DEBUG, entry);
 
                 if (entry.isValid()) {
                     partitions.add(entry);
@@ -125,7 +128,7 @@ public class GptPartitionTable implements PartitionTable<GptPartitionTableEntry>
             }
 
             if (entries.isEmpty() || entries.get(0).getSystemIndicator() != IBMPartitionTypes.PARTTYPE_EFI_GPT) {
-                log.log(Level.DEBUG, "No protective MBR found: " + entries);
+                logger.log(Level.DEBUG, "No protective MBR found: " + entries);
                 return false;
             }
         }

@@ -300,7 +300,7 @@ logger.log(Level.TRACE, "sector: " + (long) (index - firstCluster()) * (long) bs
     }
 
     public String toString() {
-        return String.format("FAT cluster:%d\nboot sector:\n%s", getClusterSize(), getBootSector());
+        return "FAT cluster:%d\nboot sector:\n%s".formatted(getClusterSize(), getBootSector());
     }
 
     public String toDebugString() {

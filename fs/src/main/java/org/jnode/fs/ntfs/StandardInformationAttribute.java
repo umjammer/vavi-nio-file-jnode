@@ -216,7 +216,7 @@ public class StandardInformationAttribute extends NTFSResidentAttribute {
             }
 
             if (value != 0) {
-                names.add(String.format("Unknown 0x%x", value));
+                names.add("Unknown 0x%x".formatted(value));
             }
 
             return names;

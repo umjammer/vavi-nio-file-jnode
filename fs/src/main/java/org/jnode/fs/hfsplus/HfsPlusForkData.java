@@ -212,7 +212,7 @@ public class HfsPlusForkData {
         }
 
         if (remaining > 0) {
-            throw new IOException(String.format("Failed to read in all the data. cnid: %s offset: %d extents: %s",
+            throw new IOException("Failed to read in all the data. cnid: %s offset: %d extents: %s".formatted(
                 cnid, offset, allExtents));
         }
 

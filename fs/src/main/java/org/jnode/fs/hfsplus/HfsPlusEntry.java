@@ -241,6 +241,6 @@ public class HfsPlusEntry implements FSEntry, FSEntryCreated, FSEntryLastAccesse
 
     @Override
     public final String toString() {
-        return String.format("HfsPlusEntry:[cnid:%s %s:'%s']", getId(), isFile() ? "file" : "directory", getName());
+        return "HfsPlusEntry:[cnid:%s %s:'%s']".formatted(getId(), isFile() ? "file" : "directory", getName());
     }
 }

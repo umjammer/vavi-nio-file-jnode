@@ -95,7 +95,7 @@ public final class CompressedDataRun implements DataRunInterface {
         final long myFirstVcn = compressedRun.getFirstVcn();
         final long myLastVcn = getLastVcn();
         final long reqLastVcn = vcn + nrClusters - 1;
-        log.log(Level.DEBUG, "me:" + myFirstVcn + "-" + myLastVcn + ", req:" + vcn + "-" + reqLastVcn);
+        log.log(Level.TRACE, "me:" + myFirstVcn + "-" + myLastVcn + ", req:" + vcn + "-" + reqLastVcn);
         if ((vcn > myLastVcn) || (myFirstVcn > reqLastVcn)) {
             // Not my region
             return 0;
@@ -134,14 +134,12 @@ public final class CompressedDataRun implements DataRunInterface {
 
         if (copyDest + copyLength > dst.length) {
             throw new ArrayIndexOutOfBoundsException(
-                String
-                    .format("Copy dest %d length %d is too big for destination %d", copyDest, copyLength, dst.length));
+                "Copy dest %d length %d is too big for destination %d".formatted(copyDest, copyLength, dst.length));
         }
 
         if (copySource + copyLength > tempUncompressed.length) {
-            throw new ArrayIndexOutOfBoundsException(
-                String.format("Copy source %d length %d is too big for source %d", copySource, copyLength,
-                    tempUncompressed.length));
+            throw new ArrayIndexOutOfBoundsException("Copy source %d length %d is too big for source %d".formatted(
+                    copySource, copyLength, tempUncompressed.length));
         }
 
         System.arraycopy(tempUncompressed, copySource, dst, copyDest, copyLength);
@@ -197,7 +195,7 @@ public final class CompressedDataRun implements DataRunInterface {
         final int rawLen = compressed.getShort(cpos);
         cpos += 2;
         final int len = rawLen & 0xFFF;
-        log.log(Level.DEBUG, "ntfs_uncompblock: block length: " + len + " + 3, 0x" +
+        log.log(Level.TRACE, "ntfs_uncompblock: block length: " + len + " + 3, 0x" +
             Integer.toHexString(len) + ",0x" + Integer.toHexString(rawLen));
 
         if (rawLen == 0) {
@@ -209,7 +207,7 @@ public final class CompressedDataRun implements DataRunInterface {
         if ((rawLen & 0x8000) == 0) {
             // Uncompressed chunks store length as 0xFFF always.
             if ((len + 1) != BLOCK_SIZE) {
-                log.log(Level.DEBUG, "ntfs_uncompblock: len: " + len + " instead of 0xfff");
+                log.log(Level.TRACE, "ntfs_uncompblock: len: " + len + " instead of 0xfff");
             }
 
             // Copies the entire compression block as-is, need to skip the compression flag,
@@ -379,6 +377,6 @@ public final class CompressedDataRun implements DataRunInterface {
 
     @Override
     public String toString() {
-        return String.format("[compressed-run vcn:%d-%d %s]", getFirstVcn(), getLastVcn(), compressedRun);
+        return "[compressed-run vcn:%d-%d %s]".formatted(getFirstVcn(), getLastVcn(), compressedRun);
     }
 }

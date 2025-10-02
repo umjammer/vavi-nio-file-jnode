@@ -384,7 +384,7 @@ public class FatDirectory extends FatEntry implements FSDirectory, FSDirectoryId
 
     @Override
     public String toString() {
-        return String.format("FatDirectory [%s] index:%d", getName(), getIndex());
+        return "FatDirectory [%s] index:%d".formatted(getName(), getIndex());
     }
 
     public String toDebugString() {

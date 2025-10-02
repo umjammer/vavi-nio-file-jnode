@@ -48,6 +48,6 @@ public class AttributeInlineData extends AttributeData {
 
     @Override
     public String toString() {
-        return String.format("inline-attribute:[length:%d]", attributeSize);
+        return "inline-attribute:[length:%d]".formatted(attributeSize);
     }
 }

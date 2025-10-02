@@ -133,6 +133,6 @@ public class ExtentKey extends AbstractKey {
 
     @Override
     public final String toString() {
-        return String.format("[%s type:%s start:%d]", fileId, forkType == DATA_FORK ? "data" : "resource", startBlock);
+        return "[%s type:%s start:%d]".formatted(fileId, forkType == DATA_FORK ? "data" : "resource", startBlock);
     }
 }

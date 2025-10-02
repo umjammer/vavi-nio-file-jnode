@@ -76,13 +76,13 @@ public class FatFileSystemType implements BlockDeviceFileSystemType<FatFileSyste
 
         if (firstSectors.length < 512) {
             // Not enough data for detection
-logger.log(Level.DEBUG, String.format("Not enough data for detection: %04x/%04x%n", firstSectors.length, 512));
+logger.log(Level.DEBUG, "Not enough data for detection: %04x/%04x%n".formatted(firstSectors.length, 512));
             return false;
         }
 
         if (firstSectors[510] != (byte) 0x55 || firstSectors[511] != (byte) 0xaa) {
             // Missing magic number
-logger.log(Level.DEBUG, String.format("Missing magic number 0x55aa: %02x%02x%n", firstSectors[510], firstSectors[511]));
+logger.log(Level.DEBUG, "Missing magic number 0x55aa: %02x%02x%n".formatted(firstSectors[510], firstSectors[511]));
             return false;
         }
 

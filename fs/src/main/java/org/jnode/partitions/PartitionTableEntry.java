@@ -77,7 +77,7 @@ public interface PartitionTableEntry {
             int sectorSize = device.getAPI(FSBlockDeviceAPI.class).getSectorSize();
 
             long offset = getStartOffset(sectorSize);
-logger.log(Level.DEBUG, String.format("entry offset: %08x", offset));
+logger.log(Level.DEBUG, "entry offset: %08x".formatted(offset));
             device.addOffset(offset);
 
             byte[] bytes = new byte[sectorSize];
@@ -100,7 +100,7 @@ logger.log(Level.DEBUG, "entry heads\n" + StringUtil.getDump(bytes, 128));
             int sectorSize = device.getAPI(FSBlockDeviceAPI.class).getSectorSize();
 
             long offset = getStartOffset(sectorSize);
-logger.log(Level.DEBUG, String.format("entry offset: %08x", offset));
+logger.log(Level.DEBUG, "entry offset: %08x".formatted(offset));
             device.addOffset(offset);
 
             byte[] bytes = new byte[sectorSize];

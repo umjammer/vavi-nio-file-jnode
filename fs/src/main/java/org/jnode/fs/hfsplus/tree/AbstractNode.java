@@ -55,7 +55,7 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
             offsets.add(offset);
         }
 
-        log.log(Level.DEBUG, "Creating node for: " + descriptor + " offsets: " + offsets);
+        log.log(Level.TRACE, "Creating node for: " + descriptor + " offsets: " + offsets);
 
         loadRecords(nodeData);
     }
@@ -73,7 +73,7 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
             int recordSize = offsets.get(i + 1) - offset;
             records.add(createRecord(key, nodeData, offset, recordSize));
 
-            log.log(Level.DEBUG, "Loading record: " + key);
+            log.log(Level.TRACE, "Loading record: " + key);
         }
     }
 
@@ -120,7 +120,7 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
      */
     public final T find(K key) {
         for (T record : records) {
-            log.log(Level.DEBUG, "Record: " + record.toString() + " Key: " + key);
+            log.log(Level.TRACE, "Record: " + record.toString() + " Key: " + key);
             @SuppressWarnings("unchecked")
             K recordKey = (K) record.getKey();
             if (recordKey != null && recordKey.equals(key)) {

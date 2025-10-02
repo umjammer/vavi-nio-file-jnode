@@ -51,7 +51,7 @@ public class VirtualDiskFactory {
             disk = Disk.read(path);
 logger.log(Logger.Level.DEBUG, "disk: " + disk + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
             // TODO basically jnode has capability of logical disk detection,
-            //  but it's for only solid image or header + solid image.
+            //  but it's for only solid image or header + solid image (= BlockDeviceAPI).
             //  so image that has other info among disk data (e.g. sector info) like "d88"
             //  is not available currently
             if (disk.getSectorSize() == -1) {
@@ -104,12 +104,12 @@ logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
 
             @Override
             public void read(long offset, ByteBuffer buffer) throws IOException {
-logger.log(Level.TRACE, () -> String.format("offset: %08x, (+o:%08x o:%08x)", offset, disk.getOffset() + offset, disk.getOffset()));
+logger.log(Level.TRACE, () -> "offset: %08x, (+o:%08x o:%08x)".formatted(offset, disk.getOffset() + offset, disk.getOffset()));
                 if (offset != 0 && disk instanceof D88) {
                     int[] r = disk.search((int) offset);
                     if (r == null) {
-logger.log(Level.WARNING, String.format("no such sector of offset: %08x", offset));
-                        throw new IOException(String.format("no such sector of offset: %08x", offset));
+logger.log(Level.TRACE, "no such sector of offset: %08x".formatted(offset));
+                        throw new IOException("no such sector of offset: %08x".formatted(offset));
                     }
                     sbc.read(ByteBuffer.wrap(disk.getSector(r[0], r[1], r[2]).data));
                 } else {

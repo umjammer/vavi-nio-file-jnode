@@ -75,7 +75,7 @@ public class SecurityIdentifier {
             subAuthorityBuilder.append(subAuthorities.get(i));
         }
 
-        return String.format("S-1-%d-%s", authority, subAuthorityBuilder);
+        return "S-1-%d-%s".formatted(authority, subAuthorityBuilder);
     }
 
     @Override

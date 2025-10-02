@@ -92,7 +92,7 @@ public interface PartitionTableType {
     static <T extends PartitionTableType> T lookup(byte[] firstSectors, Device device) {
         ServiceLoader<PartitionTableType> sl = ServiceLoader.load(PartitionTableType.class);
         for (PartitionTableType ptt : sl) {
-logger.log(Level.DEBUG, "partition table type: " + ptt);
+logger.log(Level.TRACE, "partition table type: " + ptt);
             if (ptt.supports(firstSectors, device.getAPI(BlockDeviceAPI.class))) {
                 return (T) ptt;
             }

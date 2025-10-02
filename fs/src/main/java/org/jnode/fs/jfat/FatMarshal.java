@@ -197,7 +197,7 @@ public class FatMarshal {
 
     @Override
     public String toString() {
-        return String.format("FatMarshal %s", NumberUtils.hex(array));
+        return "FatMarshal %s".formatted(NumberUtils.hex(array));
     }
 
     public String toDebugString() {

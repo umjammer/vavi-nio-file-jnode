@@ -55,7 +55,7 @@ public class Ext2Entry extends AbstractFSEntry implements FSEntryLastChanged, FS
         this.directoryRecordId = directoryRecordId;
         this.type = type;
 
-        log.log(Level.DEBUG, "Ext2Entry(iNode, name): name=" + name +
+        log.log(Level.TRACE, "Ext2Entry(iNode, name): name=" + name +
             (isDirectory() ? " is a directory " : "") + (isFile() ? " is a file " : ""));
     }
 

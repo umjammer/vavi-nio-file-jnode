@@ -52,7 +52,7 @@ public class IBMPartitionTableEntry implements PartitionTableEntry {
     @Override
     public boolean isValid() {
         int bootIndicatorValue = getBootIndicatorValue();
-log.log(Level.DEBUG, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + isEmpty() + ", nrSectors: " + getNrSectors());
+log.log(Level.TRACE, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + isEmpty() + ", nrSectors: " + getNrSectors());
         return
             !isEmpty() &&
             (bootIndicatorValue == 0 || bootIndicatorValue == BOOTABLE) &&
@@ -90,7 +90,7 @@ log.log(Level.DEBUG, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + 
     }
 
     public int getBootIndicatorValue() {
-log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + LittleEndian.getUInt8(bs, ofs + 0));
+log.log(Level.TRACE, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + LittleEndian.getUInt8(bs, ofs + 0));
         return LittleEndian.getUInt8(bs, ofs + 0);
     }
 
@@ -124,7 +124,7 @@ log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + 
         try {
             return IBMPartitionTypes.valueOf(code);
         } catch (IllegalArgumentException e) {
-            log.log(Level.DEBUG, "Unknown or invalid system indicator code: 0x" + Integer.toHexString(code));
+            log.log(Level.TRACE, "Unknown or invalid system indicator code: 0x" + Integer.toHexString(code));
             return IBMPartitionTypes.PARTTYPE_UNKNOWN;
         }
     }

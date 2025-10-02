@@ -93,7 +93,7 @@ public class MultipleMountProtection {
      */
     public boolean isInUse() {
         if (sequenceNumber != MMP_SEQ_CLEAN) {
-            log.log(Level.WARNING, String.format("File system appears to be in use from: %s:%s, seq:%x", nodeName, blockDeviceName,
+            log.log(Level.WARNING, "File system appears to be in use from: %s:%s, seq:%x".formatted(nodeName, blockDeviceName,
                 sequenceNumber));
             return true;
 

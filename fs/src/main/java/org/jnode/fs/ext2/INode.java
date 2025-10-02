@@ -125,7 +125,7 @@ public class INode {
      * be saved to the disk
      */
     public void flush() throws IOException {
-        log.log(Level.DEBUG, "Flush called for inode " + getINodeNr());
+        log.log(Level.TRACE, "Flush called for inode " + getINodeNr());
 
         freePreallocatedBlocks();
         update();
@@ -139,7 +139,7 @@ public class INode {
     protected synchronized void update() throws IOException {
         try {
             if (dirty) {
-                log.log(Level.DEBUG, "  ** updating inode **");
+                log.log(Level.TRACE, "  ** updating inode **");
                 desc.getINodeTable().writeInodeData(desc.getIndex(), data);
                 dirty = false;
             }
@@ -434,7 +434,7 @@ public class INode {
 
         // get the direct blocks (0; 11)
         if (i < 12) {
-            log.log(Level.DEBUG, "getDataBlockNr(): block nr: " + LittleEndian.getUInt32(data, 40 + (int) i * 4));
+            log.log(Level.TRACE, "getDataBlockNr(): block nr: " + LittleEndian.getUInt32(data, 40 + (int) i * 4));
             return LittleEndian.getUInt32(data, 40 + (int) i * 4);
         }
 
@@ -602,9 +602,9 @@ public class INode {
     private void freePreallocatedBlocks() throws FileSystemException, IOException {
         int preallocCount = desc.getPreallocCount();
         if (preallocCount > 0) {
-            log.log(Level.DEBUG, "Freeing preallocated blocks");
+            log.log(Level.TRACE, "Freeing preallocated blocks");
         } else {
-            log.log(Level.DEBUG, "No preallocated blocks in the inode");
+            log.log(Level.TRACE, "No preallocated blocks in the inode");
             return;
         }
 

@@ -43,6 +43,6 @@ public class AttributeForkData extends AttributeData {
 
     @Override
     public String toString() {
-        return String.format("fork-attribute:[%s]", fork);
+        return "fork-attribute:[%s]".formatted(fork);
     }
 }

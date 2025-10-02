@@ -98,6 +98,6 @@ public class DecmpfsDiskHeader {
 
     @Override
     public String toString() {
-        return String.format("decmpfs-disk-header:[type:%d, length:%d]", type, uncompressedSize);
+        return "decmpfs-disk-header:[type:%d, length:%d]".formatted(type, uncompressedSize);
     }
 }

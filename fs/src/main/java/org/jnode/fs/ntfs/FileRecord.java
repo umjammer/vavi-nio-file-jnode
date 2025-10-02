@@ -408,10 +408,10 @@ public class FileRecord extends NTFSRecord {
 
             try {
                 if (attributeListAttribute == null) {
-                    log.log(Level.DEBUG, "All attributes stored");
+                    log.log(Level.TRACE, "All attributes stored");
                     attributeList = new ArrayList<>(getAllStoredAttributes());
                 } else {
-                    log.log(Level.DEBUG, "Attributes in attribute list");
+                    log.log(Level.TRACE, "Attributes in attribute list");
                     readAttributeListAttributes();
                 }
             } catch (Exception e) {
@@ -429,16 +429,16 @@ public class FileRecord extends NTFSRecord {
      * @return the attribute.
      */
     public NTFSAttribute findAttributeByType(int attrTypeID) {
-        log.log(Level.DEBUG, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ")");
+        log.log(Level.TRACE, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ")");
 
         for (NTFSAttribute attr : getAllAttributes()) {
             if (attr.getAttributeType() == attrTypeID) {
-                log.log(Level.DEBUG, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ") found");
+                log.log(Level.TRACE, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ") found");
                 return attr;
             }
         }
 
-        log.log(Level.DEBUG, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ") not found");
+        log.log(Level.TRACE, "findAttributeByType(0x" + NumberUtils.hex(attrTypeID, 4) + ") not found");
         return null;
     }
 
@@ -449,7 +449,7 @@ public class FileRecord extends NTFSRecord {
      * @return an iterator for the matching the attributes.
      */
     public Iterator<NTFSAttribute> findAttributesByType(final int attrTypeID) {
-        log.log(Level.DEBUG, "findAttributesByType(0x" + NumberUtils.hex(attrTypeID, 4) + ")");
+        log.log(Level.TRACE, "findAttributesByType(0x" + NumberUtils.hex(attrTypeID, 4) + ")");
 
         return new FilteredAttributeIterator(getAllAttributes().iterator()) {
             @Override
@@ -467,14 +467,14 @@ public class FileRecord extends NTFSRecord {
      * @return an iterator for the matching the attributes.
      */
     public Iterator<NTFSAttribute> findAttributesByTypeAndName(final int attrTypeID, final String name) {
-        log.log(Level.DEBUG, "findAttributesByTypeAndName(0x" + NumberUtils.hex(attrTypeID, 4) + "," + name + ")");
+        log.log(Level.TRACE, "findAttributesByTypeAndName(0x" + NumberUtils.hex(attrTypeID, 4) + "," + name + ")");
         return new FilteredAttributeIterator(getAllAttributes().iterator()) {
             @Override
             protected boolean matches(NTFSAttribute attr) {
                 if (attr.getAttributeType() == attrTypeID) {
                     String attrName = attr.getAttributeName();
                     if (Objects.equals(name, attrName)) {
-                        log.log(Level.DEBUG, "findAttributesByTypeAndName(0x" + NumberUtils.hex(attrTypeID, 4) + "," + name
+                        log.log(Level.TRACE, "findAttributesByTypeAndName(0x" + NumberUtils.hex(attrTypeID, 4) + "," + name
                             + ") found");
                         return true;
                     }
@@ -547,7 +547,7 @@ public class FileRecord extends NTFSRecord {
                          boolean limitToInitialised)
         throws IOException {
 
-        log.log(Level.DEBUG, "readData: offset " + fileOffset + " attr:" + attributeType + " stream: " + streamName +
+        log.log(Level.TRACE, "readData: offset " + fileOffset + " attr:" + attributeType + " stream: " + streamName +
                 " length " + len + ", file record = " + this);
 
         if (len == 0) {
@@ -573,7 +573,7 @@ public class FileRecord extends NTFSRecord {
             }
             resData.getData(resData.getAttributeOffset() + (int) fileOffset, dest, off, len);
 
-            log.log(Level.DEBUG, "readData: read from resident data");
+            log.log(Level.TRACE, "readData: read from resident data");
 
             return;
         }
@@ -638,7 +638,7 @@ public class FileRecord extends NTFSRecord {
             }
         }
 
-        log.log(Level.DEBUG, "readData: read " + readClusters + " from non-resident attributes");
+        log.log(Level.TRACE, "readData: read " + readClusters + " from non-resident attributes");
 
         if (readClusters != nrClusters) {
             throw new IOException("Requested " + nrClusters + " clusters but only read " + readClusters +
@@ -651,9 +651,9 @@ public class FileRecord extends NTFSRecord {
     @Override
     public String toString() {
         if (isInUse()) {
-            return String.format("FileRecord [%d fileName='%s']", referenceNumber, getFileName());
+            return "FileRecord [%d fileName='%s']".formatted(referenceNumber, getFileName());
         } else {
-            return String.format("FileRecord [%d unused]", referenceNumber);
+            return "FileRecord [%d unused]".formatted(referenceNumber);
         }
     }
 
@@ -695,7 +695,7 @@ public class FileRecord extends NTFSRecord {
                     attribute = holdingRecord.findStoredAttributeByID(entry.getAttributeID());
 
                     if (attribute == null) {
-                        log.log(Level.ERROR, String.format("Failed to find an attribute matching entry '%s' in the holding record", entry));
+                        log.log(Level.ERROR, "Failed to find an attribute matching entry '%s' in the holding record".formatted(entry));
                         continue;
                     } else if (!attribute.isResident() && attribute.isCompressedAttribute() &&
                         compressedByType.containsKey(attribute.getAttributeType())) {
@@ -739,17 +739,17 @@ public class FileRecord extends NTFSRecord {
         while (true) {
             int type = getUInt32AsInt(offset);
 
-            if (type == 0xFFFFFFFF) {
+            if (type == 0xffff_ffff) {
                 // Normal end of list condition.
                 break;
             } else {
                 NTFSAttribute attribute = NTFSAttribute.getAttribute(FileRecord.this, offset);
 
-                log.log(Level.DEBUG, "Attribute: " + attribute.toDebugString());
+                log.log(Level.TRACE, "Attribute: " + attribute.toDebugString());
 
                 int offsetToNextOffset = getUInt32AsInt(offset + 0x04);
                 if (offsetToNextOffset <= 0) {
-                    log.log(Level.DEBUG, "Non-positive offset, preventing infinite loop.  Data on disk may be corrupt.  "
+                    log.log(Level.TRACE, "Non-positive offset, preventing infinite loop.  Data on disk may be corrupt.  "
                         + "referenceNumber = " + referenceNumber);
                     break;
                 } else {

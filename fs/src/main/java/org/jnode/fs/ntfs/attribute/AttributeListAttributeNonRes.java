@@ -60,7 +60,7 @@ public class AttributeListAttributeNonRes extends NTFSNonResidentAttribute imple
         // TODO: Consider handling multiple data runs separately instead
         //       of "gluing" them all together like this.
         final int nrClusters = getNumberOfVCNs();
-        log.log(Level.DEBUG, String.format("Allocating %d clusters for non-resident attribute", nrClusters));
+        log.log(Level.DEBUG, "Allocating %d clusters for non-resident attribute".formatted(nrClusters));
         final byte[] data = new byte[nrClusters * getFileRecord().getClusterSize()];
         readVCN(getStartVCN(), data, 0, nrClusters);
         AttributeListBlock listBlock = new AttributeListBlock(data, 0, getAttributeActualSize());

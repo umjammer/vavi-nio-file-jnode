@@ -95,7 +95,6 @@ public class NTFSStructure {
      * Read an unsigned 8-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getUInt8(int offset) {
         return LittleEndian.getUInt8(buffer, this.offset + offset);
@@ -105,7 +104,6 @@ public class NTFSStructure {
      * Read an unsigned 16-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getUInt16(int offset) {
         return LittleEndian.getUInt16(buffer, this.offset + offset);
@@ -115,7 +113,6 @@ public class NTFSStructure {
      * Read an unsigned 24-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getUInt24(int offset) {
         return LittleEndian.getUInt24(buffer, this.offset + offset);
@@ -125,7 +122,6 @@ public class NTFSStructure {
      * Read an unsigned 32-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final long getUInt32(int offset) {
         return LittleEndian.getUInt32(buffer, this.offset + offset);
@@ -135,7 +131,6 @@ public class NTFSStructure {
      * Read an unsigned 32-bit integer from a given offset as a java int.
      *
      * @param offset the offset
-     * @return
      */
     public final int getUInt32AsInt(int offset) {
         return (int) LittleEndian.getUInt32(buffer, this.offset + offset);
@@ -145,7 +140,6 @@ public class NTFSStructure {
      * Read an unsigned 48-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final long getUInt48(int offset) {
         return LittleEndian.getUInt48(buffer, this.offset + offset);
@@ -155,7 +149,6 @@ public class NTFSStructure {
      * Read a signed 8-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getInt8(int offset) {
         return LittleEndian.getInt8(buffer, this.offset + offset);
@@ -165,7 +158,6 @@ public class NTFSStructure {
      * Read a signed 16-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getInt16(int offset) {
         return LittleEndian.getInt16(buffer, this.offset + offset);
@@ -175,7 +167,6 @@ public class NTFSStructure {
      * Read a signed 24-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getInt24(int offset) {
         return LittleEndian.getInt24(buffer, this.offset + offset);
@@ -185,7 +176,6 @@ public class NTFSStructure {
      * Read n signed 32-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final int getInt32(int offset) {
         return LittleEndian.getInt32(buffer, this.offset + offset);
@@ -195,7 +185,6 @@ public class NTFSStructure {
      * Read n signed 48-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final long getInt48(int offset) {
         return LittleEndian.getInt48(buffer, this.offset + offset);
@@ -205,7 +194,6 @@ public class NTFSStructure {
      * Read n signed 64-bit integer from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final long getInt64(int offset) {
         return LittleEndian.getInt64(buffer, this.offset + offset);
@@ -227,7 +215,6 @@ public class NTFSStructure {
      * Read an unsigned 16-bit unicode character from a given offset.
      *
      * @param offset the offset
-     * @return
      */
     public final char getChar16(int offset) {
         final int v0 = buffer[this.offset + offset] & 0xFF;

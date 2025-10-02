@@ -132,7 +132,7 @@ public class FatRootDirectory extends FatDirectory {
 
     @Override
     public String toString() {
-        return String.format("FatRootDirectory [%s]", getName());
+        return "FatRootDirectory [%s]".formatted(getName());
     }
 
     @Override

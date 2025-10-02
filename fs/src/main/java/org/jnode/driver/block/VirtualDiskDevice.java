@@ -32,7 +32,7 @@ public class VirtualDiskDevice extends Device implements FSBlockDeviceAPI {
     /** for partition entry */
     public void addOffset(long offset) {
         this.offset += offset;
-logger.log(Level.DEBUG, String.format("offset: %08x + %08x -> %08x", (this.offset - offset), offset, this.offset));
+logger.log(Level.DEBUG, "offset: %08x + %08x -> %08x".formatted((this.offset - offset), offset, this.offset));
     }
 
     /** virtual offset */

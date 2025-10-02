@@ -52,7 +52,7 @@ public class FileDevice extends Device implements FSBlockDeviceAPI {
      */
     public void addOffset(long offset) {
         this.offset += offset;
-log.log(Level.DEBUG, String.format("offset: %08x + %08x -> %08x", (this.offset - offset), offset, this.offset));
+log.log(Level.DEBUG, "offset: %08x + %08x -> %08x".formatted((this.offset - offset), offset, this.offset));
     }
 
     /**
@@ -90,7 +90,7 @@ log.log(Level.DEBUG, String.format("offset: %08x + %08x -> %08x", (this.offset -
     @Override
     public void read(long devOffset, ByteBuffer destBuf) throws IOException {
         raf.seek(devOffset + offset);
-log.log(Level.DEBUG, String.format("offset: %08x (%08x)", devOffset + offset, offset));
+log.log(Level.TRACE, "offset: %08x (%08x)".formatted(devOffset + offset, offset));
 
         // TODO optimize it also to use ByteBuffer at lower level
         ByteBufferUtils.ByteArray destBA = ByteBufferUtils.toByteArray(destBuf);
