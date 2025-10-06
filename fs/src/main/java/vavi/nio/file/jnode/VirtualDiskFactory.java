@@ -53,7 +53,7 @@ logger.log(Logger.Level.DEBUG, "disk: " + disk + ", bps: " + disk.getSectorSize(
             // TODO basically jnode has capability of logical disk detection,
             //  but it's for only solid image or header + solid image (= BlockDeviceAPI).
             //  so image that has other info among disk data (e.g. sector info) like "d88"
-            //  is not available currently
+            //  is available currently using ad-hoc way by Disk#search()
             if (disk.getSectorSize() == -1) {
 logger.log(Logger.Level.DEBUG, "no sector size, try to post read");
                 try {
@@ -81,7 +81,7 @@ logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
             }
             @Override protected String imageTypeText() {return null;}
             @Override public void read(SeekableByteChannel sbc) throws IOException {}
-            @Override public void save(Path path) throws IOException {}
+            @Override public void save(SeekableByteChannel sbc) throws IOException {}
             @Override public String imageDescText() { return null; }
             @Override public String filterDesc() { return null; }
             @Override public String filterExt() { return null; }
@@ -106,6 +106,7 @@ logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
             public void read(long offset, ByteBuffer buffer) throws IOException {
 logger.log(Level.TRACE, () -> "offset: %08x, (+o:%08x o:%08x)".formatted(offset, disk.getOffset() + offset, disk.getOffset()));
                 if (offset != 0 && disk instanceof D88) {
+                    // for NOT solid disk (TODO this is ad-hoc because VirtualDisk is for solid disk)
                     int[] r = disk.search((int) offset);
                     if (r == null) {
 logger.log(Level.TRACE, "no such sector of offset: %08x".formatted(offset));
@@ -113,6 +114,7 @@ logger.log(Level.TRACE, "no such sector of offset: %08x".formatted(offset));
                     }
                     sbc.read(ByteBuffer.wrap(disk.getSector(r[0], r[1], r[2]).data));
                 } else {
+                    // for solid disk
                     sbc.position(disk.getOffset() + offset);
                     sbc.read(buffer);
                 }

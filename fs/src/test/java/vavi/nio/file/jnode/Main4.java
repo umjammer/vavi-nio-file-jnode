@@ -38,10 +38,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 @PropsEntity(url = "file://${user.dir}/local.properties")
 public class Main4 {
 
-    static {
-        System.setProperty("vavi.util.logging.VaviFormatter.extraClassMethod", "co\\.paralleluniverse\\.fuse\\.LoggedFuseFilesystem#log");
-    }
-
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
     }
