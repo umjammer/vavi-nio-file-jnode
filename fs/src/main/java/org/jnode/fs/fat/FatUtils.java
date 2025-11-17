@@ -22,7 +22,9 @@ package org.jnode.fs.fat;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
-import org.jnode.util.LittleEndian;
+
+import vavi.util.ByteUtil;
+
 
 /**
  * <description>
@@ -184,45 +186,39 @@ public class FatUtils {
     public static void writeSubString(char[] src, int srcOffset, int ordinal, byte checkSum,
             boolean isLast, byte[] dest, int destOffset) {
         if (isLast) {
-            LittleEndian.setInt8(dest, destOffset, ordinal + (1 << 6)); // set
-                                                                        // the
-                                                                        // 6th
-            // security ending
-            // bit
+            dest[destOffset] = (byte) (ordinal + (1 << 6)); // set the 6th security ending bit
         } else {
-            LittleEndian.setInt8(dest, destOffset, ordinal);
+            dest[destOffset] = (byte) ordinal;
         }
 
-        LittleEndian.setInt16(dest, destOffset + 1, src[srcOffset + 0]);
-        LittleEndian.setInt16(dest, destOffset + 3, src[srcOffset + 1]);
-        LittleEndian.setInt16(dest, destOffset + 5, src[srcOffset + 2]);
-        LittleEndian.setInt16(dest, destOffset + 7, src[srcOffset + 3]);
-        LittleEndian.setInt16(dest, destOffset + 9, src[srcOffset + 4]);
-        LittleEndian.setInt8(dest, destOffset + 11, 0x0f); // this is the
-                                                            // hidden attribute
-                                                            // tag for
-        // lfn
-        LittleEndian.setInt8(dest, destOffset + 12, 0); // reserved
-        LittleEndian.setInt8(dest, destOffset + 13, checkSum); // checksum
-        LittleEndian.setInt16(dest, destOffset + 14, src[srcOffset + 5]);
-        LittleEndian.setInt16(dest, destOffset + 16, src[srcOffset + 6]);
-        LittleEndian.setInt16(dest, destOffset + 18, src[srcOffset + 7]);
-        LittleEndian.setInt16(dest, destOffset + 20, src[srcOffset + 8]);
-        LittleEndian.setInt16(dest, destOffset + 22, src[srcOffset + 9]);
-        LittleEndian.setInt16(dest, destOffset + 24, src[srcOffset + 10]);
-        LittleEndian.setInt16(dest, destOffset + 26, 0); // sector... unused
-        LittleEndian.setInt16(dest, destOffset + 28, src[srcOffset + 11]);
-        LittleEndian.setInt16(dest, destOffset + 30, src[srcOffset + 12]);
+        ByteUtil.writeLeShort((short) src[srcOffset + 0], dest, destOffset + 1);
+        ByteUtil.writeLeShort((short) src[srcOffset + 1], dest, destOffset + 3);
+        ByteUtil.writeLeShort((short) src[srcOffset + 2], dest, destOffset + 5);
+        ByteUtil.writeLeShort((short) src[srcOffset + 3], dest, destOffset + 7);
+        ByteUtil.writeLeShort((short) src[srcOffset + 4], dest, destOffset + 9);
+        dest[destOffset + 11] = (byte) 0x0f; // this is the hidden attribute tag for lfn
+        dest[destOffset + 12] = (byte) 0; // reserved
+        dest[destOffset + 13] = (byte) (int) checkSum; // checksum
+        ByteUtil.writeLeShort((short) src[srcOffset + 5], dest, destOffset + 14);
+        ByteUtil.writeLeShort((short) src[srcOffset + 6], dest, destOffset + 16);
+        ByteUtil.writeLeShort((short) src[srcOffset + 7], dest, destOffset + 18);
+        ByteUtil.writeLeShort((short) src[srcOffset + 8], dest, destOffset + 20);
+        ByteUtil.writeLeShort((short) src[srcOffset + 9], dest, destOffset + 22);
+        ByteUtil.writeLeShort((short) src[srcOffset + 10], dest, destOffset + 24);
+        // sector... unused
+        ByteUtil.writeLeShort((short) 0, dest, destOffset + 26);
+        ByteUtil.writeLeShort((short) src[srcOffset + 11], dest, destOffset + 28);
+        ByteUtil.writeLeShort((short) src[srcOffset + 12], dest, destOffset + 30);
 
         log.log(Level.DEBUG, "<<< END writeSubString dest=\n" /* + FSUtils.toString(dest) */ + ">>>");
     }
 
     public static byte getOrdinal(byte[] rawData, int offset) {
-        return (byte) LittleEndian.getUInt8(rawData, offset);
+        return (byte) (rawData[offset] & 0xff);
     }
 
     public static byte getCheckSum(byte[] rawData, int offset) {
-        return (byte) LittleEndian.getUInt8(rawData, offset + 13);
+        return (byte) (rawData[offset + 13] & 0xff);
     }
 
     /**
@@ -274,19 +270,19 @@ log.log(Level.DEBUG, "<<< END getSubString: return=" + str + " >>>");
      */
     static char[] getUnicodeChars(byte[] rawData, int offset) {
         char[] unicodechar = new char[SUBNAME_SIZE];
-        unicodechar[0] = (char) LittleEndian.getUInt16(rawData, offset + 1);
-        unicodechar[1] = (char) LittleEndian.getUInt16(rawData, offset + 3);
-        unicodechar[2] = (char) LittleEndian.getUInt16(rawData, offset + 5);
-        unicodechar[3] = (char) LittleEndian.getUInt16(rawData, offset + 7);
-        unicodechar[4] = (char) LittleEndian.getUInt16(rawData, offset + 9);
-        unicodechar[5] = (char) LittleEndian.getUInt16(rawData, offset + 14);
-        unicodechar[6] = (char) LittleEndian.getUInt16(rawData, offset + 16);
-        unicodechar[7] = (char) LittleEndian.getUInt16(rawData, offset + 18);
-        unicodechar[8] = (char) LittleEndian.getUInt16(rawData, offset + 20);
-        unicodechar[9] = (char) LittleEndian.getUInt16(rawData, offset + 22);
-        unicodechar[10] = (char) LittleEndian.getUInt16(rawData, offset + 24);
-        unicodechar[11] = (char) LittleEndian.getUInt16(rawData, offset + 28);
-        unicodechar[12] = (char) LittleEndian.getUInt16(rawData, offset + 30);
+        unicodechar[0] = (char) (ByteUtil.readLeShort(rawData, offset + 1) & 0xffff);
+        unicodechar[1] = (char) (ByteUtil.readLeShort(rawData, offset + 3) & 0xffff);
+        unicodechar[2] = (char) (ByteUtil.readLeShort(rawData, offset + 5) & 0xffff);
+        unicodechar[3] = (char) (ByteUtil.readLeShort(rawData, offset + 7) & 0xffff);
+        unicodechar[4] = (char) (ByteUtil.readLeShort(rawData, offset + 9) & 0xffff);
+        unicodechar[5] = (char) (ByteUtil.readLeShort(rawData, offset + 14) & 0xffff);
+        unicodechar[6] = (char) (ByteUtil.readLeShort(rawData, offset + 16) & 0xffff);
+        unicodechar[7] = (char) (ByteUtil.readLeShort(rawData, offset + 18) & 0xffff);
+        unicodechar[8] = (char) (ByteUtil.readLeShort(rawData, offset + 20) & 0xffff);
+        unicodechar[9] = (char) (ByteUtil.readLeShort(rawData, offset + 22) & 0xffff);
+        unicodechar[10] = (char) (ByteUtil.readLeShort(rawData, offset + 24) & 0xffff);
+        unicodechar[11] = (char) (ByteUtil.readLeShort(rawData, offset + 28) & 0xffff);
+        unicodechar[12] = (char) (ByteUtil.readLeShort(rawData, offset + 30) & 0xffff);
         return unicodechar;
     }
 }

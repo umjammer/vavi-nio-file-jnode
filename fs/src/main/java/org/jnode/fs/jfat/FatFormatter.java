@@ -47,7 +47,7 @@ import java.util.Date;
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.driver.block.BlockDeviceAPI;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
 
 import static java.lang.Integer.toHexString;
 
@@ -297,9 +297,9 @@ public class FatFormatter {
         for (int i = 0; i < NumOfFATs; i++) {
             int SectorStart = (ReservedSectorCount + (i * FatSize)) * 512;
             this.reservedSector = new byte[12];
-            LittleEndian.setInt32(this.reservedSector, 0, ReservedSector_0);
-            LittleEndian.setInt32(this.reservedSector, 4, ReservedSector_1);
-            LittleEndian.setInt32(this.reservedSector, 8, ReservedSector_2);
+            ByteUtil.writeLeInt(ReservedSector_0, this.reservedSector, 0);
+            ByteUtil.writeLeInt(ReservedSector_1, this.reservedSector, 4);
+            ByteUtil.writeLeInt(ReservedSector_2, this.reservedSector, 8);
             api.write(SectorStart, ByteBuffer.wrap(this.reservedSector));
         }
     }

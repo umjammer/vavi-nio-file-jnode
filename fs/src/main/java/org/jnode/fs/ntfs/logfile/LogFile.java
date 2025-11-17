@@ -16,7 +16,8 @@ import org.jnode.fs.ntfs.FileRecord;
 import org.jnode.fs.ntfs.NTFSVolume;
 import org.jnode.fs.ntfs.attribute.NTFSAttribute;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * $LogFile
@@ -281,7 +282,7 @@ public class LogFile {
         // area'.
 
         for (int offset = 4 * logPageSize; offset < logFileLength; offset += logPageSize) {
-            int magic = LittleEndian.getInt32(logFileBuffer, offset);
+            int magic = ByteUtil.readLeInt(logFileBuffer, offset);
 
             if (magic != RecordPageHeader.Magic.RCRD) {
                 // Bad page magic, possibly an uninitialised page

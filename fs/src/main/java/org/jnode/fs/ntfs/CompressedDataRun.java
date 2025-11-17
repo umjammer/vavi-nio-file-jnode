@@ -25,7 +25,9 @@ import java.util.Arrays;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
-import org.jnode.util.LittleEndian;
+
+import vavi.util.ByteUtil;
+
 
 /**
  * @author Daniel Noll (daniel@noll.id.au)
@@ -327,7 +329,7 @@ public final class CompressedDataRun implements DataRunInterface {
          * @return the short.
          */
         private int getShort(int offset) {
-            return LittleEndian.getUInt16(array, this.offset + offset);
+            return ByteUtil.readLeShort(array, this.offset + offset) & 0xffff;
         }
 
         /**

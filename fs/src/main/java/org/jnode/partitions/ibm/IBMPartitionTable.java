@@ -36,7 +36,8 @@ import org.jnode.driver.Device;
 import org.jnode.driver.block.BlockDeviceAPI;
 import org.jnode.partitions.PartitionTable;
 import org.jnode.util.BigEndian;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author epr
@@ -166,36 +167,36 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             return false;
         }
 
-        if (LittleEndian.getUInt16(bootSector, 510) != 0xaa55) {
+        if ((ByteUtil.readLeShort(bootSector, 510) & 0xffff) != 0xaa55) {
             log.log(Level.TRACE, "No aa55 magic");
             return false;
         }
 
-        if (LittleEndian.getUInt16(bootSector, 428) == 0x5678) {
+        if ((ByteUtil.readLeShort(bootSector, 428) & 0xffff) == 0x5678) {
             // Matches the AAP MBR extra signature, probably a valid partition table
             log.log(Level.TRACE, "Has AAP MBR extra signature");
             return true;
         }
 
-        if (LittleEndian.getUInt16(bootSector, 380) == 0xa55a) {
+        if ((ByteUtil.readLeShort(bootSector, 380) & 0xffff) == 0xa55a) {
             // Matches the AST/NEC MBR extra signature, probably a valid partition table
             log.log(Level.TRACE, "Has AST/NEC MBR extra signature");
             return true;
         }
 
-        if (LittleEndian.getUInt16(bootSector, 252) == 0x55aa) {
+        if ((ByteUtil.readLeShort(bootSector, 252) & 0xffff) == 0x55aa) {
             // Matches the Disk Manager MBR extra signature, probably a valid partition table
             log.log(Level.TRACE, "Has Disk Manager MBR extra signature");
             return true;
         }
 
-        if (LittleEndian.getUInt32(bootSector, 2) == 0x4c57454e) {
+        if ((ByteUtil.readLeInt(bootSector, 2) & 0xffff_ffffL) == 0x4c57454e) {
             // Matches the TRACE MBR extra signature, probably a valid partition table
             log.log(Level.TRACE, "Has NEWLDR MBR extra signature");
             return true;
         }
 
-        if (LittleEndian.getUInt32(bootSector, 6) == 0x4f4c494c) {
+        if ((ByteUtil.readLeInt(bootSector, 6) & 0xffff_ffffL) == 0x4f4c494c) {
             // Matches the LILO signature, probably a valid partition table
             log.log(Level.TRACE, "Has LILO signature");
             return true;
@@ -231,7 +232,7 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             return true;
         }
 
-        if (LittleEndian.getUInt32(bootSector, 296) == 0xC3F961D6L) {
+        if ((ByteUtil.readLeInt(bootSector, 296) & 0xffff_ffffL) == 0xC3F961D6L) {
             // Matches Microsoft Windows 2000 partition boot code. Starting from Windows 2000 the boot code error
             // messages are localised, so the check above won't match them.
             //
@@ -271,7 +272,7 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             return true;
         }
 
-        if (LittleEndian.getUInt32(bootSector, 241) == 0x41504354) {
+        if ((ByteUtil.readLeInt(bootSector, 241) & 0xffff_ffffL) == 0x41504354) {
             // Matches TCPA signature. Seen at offsets:
             //  * 0xF1 - Windows Vista
             //  * 0x18E - Windows PE
@@ -306,7 +307,7 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             return false;
         }
 
-        if (LittleEndian.getUInt32(bootSector, 0xc) == 0x504E0000) {
+        if ((ByteUtil.readLeInt(bootSector, 0xc) & 0xffff_ffffL) == 0x504E0000) {
             // Matches the 'NP' signature
             log.log(Level.DEBUG, "Matches the 'NP' signature");
             return true;

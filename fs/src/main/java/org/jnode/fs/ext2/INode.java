@@ -33,7 +33,8 @@ import org.jnode.fs.ext2.xattr.XAttrEntry;
 import org.jnode.fs.ext2.xattr.XAttrHeader;
 import org.jnode.fs.ext4.ExtentHeader;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * This class represents an inode. Once they are allocated, inodes are read and
@@ -168,7 +169,7 @@ public class INode {
      */
     public int getExtraISize() {
         if (getExt2FileSystem().hasROFeature(Ext2Constants.EXT4_FEATURE_RO_COMPAT_EXTRA_ISIZE)) {
-            return LittleEndian.getInt16(data, 0x80);
+            return ByteUtil.readLeShort(data, 0x80);
         }
 
         // Extra isize not supported
@@ -181,8 +182,8 @@ public class INode {
      * @return the extra attribute block.
      */
     public long getXAttrBlock() {
-        long blockLow = LittleEndian.getUInt32(data, 0x68);
-        long blockHigh = LittleEndian.getUInt16(data, 0x76);
+        long blockLow = ByteUtil.readLeInt(data, 0x68) & 0xffff_ffffL;
+        long blockHigh = ByteUtil.readLeShort(data, 0x76) & 0xffff;
         return blockLow | blockHigh << 32;
     }
 
@@ -216,7 +217,7 @@ public class INode {
 
             if (xAttrHeader.getMagic() == XAttrHeader.MAGIC) {
                 for (int offset = XAttrHeader.SIZE; offset + XAttrEntry.MINIMUM_SIZE < xattrBuffer.length; ) {
-                    if (LittleEndian.getUInt32(xattrBuffer, offset) == 0) {
+                    if ((ByteUtil.readLeInt(xattrBuffer, offset) & 0xffff_ffffL) == 0) {
                         break;
                     }
 
@@ -247,7 +248,7 @@ public class INode {
 
                 if (xAttrHeader.getMagic() == XAttrHeader.MAGIC) {
                     for (int offset = XAttrHeader.SIZE; offset + XAttrEntry.MINIMUM_SIZE < xattrBuffer.length; ) {
-                        if (LittleEndian.getUInt32(xattrBuffer, offset) == 0) {
+                        if ((ByteUtil.readLeInt(xattrBuffer, offset) & 0xffff_ffffL) == 0) {
                             break;
                         }
 
@@ -291,11 +292,11 @@ public class INode {
         byte[] data = fs.getBlock(dataBlockNr);
         if (indirectionLevel == 1)
             // data is a (simple) indirect block
-            return LittleEndian.getUInt32(data, (int) offset * 4);
+            return ByteUtil.readLeInt(data, (int) offset * 4) & 0xffff_ffffL;
 
         long blockIndex = offset / (long) Math.pow(getIndirectCount(), indirectionLevel - 1);
         long blockOffset = offset % (long) Math.pow(getIndirectCount(), indirectionLevel - 1);
-        long blockNr = LittleEndian.getUInt32(data, (int) blockIndex * 4);
+        long blockNr = ByteUtil.readLeInt(data, (int) blockIndex * 4) & 0xffff_ffffL;
 
         return indirectRead(blockNr, blockOffset, indirectionLevel - 1);
     }
@@ -333,7 +334,7 @@ public class INode {
             Arrays.fill(zeroes, 0, fs.getBlockSize(), (byte) 0);
             fs.writeBlock(blockNr, zeroes, false);
         } else {
-            blockNr = LittleEndian.getUInt32(data, (int) blockIndex * 4);
+            blockNr = ByteUtil.readLeInt(data, (int) blockIndex * 4) & 0xffff_ffffL;
         }
 
         indirectWrite(blockNr, blockOffset, allocatedBlocks, value, indirectionLevel - 1);
@@ -360,7 +361,7 @@ public class INode {
 
         long blockIndex = offset / (long) Math.pow(getIndirectCount(), indirectionLevel - 1);
         long blockOffset = offset % (long) Math.pow(getIndirectCount(), indirectionLevel - 1);
-        long blockNr = LittleEndian.getUInt32(data, (int) blockIndex * 4);
+        long blockNr = ByteUtil.readLeInt(data, (int) blockIndex * 4) & 0xffff_ffffL;
 
         indirectFree(blockNr, blockOffset, indirectionLevel - 1);
 
@@ -434,22 +435,22 @@ public class INode {
 
         // get the direct blocks (0; 11)
         if (i < 12) {
-            log.log(Level.TRACE, "getDataBlockNr(): block nr: " + LittleEndian.getUInt32(data, 40 + (int) i * 4));
-            return LittleEndian.getUInt32(data, 40 + (int) i * 4);
+            log.log(Level.TRACE, "getDataBlockNr(): block nr: " + (ByteUtil.readLeInt(data, 40 + (int) i * 4) & 0xffff_ffffL));
+            return ByteUtil.readLeInt(data, 40 + (int) i * 4) & 0xffff_ffffL;
         }
 
         // see the indirect blocks (12; indirectCount-1)
         i -= 12;
         if (i < indirectCount) {
             // the 12th index points to the indirect block
-            return indirectRead(LittleEndian.getUInt32(data, 40 + 12 * 4), i, 1);
+            return indirectRead(ByteUtil.readLeInt(data, 40 + 12 * 4) & 0xffff_ffffL, i, 1);
         }
 
         // see the double indirect blocks (indirectCount; doubleIndirectCount-1)
         i -= indirectCount;
         if (i < (long) indirectCount * indirectCount) {
             // the 13th index points to the double indirect block
-            return indirectRead(LittleEndian.getUInt32(data, 40 + 13 * 4), i, 2);
+            return indirectRead(ByteUtil.readLeInt(data, 40 + 13 * 4) & 0xffff_ffffL, i, 2);
         }
 
         // see the triple indirect blocks (doubleIndirectCount;
@@ -457,7 +458,7 @@ public class INode {
         i -= (long) indirectCount * indirectCount;
         if (i < (long) indirectCount * indirectCount * indirectCount) {
             // the 14th index points to the triple indirect block
-            return indirectRead(LittleEndian.getUInt32(data, 40 + 14 * 4), i, 3);
+            return indirectRead(ByteUtil.readLeInt(data, 40 + 14 * 4) & 0xffff_ffffL, i, 3);
         }
 
         // shouldn't get here
@@ -528,7 +529,7 @@ public class INode {
                 fs.writeBlock(indirectBlockNr, zeroes, false);
             } else {
                 // the indirect block has already been used
-                indirectBlockNr = LittleEndian.getUInt32(data, 40 + 12 * 4);
+                indirectBlockNr = ByteUtil.readLeInt(data, 40 + 12 * 4) & 0xffff_ffffL;
             }
 
             indirectWrite(indirectBlockNr, i, allocatedBlocks, blockNr, 1);
@@ -554,7 +555,7 @@ public class INode {
                 Arrays.fill(zeroes, 0, fs.getBlockSize(), (byte) 0);
                 fs.writeBlock(doubleIndirectBlockNr, zeroes, false);
             } else {
-                doubleIndirectBlockNr = LittleEndian.getUInt32(data, 40 + 13 * 4);
+                doubleIndirectBlockNr = ByteUtil.readLeInt(data, 40 + 13 * 4) & 0xffff_ffffL;
             }
 
             indirectWrite(doubleIndirectBlockNr, i, allocatedBlocks, blockNr, 2);
@@ -582,7 +583,7 @@ public class INode {
                 Arrays.fill(zeroes, 0, fs.getBlockSize(), (byte) 0);
                 fs.writeBlock(tripleIndirectBlockNr, zeroes, false);
             } else {
-                tripleIndirectBlockNr = LittleEndian.getUInt32(data, 40 + 14 * 4);
+                tripleIndirectBlockNr = ByteUtil.readLeInt(data, 40 + 14 * 4) & 0xffff_ffffL;
             }
 
             indirectWrite(tripleIndirectBlockNr, i, allocatedBlocks, blockNr, 3);
@@ -648,7 +649,7 @@ public class INode {
 
         // see the direct blocks (0; 11)
         if (i < 12) {
-            indirectFree(LittleEndian.getUInt32(data, 40 + (int) i * 4), 0, 0);
+            indirectFree(ByteUtil.readLeInt(data, 40 + (int) i * 4) & 0xffff_ffffL, 0, 0);
             Ext2Utils.set32(data, 40 + (int) i * 4, 0);
             return;
         }
@@ -657,7 +658,7 @@ public class INode {
         i -= 12;
         if (i < indirectCount) {
             // the 12th index points to the indirect block
-            indirectFree(LittleEndian.getUInt32(data, 40 + 12 * 4), i, 1);
+            indirectFree(ByteUtil.readLeInt(data, 40 + 12 * 4) & 0xffff_ffffL, i, 1);
             // if this was the last block on the indirect block, then delete the record of
             // the indirect block from the inode
             if (i == 0) {
@@ -670,7 +671,7 @@ public class INode {
         i -= indirectCount;
         if (i < (long) indirectCount * indirectCount) {
             // the 13th index points to the double indirect block
-            indirectFree(LittleEndian.getUInt32(data, 40 + 13 * 4), i, 2);
+            indirectFree(ByteUtil.readLeInt(data, 40 + 13 * 4) & 0xffff_ffffL, i, 2);
             // if this was the last block on the double indirect block, then delete the record of
             // the double indirect block from the inode
             if (i == 0) {
@@ -683,7 +684,7 @@ public class INode {
         i -= (long) indirectCount * indirectCount;
         if (i < (long) indirectCount * indirectCount * indirectCount) {
             // the 14th index points to the triple indirect block
-            indirectFree(LittleEndian.getUInt32(data, 40 + 14 * 4), i, 3);
+            indirectFree(ByteUtil.readLeInt(data, 40 + 14 * 4) & 0xffff_ffffL, i, 3);
             // if this was the last block on the triple indirect block, then delete the record of
             // the triple indirect block from the inode
             if (i == 0) {
@@ -873,22 +874,22 @@ public class INode {
     // other persistent inode data
 
     public synchronized int getMode() {
-        int iMode = LittleEndian.getUInt16(data, 0);
+        int iMode = ByteUtil.readLeShort(data, 0) & 0xffff;
 //        log.log(Level.DEBUG, "INode.getIMode(): " + Ext2Print.hexFormat(iMode));
         return iMode;
     }
 
     public synchronized void setMode(int imode) {
-        LittleEndian.setInt16(data, 0, imode);
+        ByteUtil.writeLeShort((short) imode, data, 0);
         setDirty(true);
     }
 
     public synchronized int getUid() {
-        return LittleEndian.getUInt16(data, 2);
+        return ByteUtil.readLeShort(data, 2) & 0xffff;
     }
 
     public synchronized void setUid(int uid) {
-        LittleEndian.setInt16(data, 2, uid);
+        ByteUtil.writeLeShort((short) uid, data, 2);
         setDirty(true);
     }
 
@@ -898,8 +899,8 @@ public class INode {
      * @return the size of the file in bytes
      */
     public synchronized long getSize() {
-        long sizeLow = LittleEndian.getUInt32(data, 4);
-        long sizeHigh = LittleEndian.getUInt32(data, 0x6C);
+        long sizeLow = ByteUtil.readLeInt(data, 4) & 0xffff_ffffL;
+        long sizeHigh = ByteUtil.readLeInt(data, 0x6C) & 0xffff_ffffL;
 
         if ((getFlags() & Ext2Constants.EXT4_HUGE_FILE_FL) != 0) {
             return (sizeHigh + sizeLow) << 32;
@@ -925,7 +926,7 @@ public class INode {
     }
 
     public synchronized long getAtime() {
-        return LittleEndian.getUInt32(data, 8);
+        return ByteUtil.readLeInt(data, 8) & 0xffff_ffffL;
     }
 
     public synchronized void setAtime(long atime) {
@@ -934,7 +935,7 @@ public class INode {
     }
 
     public synchronized long getCtime() {
-        return LittleEndian.getUInt32(data, 12);
+        return ByteUtil.readLeInt(data, 12) & 0xffff_ffffL;
     }
 
     public synchronized void setCtime(long ctime) {
@@ -943,7 +944,7 @@ public class INode {
     }
 
     public synchronized long getMtime() {
-        return LittleEndian.getUInt32(data, 16);
+        return ByteUtil.readLeInt(data, 16) & 0xffff_ffffL;
     }
 
     public synchronized void setMtime(long mtime) {
@@ -952,7 +953,7 @@ public class INode {
     }
 
     public synchronized long getDtime() {
-        return LittleEndian.getUInt32(data, 20);
+        return ByteUtil.readLeInt(data, 20) & 0xffff_ffffL;
     }
 
     public synchronized void setDtime(long dtime) {
@@ -961,20 +962,20 @@ public class INode {
     }
 
     public synchronized int getGid() {
-        return LittleEndian.getUInt16(data, 24);
+        return ByteUtil.readLeShort(data, 24) & 0xffff;
     }
 
     public synchronized void setGid(int gid) {
-        LittleEndian.setInt16(data, 24, gid);
+        ByteUtil.writeLeShort((short) gid, data, 24);
         setDirty(true);
     }
 
     public synchronized int getLinksCount() {
-        return LittleEndian.getUInt16(data, 26);
+        return ByteUtil.readLeShort(data, 26) & 0xffff;
     }
 
     public synchronized void setLinksCount(int lc) {
-        LittleEndian.setInt16(data, 26, lc);
+        ByteUtil.writeLeShort((short) lc, data, 26);
         setDirty(true);
     }
 
@@ -982,7 +983,7 @@ public class INode {
      * Return the size in 512-byte blocks.
      */
     public synchronized long getBlocks() {
-        return LittleEndian.getUInt32(data, 28);
+        return ByteUtil.readLeInt(data, 28) & 0xffff_ffffL;
     }
 
     public synchronized void setBlocks(long count) {
@@ -994,7 +995,7 @@ public class INode {
     // this value is set by setSize
 
     public synchronized long getFlags() {
-        return LittleEndian.getUInt32(data, 32);
+        return ByteUtil.readLeInt(data, 32) & 0xffff_ffffL;
     }
 
     public synchronized void setFlags(long flags) {
@@ -1003,7 +1004,7 @@ public class INode {
     }
 
     public synchronized long getOSD1() {
-        return LittleEndian.getUInt32(data, 36);
+        return ByteUtil.readLeInt(data, 36) & 0xffff_ffffL;
     }
 
     public synchronized void setOSD1(long osd1) {
@@ -1012,7 +1013,7 @@ public class INode {
     }
 
     public synchronized long getGeneration() {
-        return LittleEndian.getUInt32(data, 100);
+        return ByteUtil.readLeInt(data, 100) & 0xffff_ffffL;
     }
 
     public synchronized void setGeneration(long gen) {
@@ -1021,7 +1022,7 @@ public class INode {
     }
 
     public synchronized long getFileACL() {
-        return LittleEndian.getUInt32(data, 104);
+        return ByteUtil.readLeInt(data, 104) & 0xffff_ffffL;
     }
 
     public synchronized void setFileACL(long acl) {
@@ -1030,7 +1031,7 @@ public class INode {
     }
 
     public synchronized long getDirACL() {
-        return LittleEndian.getUInt32(data, 108);
+        return ByteUtil.readLeInt(data, 108) & 0xffff_ffffL;
     }
 
     public synchronized void setDirACL(long acl) {
@@ -1039,7 +1040,7 @@ public class INode {
     }
 
     public synchronized long getFAddr() {
-        return LittleEndian.getUInt32(data, 112);
+        return ByteUtil.readLeInt(data, 112) & 0xffff_ffffL;
     }
 
     public synchronized void setFAddr(long faddr) {

@@ -23,7 +23,7 @@ package org.jnode.fs.iso9660;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
-import org.jnode.util.LittleEndian;
+
 
 /**
  * ISO9660 datetime structure.
@@ -79,13 +79,13 @@ public class ISO9660DTime {
      * @param off  offset into the byte array at which to read the struct.
      */
     public ISO9660DTime(byte[] buff, int off) {
-        year = LittleEndian.getUInt8(buff, off);
-        month = LittleEndian.getUInt8(buff, off + 1);
-        day = LittleEndian.getUInt8(buff, off + 2);
-        hour = LittleEndian.getUInt8(buff, off + 3);
-        minute = LittleEndian.getUInt8(buff, off + 4);
-        second = LittleEndian.getUInt8(buff, off + 5);
-        gmtOffset = LittleEndian.getInt8(buff, off + 6);
+        year = buff[off] & 0xff;
+        month = buff[off + 1] & 0xff;
+        day = buff[off + 2] & 0xff;
+        hour = buff[off + 3] & 0xff;
+        minute = buff[off + 4] & 0xff;
+        second = buff[off + 5] & 0xff;
+        gmtOffset = buff[off + 6];
     }
 
     /**

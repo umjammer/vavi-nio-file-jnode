@@ -25,7 +25,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.jnode.fs.ntfs.NTFSFile;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * A security descriptor stream, '$Secure:$SDS', that holds the security descriptor entries.
@@ -91,7 +92,7 @@ public class SecurityDescriptorStream {
         // First read in the size of the entry
         byte[] sizeBuffer = new byte[0x4];
         sdsFile.read(offset + 0x10, ByteBuffer.wrap(sizeBuffer));
-        int size = LittleEndian.getInt32(sizeBuffer, 0);
+        int size = ByteUtil.readLeInt(sizeBuffer, 0);
 
         if (size == 0) {
             return null;

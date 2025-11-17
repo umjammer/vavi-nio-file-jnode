@@ -18,7 +18,7 @@ import org.jnode.driver.block.BlockDeviceAPI;
 import org.jnode.partitions.PartitionTable;
 import org.jnode.partitions.PartitionTableException;
 import org.jnode.partitions.PartitionTableType;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
 import vavi.util.StringUtil;
 import vavi.util.serdes.Serdes;
 import vavix.io.partition.PC98PartitionEntry;
@@ -65,8 +65,8 @@ logger.log(Level.TRACE, "Not enough data for detection: %04x/%04x".formatted(boo
             return false;
         }
 
-        if (LittleEndian.getUInt16(bootSector, 510) != 0xaa55) {
-logger.log(Level.TRACE, "No aa55 magic: %04x".formatted(LittleEndian.getUInt16(bootSector, 510)));
+        if ((ByteUtil.readLeShort(bootSector, 510) & 0xffff) != 0xaa55) {
+logger.log(Level.TRACE, "No aa55 magic: %04x".formatted(ByteUtil.readLeShort(bootSector, 510) & 0xffff));
             return false;
         }
 

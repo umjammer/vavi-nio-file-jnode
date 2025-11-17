@@ -33,7 +33,7 @@ import org.jnode.partitions.PartitionTable;
 import org.jnode.partitions.ibm.IBMPartitionTable;
 import org.jnode.partitions.ibm.IBMPartitionTableEntry;
 import org.jnode.partitions.ibm.IBMPartitionTypes;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
 
 import static java.lang.System.getLogger;
 
@@ -64,8 +64,8 @@ public class GptPartitionTable implements PartitionTable<GptPartitionTableEntry>
         blockSize = detectBlockSize(first16KiB);
 
         if (blockSize != -1) {
-            long entries = LittleEndian.getUInt32(first16KiB, blockSize + 0x50);
-            int entrySize = (int) LittleEndian.getUInt32(first16KiB, blockSize + 0x54);
+            long entries = ByteUtil.readLeInt(first16KiB, blockSize + 0x50) & 0xffff_ffffL;
+            int entrySize = (int) (ByteUtil.readLeInt(first16KiB, blockSize + 0x54) & 0xffff_ffffL);
 
             for (int partitionNumber = 0; partitionNumber < entries; partitionNumber++) {
                 logger.log(Level.DEBUG, "try part " + partitionNumber);

@@ -24,8 +24,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.jnode.partitions.PartitionTable;
 import org.jnode.partitions.PartitionTableEntry;
-import org.jnode.util.LittleEndian;
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * A GPT partition table entry.
@@ -93,7 +94,7 @@ public class GptPartitionTableEntry implements PartitionTableEntry {
      */
     @Override
     public long getStartOffset(int sectorSize) {
-        return LittleEndian.getInt64(first16KiB, offset + 0x20) * blockSize;
+        return ByteUtil.readLeLong(first16KiB, offset + 0x20) * blockSize;
     }
 
     /**
@@ -101,11 +102,11 @@ public class GptPartitionTableEntry implements PartitionTableEntry {
      */
     @Override
     public long getEndOffset(int sectorSize) {
-        return (LittleEndian.getInt64(first16KiB, offset + 0x28) + 1) * blockSize;
+        return (ByteUtil.readLeLong(first16KiB, offset + 0x28) + 1) * blockSize;
     }
 
     public long getFlags() {
-        return LittleEndian.getInt64(first16KiB, offset + 0x30);
+        return ByteUtil.readLeLong(first16KiB, offset + 0x30);
     }
 
     public String getName() {
@@ -123,7 +124,7 @@ public class GptPartitionTableEntry implements PartitionTableEntry {
     public String dump() {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < 128; i++) {
-            b.append(NumberUtils.hex(LittleEndian.getUInt8(first16KiB, offset + i), 2));
+            b.append(NumberUtils.hex(first16KiB[offset + i] & 0xff, 2));
             b.append(' ');
         }
         return b.toString();

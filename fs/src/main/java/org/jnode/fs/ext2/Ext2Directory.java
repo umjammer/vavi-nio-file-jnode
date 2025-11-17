@@ -35,7 +35,8 @@ import org.jnode.fs.spi.AbstractFSDirectory;
 import org.jnode.fs.spi.AbstractFileSystem;
 import org.jnode.fs.spi.FSEntryTable;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author Andras Nagy
@@ -367,7 +368,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
                     if (index >= iNode.getSize())
                         return false;
 
-                    if (data.capacity() < 8 || LittleEndian.getUInt16(data.array(), index + 4) == 0) {
+                    if (data.capacity() < 8 || (ByteUtil.readLeShort(data.array(), index + 4) & 0xffff) == 0) {
                         return false;
                     }
 

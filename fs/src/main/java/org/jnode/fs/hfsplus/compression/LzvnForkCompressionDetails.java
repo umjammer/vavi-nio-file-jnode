@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
 import org.jnode.fs.hfsplus.HfsPlusForkData;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Contains the details of the LZVN compression details.
@@ -36,7 +37,7 @@ public class LzvnForkCompressionDetails {
         // Read in the number of chunks
         ByteBuffer offsetToFirstChunkLengthBuffer = ByteBuffer.allocate(0x4);
         forkData.read(fs, 0, offsetToFirstChunkLengthBuffer);
-        int offsetToFirstChunk = LittleEndian.getInt32(offsetToFirstChunkLengthBuffer.array(), 0);
+        int offsetToFirstChunk = ByteUtil.readLeInt(offsetToFirstChunkLengthBuffer.array(), 0);
         chunkCount = offsetToFirstChunk / 4;
 
         // Read in the offset array data
@@ -45,7 +46,7 @@ public class LzvnForkCompressionDetails {
 
         // Each chunk has an offset from the end of the header
         for (int i = 0; i < chunkCount; i++) {
-            long chunkOffset = LittleEndian.getUInt32(offsetArrayData.array(), 4 * i);
+            long chunkOffset = ByteUtil.readLeInt(offsetArrayData.array(), 4 * i) & 0xffff_ffffL;
             offsetArray.add(chunkOffset);
         }
     }

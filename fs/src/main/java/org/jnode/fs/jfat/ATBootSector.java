@@ -27,9 +27,9 @@ import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.driver.block.BlockDeviceAPI;
 import org.jnode.partitions.ibm.IBMPartitionTable;
-import org.jnode.util.LittleEndian;
 import org.jnode.util.NumberUtils;
 
+import vavi.util.ByteUtil;
 import vavi.util.StringUtil;
 
 /**
@@ -261,29 +261,29 @@ log.log(Level.INFO, "type: " + type);
     }
 
     protected int get8(int offset) {
-        return LittleEndian.getUInt8(sector, offset);
+        return sector[offset] & 0xff;
     }
 
     protected void set8(int offset, int value) {
-        LittleEndian.setInt8(sector, offset, value);
+        sector[offset] = (byte) value;
         dirty = true;
     }
 
     protected int get16(int offset) {
-        return LittleEndian.getUInt16(sector, offset);
+        return ByteUtil.readLeShort(sector, offset) & 0xffff;
     }
 
     protected void set16(int offset, int value) {
-        LittleEndian.setInt16(sector, offset, value);
+        ByteUtil.writeLeShort((short) value, sector, offset);
         dirty = true;
     }
 
     protected long get32(int offset) {
-        return LittleEndian.getUInt32(sector, offset);
+        return ByteUtil.readLeInt(sector, offset) & 0xffff_ffffL;
     }
 
     protected void set32(int offset, long value) {
-        LittleEndian.setInt32(sector, offset, (int) value);
+        ByteUtil.writeLeInt((int) value, sector, offset);
         dirty = true;
     }
 
@@ -303,7 +303,7 @@ log.log(Level.INFO, "type: " + type);
                 ch = value.charAt(i);
             else
                 ch = (char) 0;
-            LittleEndian.setInt8(sector, offset + i, ch);
+            sector[offset + i] = (byte) (int) ch;
         }
         dirty = true;
     }
