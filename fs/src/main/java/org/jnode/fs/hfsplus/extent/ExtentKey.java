@@ -46,8 +46,8 @@ public class ExtentKey extends AbstractKey {
         System.arraycopy(src, offset, ek, 0, KEY_LENGTH);
         // TODO Understand why the +2 is necessary
         keyLength = BigEndian.getUInt16(ek, 0) + 2;
-        forkType = BigEndian.getUInt8(ek, 2);
-        pad = BigEndian.getUInt8(ek, 3);
+        forkType = ek[2] & 0xff;
+        pad = ek[3] & 0xff;
         fileId = new CatalogNodeId(ek, 4);
         startBlock = BigEndian.getUInt32(ek, 8);
     }

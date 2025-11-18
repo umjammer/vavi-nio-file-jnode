@@ -4,8 +4,6 @@
 
 package org.jnode.fs.xfs;
 
-import java.nio.charset.Charset;
-
 import org.jnode.util.BigEndian;
 
 
@@ -66,7 +64,7 @@ public class XfsObject {
      * @return the value.
      */
     public int getUInt8(int relativeOffset) {
-        return BigEndian.getUInt8(data, offset + relativeOffset);
+        return data[offset + relativeOffset] & 0xff;
     }
 
     /**

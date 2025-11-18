@@ -86,8 +86,8 @@ public class NodeDescriptor {
         System.arraycopy(src, offset, data, 0, BT_NODE_DESCRIPTOR_LENGTH);
         fLink = BigEndian.getUInt32(data, 0);
         bLink = BigEndian.getUInt32(data, 4);
-        kind = BigEndian.getInt8(data, 8);
-        height = BigEndian.getUInt8(data, 9);
+        kind = data[8];
+        height = data[9] & 0xff;
         numRecords = BigEndian.getUInt16(data, 10);
     }
 
@@ -98,8 +98,8 @@ public class NodeDescriptor {
         byte[] data = new byte[BT_NODE_DESCRIPTOR_LENGTH];
         BigEndian.setInt32(data, 0, (int) fLink);
         BigEndian.setInt32(data, 4, (int) bLink);
-        BigEndian.setInt8(data, 8, kind);
-        BigEndian.setInt8(data, 9, height);
+        data[8] = (byte) kind;
+        data[9] = (byte) height;
         BigEndian.setInt16(data, 10, numRecords);
         return data;
     }

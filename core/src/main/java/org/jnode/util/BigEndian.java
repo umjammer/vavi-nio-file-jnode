@@ -20,32 +20,13 @@
 
 package org.jnode.util;
 
+
 /**
  * Big endian (MSB first) conversion methods.
  *
  * @author Ewout Prangsma (epr@users.sourceforge.net)
  */
 public class BigEndian {
-
-    /**
-     * Gets an 8-bit unsigned integer from the given byte array at the given offset.
-     *
-     * @param src the src
-     * @param offset the offset
-     */
-    public static int getUInt8(byte[] src, int offset) {
-        return src[offset] & 0xFF;
-    }
-
-    /**
-     * Gets an 8-bit signed integer from the given byte array at the given offset.
-     *
-     * @param src the src
-     * @param offset the offset
-     */
-    public static int getInt8(byte[] src, int offset) {
-        return src[offset];
-    }
 
     /**
      * Gets a 16-bit unsigned integer from the given byte array at the given offset.
@@ -176,27 +157,11 @@ public class BigEndian {
     }
 
     /**
-     * Sets an 8-bit integer in the given byte array at the given offset.
-     */
-    public static void setInt8(byte[] dst, int offset, int value) {
-        dst[offset] = (byte) value;
-    }
-
-    /**
      * Sets a 16-bit integer in the given byte array at the given offset.
      */
     public static void setInt16(byte[] dst, int offset, int value) {
         dst[offset + 1] = (byte) (value & 0xFF);
         dst[offset + 0] = (byte) ((value >>> 8) & 0xFF);
-    }
-
-    /**
-     * Sets a 24-bit integer in the given byte array at the given offset.
-     */
-    public static void setInt24(byte[] dst, int offset, int value) {
-        dst[offset + 2] = (byte) (value & 0xFF);
-        dst[offset + 1] = (byte) ((value >>> 8) & 0xFF);
-        dst[offset + 0] = (byte) ((value >>> 16) & 0xFF);
     }
 
     /**
@@ -207,32 +172,6 @@ public class BigEndian {
         dst[offset + 2] = (byte) ((value >>> 8) & 0xFF);
         dst[offset + 1] = (byte) ((value >>> 16) & 0xFF);
         dst[offset + 0] = (byte) ((value >>> 24) & 0xFF);
-    }
-
-    /**
-     * Sets a 48-bit integer in the given byte array at the given offset.
-     */
-    public static void setInt48(byte[] dst, int offset, long value) {
-        dst[offset + 5] = (byte) (value & 0xFF);
-        dst[offset + 4] = (byte) ((value >>> 8) & 0xFF);
-        dst[offset + 3] = (byte) ((value >>> 16) & 0xFF);
-        dst[offset + 2] = (byte) ((value >>> 24) & 0xFF);
-        dst[offset + 1] = (byte) ((value >>> 32) & 0xFF);
-        dst[offset + 0] = (byte) ((value >>> 40) & 0xFF);
-    }
-
-    /**
-     * Sets a 64-bit integer in the given byte array at the given offset.
-     */
-    public static void setInt64(byte[] dst, int offset, long value) {
-        dst[offset + 7] = (byte) (value & 0xFF);
-        dst[offset + 6] = (byte) ((value >>> 8) & 0xFF);
-        dst[offset + 5] = (byte) ((value >>> 16) & 0xFF);
-        dst[offset + 4] = (byte) ((value >>> 24) & 0xFF);
-        dst[offset + 3] = (byte) ((value >>> 32) & 0xFF);
-        dst[offset + 2] = (byte) ((value >>> 40) & 0xFF);
-        dst[offset + 1] = (byte) ((value >>> 48) & 0xFF);
-        dst[offset + 0] = (byte) ((value >>> 56) & 0xFF);
     }
 
     /**

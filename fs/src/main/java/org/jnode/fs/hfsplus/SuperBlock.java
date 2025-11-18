@@ -33,6 +33,8 @@ import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
 import org.jnode.fs.hfsplus.extent.ExtentDescriptor;
 import org.jnode.util.BigEndian;
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * HFS+ volume header definition.
@@ -372,7 +374,7 @@ public class SuperBlock extends HfsPlusObject {
     }
 
     public final void setEncodingsBmp(final long value) {
-        BigEndian.setInt64(data, 72, value);
+        ByteUtil.writeBeLong(value, data, 72);
     }
 
     public final byte[] getFinderInfo() {

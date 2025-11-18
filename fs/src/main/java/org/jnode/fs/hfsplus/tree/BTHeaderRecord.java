@@ -123,8 +123,8 @@ public class BTHeaderRecord {
         freeNodes = BigEndian.getUInt32(data, 26);
         // UInt16 reserved1 - offset 30
         clumpSize = BigEndian.getUInt32(data, 32);
-        treeType = BigEndian.getUInt8(data, 36);
-        keyCompareType = BigEndian.getUInt8(data, 37);
+        treeType = data[36] & 0xff;
+        keyCompareType = data[37] & 0xff;
         attributes = BigEndian.getUInt32(data, 38);
     }
 
@@ -140,8 +140,8 @@ public class BTHeaderRecord {
         BigEndian.setInt32(data, 22, (int) totalNodes);
         BigEndian.setInt32(data, 26, (int) freeNodes);
         BigEndian.setInt32(data, 32, (int) clumpSize);
-        BigEndian.setInt8(data, 36, treeType);
-        BigEndian.setInt8(data, 37, keyCompareType);
+        data[36] = (byte) treeType;
+        data[37] = (byte) keyCompareType;
         BigEndian.setInt32(data, 38, (int) attributes);
         return data;
     }
