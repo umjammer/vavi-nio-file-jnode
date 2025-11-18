@@ -9,7 +9,6 @@ import org.jnode.fs.hfsplus.HfsPlusFile;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
 import org.jnode.fs.hfsplus.attributes.AttributeData;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.BigEndian;
 import vavi.util.ByteUtil;
 
 
@@ -490,7 +489,7 @@ public class LzvnForkCompression implements HfsPlusCompression {
     private static long ReverseInt64(long value) {
         byte[] swapBuffer = new byte[8];
         ByteUtil.writeLeLong(value, swapBuffer, 0);
-        return BigEndian.getInt64(swapBuffer, 0);
+        return ByteUtil.readBeLong(swapBuffer, 0);
     }
 
     /**

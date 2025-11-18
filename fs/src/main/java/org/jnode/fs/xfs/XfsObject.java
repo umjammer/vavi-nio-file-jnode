@@ -4,7 +4,7 @@
 
 package org.jnode.fs.xfs;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
 
 
 /**
@@ -74,7 +74,7 @@ public class XfsObject {
      * @return the value.
      */
     public int getUInt16(int relativeOffset) {
-        return BigEndian.getUInt16(data, offset + relativeOffset);
+        return ByteUtil.readBeShort(data, offset + relativeOffset) & 0xffff;
     }
 
     /**
@@ -84,7 +84,7 @@ public class XfsObject {
      * @return the value.
      */
     public long getUInt32(int relativeOffset) {
-        return BigEndian.getUInt32(data, offset + relativeOffset);
+        return ByteUtil.readBeInt(data, offset + relativeOffset) & 0xffff_ffffL;
     }
 
     /**
@@ -94,6 +94,6 @@ public class XfsObject {
      * @return the value.
      */
     public long getInt64(int relativeOffset) {
-        return BigEndian.getInt64(data, offset + relativeOffset);
+        return ByteUtil.readBeLong(data, offset + relativeOffset);
     }
 }

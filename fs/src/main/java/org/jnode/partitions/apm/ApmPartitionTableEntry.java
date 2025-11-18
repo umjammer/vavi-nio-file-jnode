@@ -24,8 +24,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.jnode.partitions.PartitionTableEntry;
 import org.jnode.partitions.ibm.IBMPartitionTable;
-import org.jnode.util.BigEndian;
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * A APM partition table entry.
@@ -76,7 +77,7 @@ public class ApmPartitionTableEntry implements PartitionTableEntry {
      */
     @Override
     public long getStartOffset(int sectorSize) {
-        return BigEndian.getUInt32(first16KiB, offset + 0x8) * 0x200L;
+        return (ByteUtil.readBeInt(first16KiB, offset + 0x8) & 0xffff_ffffL) * 0x200L;
     }
 
     /**
@@ -84,7 +85,7 @@ public class ApmPartitionTableEntry implements PartitionTableEntry {
      */
     @Override
     public long getEndOffset(int sectorSize) {
-        return getStartOffset(0) + BigEndian.getUInt32(first16KiB, offset + 0xc) * 0x200L;
+        return getStartOffset(0) + (ByteUtil.readBeInt(first16KiB, offset + 0xc) & 0xffff_ffffL) * 0x200L;
     }
 
     public String getName() {

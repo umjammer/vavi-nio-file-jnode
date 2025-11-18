@@ -33,8 +33,9 @@ import org.jnode.fs.hfsplus.tree.BTHeaderRecord;
 import org.jnode.fs.hfsplus.tree.IndexRecord;
 import org.jnode.fs.hfsplus.tree.LeafRecord;
 import org.jnode.fs.hfsplus.tree.NodeDescriptor;
-import org.jnode.util.BigEndian;
 import org.jnode.util.ByteBufferUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * The attributes file in the HFS+ volume.
@@ -149,7 +150,7 @@ public class Attributes {
             return null;
         }
 
-        long type = BigEndian.getUInt32(leafRecord.getData(), 0);
+        long type = ByteUtil.readBeInt(leafRecord.getData(), 0) & 0xffff_ffffL;
 
         if (type == AttributeData.ATTRIBUTE_INLINE_DATA) {
             return new AttributeInlineData(leafRecord.getData(), 0);

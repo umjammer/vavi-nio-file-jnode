@@ -25,7 +25,7 @@ import java.lang.System.Logger.Level;
 
 import org.jnode.fs.hfsplus.HfsPlusBSDInfo;
 import org.jnode.fs.hfsplus.HfsUtils;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
 
 import static java.lang.System.getLogger;
 
@@ -68,15 +68,15 @@ public class CatalogFolder {
         byte[] data = new byte[88];
 logger.log(Level.TRACE, "src: " + src.length);
         System.arraycopy(src, 0, data, 0, Math.min(CATALOG_FOLDER_SIZE, src.length)); // TODO check
-        recordType = BigEndian.getInt16(data, 0);
-        flags = BigEndian.getUInt16(data, 2);
-        valence = BigEndian.getUInt32(data, 4);
+        recordType = ByteUtil.readBeShort(data, 0);
+        flags = ByteUtil.readBeShort(data, 2) & 0xffff;
+        valence = ByteUtil.readBeInt(data, 4) & 0xffff_ffffL;
         folderId = new CatalogNodeId(data, 8);
-        createDate = BigEndian.getUInt32(data, 12);
-        contentModDate = BigEndian.getUInt32(data, 16);
-        attrModDate = BigEndian.getUInt32(data, 20);
-        accessDate = BigEndian.getUInt32(data, 24);
-        backupDate = BigEndian.getUInt32(data, 28);
+        createDate = ByteUtil.readBeInt(data, 12) & 0xffff_ffffL;
+        contentModDate = ByteUtil.readBeInt(data, 16) & 0xffff_ffffL;
+        attrModDate = ByteUtil.readBeInt(data, 20) & 0xffff_ffffL;
+        accessDate = ByteUtil.readBeInt(data, 24) & 0xffff_ffffL;
+        backupDate = ByteUtil.readBeInt(data, 28) & 0xffff_ffffL;
         permissions = new HfsPlusBSDInfo(data, 32);
     }
 
@@ -100,12 +100,12 @@ logger.log(Level.TRACE, "src: " + src.length);
      */
     public byte[] getBytes() {
         byte[] data = new byte[88];
-        BigEndian.setInt16(data, 0, recordType);
-        BigEndian.setInt32(data, 4, (int) valence);
+        ByteUtil.writeBeShort((short) recordType, data, 0);
+        ByteUtil.writeBeInt((int) valence, data, 4);
         System.arraycopy(folderId.getBytes(), 0, data, 8, folderId.getBytes().length);
-        BigEndian.setInt32(data, 12, (int) createDate);
-        BigEndian.setInt32(data, 16, (int) contentModDate);
-        BigEndian.setInt32(data, 20, (int) attrModDate);
+        ByteUtil.writeBeInt((int) createDate, data, 12);
+        ByteUtil.writeBeInt((int) contentModDate, data, 16);
+        ByteUtil.writeBeInt((int) attrModDate, data, 20);
         return data;
     }
 

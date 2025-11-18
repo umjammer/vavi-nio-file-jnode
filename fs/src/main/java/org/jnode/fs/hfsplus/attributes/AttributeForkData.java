@@ -5,7 +5,8 @@ import java.nio.ByteBuffer;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
 import org.jnode.fs.hfsplus.HfsPlusForkData;
 import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Attribute data stored in the resource fork for the file ('HFSPlusAttrForkData').
@@ -27,7 +28,7 @@ public class AttributeForkData extends AttributeData {
      * @param offset the offset to read from.
      */
     public AttributeForkData(CatalogNodeId cnid, byte[] source, int offset) {
-        recordType = BigEndian.getUInt32(source, offset);
+        recordType = ByteUtil.readBeInt(source, offset) & 0xffff_ffffL;
         fork = new HfsPlusForkData(cnid, false, source, offset);
     }
 

@@ -35,7 +35,6 @@ import org.jnode.driver.ApiNotFoundException;
 import org.jnode.driver.Device;
 import org.jnode.driver.block.BlockDeviceAPI;
 import org.jnode.partitions.PartitionTable;
-import org.jnode.util.BigEndian;
 import vavi.util.ByteUtil;
 
 
@@ -190,19 +189,19 @@ public class IBMPartitionTable implements PartitionTable<IBMPartitionTableEntry>
             return true;
         }
 
-        if ((ByteUtil.readLeInt(bootSector, 2) & 0xffff_ffffL) == 0x4c57454e) {
+        if ((ByteUtil.readLeInt(bootSector, 2) & 0xffff_ffffL) == 0x4c57_454e) {
             // Matches the TRACE MBR extra signature, probably a valid partition table
             log.log(Level.TRACE, "Has NEWLDR MBR extra signature");
             return true;
         }
 
-        if ((ByteUtil.readLeInt(bootSector, 6) & 0xffff_ffffL) == 0x4f4c494c) {
+        if ((ByteUtil.readLeInt(bootSector, 6) & 0xffff_ffffL) == 0x4f4c_494c) {
             // Matches the LILO signature, probably a valid partition table
             log.log(Level.TRACE, "Has LILO signature");
             return true;
         }
 
-        if (BigEndian.getUInt32(bootSector, 0) == 0x33ffbe00 && BigEndian.getUInt32(bootSector, 4) == 0x028ed7bc) {
+        if ((ByteUtil.readBeInt(bootSector, 0) & 0xffff_ffffL) == 0x33ff_be00 && (ByteUtil.readBeInt(bootSector, 4) & 0xffff_ffffL) == 0x028e_d7bc) {
             // Matches HP boot code. It is not possible to match the strings here because they are localised. E.g:
             //   "\r\nMissing operating system\r\n\u0000\r\nMaster Boot Record Error\r\n\u0000\r\nPress a key.\r\n\u0000"
             //   "\r\nManglende operativ system\r\n\u0000\r\nFeil i hovedoppstartsposten\r\n\u0000\r\nTrykk en tast"

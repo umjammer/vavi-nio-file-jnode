@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus.extent;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class ExtentDescriptor {
     /** The size of the extent descriptor. */
@@ -57,8 +58,8 @@ public class ExtentDescriptor {
     public ExtentDescriptor(final byte[] src, final int offset) {
         byte[] data = new byte[EXTENT_DESCRIPTOR_LENGTH];
         System.arraycopy(src, offset, data, 0, EXTENT_DESCRIPTOR_LENGTH);
-        startBlock = BigEndian.getUInt32(data, 0);
-        blockCount = BigEndian.getUInt32(data, 4);
+        startBlock = ByteUtil.readBeInt(data, 0) & 0xffff_ffffL;
+        blockCount = ByteUtil.readBeInt(data, 4) & 0xffff_ffffL;
     }
 
     /**
@@ -66,15 +67,15 @@ public class ExtentDescriptor {
      */
     public final byte[] getBytes() {
         byte[] data = new byte[EXTENT_DESCRIPTOR_LENGTH];
-        BigEndian.setInt32(data, 0, (int) startBlock);
-        BigEndian.setInt32(data, 4, (int) blockCount);
+        ByteUtil.writeBeInt((int) startBlock, data, 0);
+        ByteUtil.writeBeInt((int) blockCount, data, 4);
         return data;
     }
 
     public byte[] write(byte[] dest, int destOffSet) {
         byte[] data = new byte[EXTENT_DESCRIPTOR_LENGTH];
-        BigEndian.setInt32(data, 0, (int) startBlock);
-        BigEndian.setInt32(data, 4, (int) blockCount);
+        ByteUtil.writeBeInt((int) startBlock, data, 0);
+        ByteUtil.writeBeInt((int) blockCount, data, 4);
         System.arraycopy(data, 0, dest, destOffSet, EXTENT_DESCRIPTOR_LENGTH);
         return dest;
     }

@@ -31,7 +31,6 @@ import java.lang.System.Logger;
 import org.jnode.fs.FileSystemException;
 import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
 import org.jnode.fs.hfsplus.extent.ExtentDescriptor;
-import org.jnode.util.BigEndian;
 import org.jnode.util.NumberUtils;
 import vavi.util.ByteUtil;
 
@@ -207,170 +206,170 @@ public class SuperBlock extends HfsPlusObject {
     // Getters/setters
 
     public final int getMagic() {
-        return BigEndian.getUInt16(data, 0);
+        return ByteUtil.readBeShort(data, 0) & 0xffff;
     }
 
     public final void setMagic(final int value) {
-        BigEndian.setInt16(data, 0, value);
+        ByteUtil.writeBeShort((short) value, data, 0);
     }
 
     //
     public final int getVersion() {
-        return BigEndian.getUInt16(data, 2);
+        return ByteUtil.readBeShort(data, 2) & 0xffff;
     }
 
     public final void setVersion(final int value) {
-        BigEndian.setInt16(data, 2, value);
+        ByteUtil.writeBeShort((short) value, data, 2);
     }
 
     //
     public final long getAttributes() {
-        return BigEndian.getUInt32(data, 4);
+        return ByteUtil.readBeInt(data, 4) & 0xffff_ffffL;
     }
 
     public final void setAttribute(final int attributeMaskBit) {
-        BigEndian.setInt32(data, 4, (int)(getAttributes() | (1 << attributeMaskBit)));
+        ByteUtil.writeBeInt((int) (getAttributes() | (1 << attributeMaskBit)), data, 4);
     }
 
     //
     public final long getLastMountedVersion() {
-        return BigEndian.getUInt32(data, 8);
+        return ByteUtil.readBeInt(data, 8) & 0xffff_ffffL;
     }
 
     public final void setLastMountedVersion(final int value) {
-        BigEndian.setInt32(data, 8, value);
+        ByteUtil.writeBeInt(value, data, 8);
     }
 
     //
     public final long getJournalInfoBlock() {
-        return BigEndian.getUInt32(data, 12);
+        return ByteUtil.readBeInt(data, 12) & 0xffff_ffffL;
     }
 
     public final void setJournalInfoBlock(final long value) {
-        BigEndian.setInt32(data, 12, (int) value);
+        ByteUtil.writeBeInt((int) value, data, 12);
     }
 
     //
     public final long getCreateDate() {
-        return BigEndian.getUInt32(data, 16);
+        return ByteUtil.readBeInt(data, 16) & 0xffff_ffffL;
     }
 
     public final void setCreateDate(final int value) {
-        BigEndian.setInt32(data, 16, value);
+        ByteUtil.writeBeInt(value, data, 16);
     }
 
     public final long getModifyDate() {
-        return BigEndian.getUInt32(data, 20);
+        return ByteUtil.readBeInt(data, 20) & 0xffff_ffffL;
     }
 
     public final void setModifyDate(final int value) {
-        BigEndian.setInt32(data, 20, value);
+        ByteUtil.writeBeInt(value, data, 20);
     }
 
     public final long getBackupDate() {
-        return BigEndian.getUInt32(data, 24);
+        return ByteUtil.readBeInt(data, 24) & 0xffff_ffffL;
     }
 
     public final void setBackupDate(final int value) {
-        BigEndian.setInt32(data, 24, value);
+        ByteUtil.writeBeInt(value, data, 24);
     }
 
     public final long getCheckedDate() {
-        return BigEndian.getUInt32(data, 28);
+        return ByteUtil.readBeInt(data, 28) & 0xffff_ffffL;
     }
 
     public final void setCheckedDate(final int value) {
-        BigEndian.setInt32(data, 28, value);
+        ByteUtil.writeBeInt(value, data, 28);
     }
 
     //
     public final long getFileCount() {
-        return BigEndian.getUInt32(data, 32);
+        return ByteUtil.readBeInt(data, 32) & 0xffff_ffffL;
     }
 
     public final void setFileCount(final int value) {
-        BigEndian.setInt32(data, 32, value);
+        ByteUtil.writeBeInt(value, data, 32);
     }
 
     //
     public final long getFolderCount() {
-        return BigEndian.getUInt32(data, 36);
+        return ByteUtil.readBeInt(data, 36) & 0xffff_ffffL;
     }
 
     public final void setFolderCount(final long value) {
-        BigEndian.setInt32(data, 36, (int) value);
+        ByteUtil.writeBeInt((int) value, data, 36);
     }
 
     //
     public final int getBlockSize() {
-        return BigEndian.getInt32(data, 40);
+        return ByteUtil.readBeInt(data, 40);
     }
 
     public final void setBlockSize(final int value) {
-        BigEndian.setInt32(data, 40, value);
+        ByteUtil.writeBeInt(value, data, 40);
     }
 
     //
     public final long getTotalBlocks() {
-        return BigEndian.getUInt32(data, 44);
+        return ByteUtil.readBeInt(data, 44) & 0xffff_ffffL;
     }
 
     public final void setTotalBlocks(final int value) {
-        BigEndian.setInt32(data, 44, value);
+        ByteUtil.writeBeInt(value, data, 44);
     }
 
     //
     public final long getFreeBlocks() {
-        return BigEndian.getUInt32(data, 48);
+        return ByteUtil.readBeInt(data, 48) & 0xffff_ffffL;
     }
 
     public final void setFreeBlocks(final long value) {
-        BigEndian.setInt32(data, 48, (int) value);
+        ByteUtil.writeBeInt((int) value, data, 48);
     }
 
     //
     public final long getNextAllocation() {
-        return BigEndian.getUInt32(data, 52);
+        return ByteUtil.readBeInt(data, 52) & 0xffff_ffffL;
     }
 
     public final void setNextAllocation(final int value) {
-        BigEndian.setInt32(data, 52, value);
+        ByteUtil.writeBeInt(value, data, 52);
     }
 
     public final long getRsrcClumpSize() {
-        return BigEndian.getUInt32(data, 56);
+        return ByteUtil.readBeInt(data, 56) & 0xffff_ffffL;
     }
 
     public final void setRsrcClumpSize(final int value) {
-        BigEndian.setInt32(data, 56, value);
+        ByteUtil.writeBeInt(value, data, 56);
     }
 
     public final long getDataClumpSize() {
-        return BigEndian.getUInt32(data, 60);
+        return ByteUtil.readBeInt(data, 60) & 0xffff_ffffL;
     }
 
     public final void setDataClumpSize(final int value) {
-        BigEndian.setInt32(data, 60, value);
+        ByteUtil.writeBeInt(value, data, 60);
     }
 
     public final long getNextCatalogId() {
-        return BigEndian.getUInt32(data, 64);
+        return ByteUtil.readBeInt(data, 64) & 0xffff_ffffL;
     }
 
     public final void setNextCatalogId(final long value) {
-        BigEndian.setInt32(data, 64, (int) value);
+        ByteUtil.writeBeInt((int) value, data, 64);
     }
 
     public final long getWriteCount() {
-        return BigEndian.getUInt32(data, 68);
+        return ByteUtil.readBeInt(data, 68) & 0xffff_ffffL;
     }
 
     public final void setWriteCount(final int value) {
-        BigEndian.setInt32(data, 68, value);
+        ByteUtil.writeBeInt(value, data, 68);
     }
 
     public final long getEncodingsBmp() {
-        return BigEndian.getInt64(data, 72);
+        return ByteUtil.readBeLong(data, 72);
     }
 
     public final void setEncodingsBmp(final long value) {

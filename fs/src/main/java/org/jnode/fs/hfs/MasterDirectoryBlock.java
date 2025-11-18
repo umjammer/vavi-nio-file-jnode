@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfs;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An HFS master directory block (MDB).
@@ -68,7 +69,7 @@ public class MasterDirectoryBlock {
      * @return the signature.
      */
     public int getSignature() {
-        return BigEndian.getUInt16(data, 0);
+        return ByteUtil.readBeShort(data, 0) & 0xffff;
     }
 
     /**
@@ -77,7 +78,7 @@ public class MasterDirectoryBlock {
      * @return the attributes.
      */
     public int getAttributes() {
-        return BigEndian.getUInt16(data, 0xa);
+        return ByteUtil.readBeShort(data, 0xa) & 0xffff;
     }
 
     /**
@@ -86,7 +87,7 @@ public class MasterDirectoryBlock {
      * @return the allocation block size.
      */
     public long getAllocationBlockSize() {
-        return BigEndian.getUInt32(data, 0x14);
+        return ByteUtil.readBeInt(data, 0x14) & 0xffff_ffffL;
     }
 
     /**
@@ -95,7 +96,7 @@ public class MasterDirectoryBlock {
      * @return the first allocation block.
      */
     public int getAllocationBlockStart() {
-        return BigEndian.getUInt16(data, 0x1c);
+        return ByteUtil.readBeShort(data, 0x1c) & 0xffff;
     }
 
     /**
@@ -104,7 +105,7 @@ public class MasterDirectoryBlock {
      * @return the signature.
      */
     public int getEmbeddedSignature() {
-        return BigEndian.getUInt16(data, 0x7c);
+        return ByteUtil.readBeShort(data, 0x7c) & 0xffff;
     }
 
     /**
@@ -113,7 +114,7 @@ public class MasterDirectoryBlock {
      * @return the start block.
      */
     public int getEmbeddedVolumeStartBlock() {
-        return BigEndian.getUInt16(data, 0x7e);
+        return ByteUtil.readBeShort(data, 0x7e) & 0xffff;
     }
 
     /**
@@ -122,6 +123,6 @@ public class MasterDirectoryBlock {
      * @return the block count.
      */
     public int getEmbeddedVolumeBlockCount() {
-        return BigEndian.getUInt16(data, 0x80);
+        return ByteUtil.readBeShort(data, 0x80) & 0xffff;
     }
 }

@@ -12,7 +12,7 @@ import org.jnode.driver.block.FSBlockDeviceAPI;
 import org.jnode.fs.BlockDeviceFileSystemType;
 import org.jnode.fs.FileSystemException;
 import org.jnode.partitions.PartitionTableEntry;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
 
 
 /**
@@ -55,6 +55,6 @@ public class XfsFileSystemType implements BlockDeviceFileSystemType<XfsFileSyste
             return false;
         }
 
-        return BigEndian.getUInt32(magic.array(), 0) == Superblock.XFS_SUPER_MAGIC;
+        return (ByteUtil.readBeInt(magic.array(), 0) & 0xffff_ffffL) == Superblock.XFS_SUPER_MAGIC;
     }
 }

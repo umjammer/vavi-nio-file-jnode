@@ -22,7 +22,6 @@ package org.jnode.fs.iso9660;
 
 import java.io.UnsupportedEncodingException;
 
-import org.jnode.util.BigEndian;
 import vavi.util.ByteUtil;
 
 
@@ -75,7 +74,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned big-endian short
      */
     protected static int getUInt16BE(byte[] buffer, int bp) {
-        return BigEndian.getUInt16(buffer, bp - 1);
+        return ByteUtil.readBeShort(buffer, bp - 1) & 0xffff;
     }
 
     /**
@@ -108,7 +107,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned big-endian int
      */
     protected static long getUInt32BE(byte[] buffer, int bp) {
-        return BigEndian.getUInt32(buffer, bp - 1);
+        return ByteUtil.readBeInt(buffer, bp - 1) & 0xffff_ffffL;
     }
 
     /**

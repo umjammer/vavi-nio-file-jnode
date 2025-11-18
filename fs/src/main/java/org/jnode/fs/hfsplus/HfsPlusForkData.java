@@ -29,7 +29,6 @@ import java.util.List;
 import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
 import org.jnode.fs.hfsplus.extent.ExtentDescriptor;
 import org.jnode.fs.hfsplus.extent.ExtentKey;
-import org.jnode.util.BigEndian;
 import vavi.util.ByteUtil;
 
 
@@ -80,9 +79,9 @@ public class HfsPlusForkData {
         this.dataFork = dataFork;
         byte[] data = new byte[FORK_DATA_LENGTH];
         System.arraycopy(src, offset, data, 0, FORK_DATA_LENGTH);
-        totalSize = BigEndian.getInt64(data, 0);
-        clumpSize = BigEndian.getUInt32(data, 8);
-        totalBlock = BigEndian.getUInt32(data, 12);
+        totalSize = ByteUtil.readBeLong(data, 0);
+        clumpSize = ByteUtil.readBeInt(data, 8) & 0xffff_ffffL;
+        totalBlock = ByteUtil.readBeInt(data, 12) & 0xffff_ffffL;
         extents = new ExtentDescriptor[8];
         for (int i = 0; i < 8; i++) {
             extents[i] = new ExtentDescriptor(data, EXTENT_OFFSET +
@@ -112,8 +111,8 @@ public class HfsPlusForkData {
     public byte[] write(byte[] dest, int destOffSet) {
         byte[] data = new byte[FORK_DATA_LENGTH];
         ByteUtil.writeBeLong(totalSize, data, 0);
-        BigEndian.setInt32(data, 8, (int) clumpSize);
-        BigEndian.setInt32(data, 12, (int) totalBlock);
+        ByteUtil.writeBeInt((int) clumpSize, data, 8);
+        ByteUtil.writeBeInt((int) totalBlock, data, 12);
         for (int i = 0; i < extents.length; i++) {
             extents[i].write(data, EXTENT_OFFSET + (i * ExtentDescriptor.EXTENT_DESCRIPTOR_LENGTH));
         }

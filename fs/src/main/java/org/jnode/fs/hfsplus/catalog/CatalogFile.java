@@ -25,7 +25,8 @@ import org.jnode.fs.hfsplus.FileInfo;
 import org.jnode.fs.hfsplus.HfsPlusBSDInfo;
 import org.jnode.fs.hfsplus.HfsPlusForkData;
 import org.jnode.fs.hfsplus.HfsUtils;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * This class implements catalog file structure use in the catalog to hold
@@ -85,14 +86,14 @@ public class CatalogFile {
     public CatalogFile(final byte[] src) {
         byte[] data = new byte[CATALOG_FILE_SIZE];
         System.arraycopy(src, 0, data, 0, 248);
-        recordType = BigEndian.getInt16(data, 0);
-        flags = BigEndian.getUInt16(data, 2);
+        recordType = ByteUtil.readBeShort(data, 0);
+        flags = ByteUtil.readBeShort(data, 2) & 0xffff;
         fileId = new CatalogNodeId(data, 8);
-        createDate = BigEndian.getUInt32(data, 12);
-        contentModDate = BigEndian.getUInt32(data, 16);
-        attrModDate = BigEndian.getUInt32(data, 20);
-        accessDate = BigEndian.getUInt32(data, 24);
-        backupDate = BigEndian.getUInt32(data, 28);
+        createDate = ByteUtil.readBeInt(data, 12) & 0xffff_ffffL;
+        contentModDate = ByteUtil.readBeInt(data, 16) & 0xffff_ffffL;
+        attrModDate = ByteUtil.readBeInt(data, 20) & 0xffff_ffffL;
+        accessDate = ByteUtil.readBeInt(data, 24) & 0xffff_ffffL;
+        backupDate = ByteUtil.readBeInt(data, 28) & 0xffff_ffffL;
         permissions = new HfsPlusBSDInfo(data, 32);
         userInfo = new FileInfo(data, 48);
         datas = new HfsPlusForkData(fileId, true, data, 88);

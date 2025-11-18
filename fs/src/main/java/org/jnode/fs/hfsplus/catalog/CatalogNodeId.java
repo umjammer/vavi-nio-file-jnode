@@ -20,13 +20,14 @@
 
 package org.jnode.fs.hfsplus.catalog;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class CatalogNodeId implements Comparable<CatalogNodeId> {
     private final long cnid;
 
     public CatalogNodeId(final byte[] src, final int offset) {
-        cnid = BigEndian.getUInt32(src, offset);
+        cnid = ByteUtil.readBeInt(src, offset) & 0xffff_ffffL;
     }
 
     public CatalogNodeId(final long nodeId) {
@@ -60,7 +61,7 @@ public class CatalogNodeId implements Comparable<CatalogNodeId> {
 
     public final byte[] getBytes() {
         byte[] cnidBuffer = new byte[4];
-        BigEndian.setInt32(cnidBuffer, 0, (int) cnid);
+        ByteUtil.writeBeInt((int) cnid, cnidBuffer, 0);
         return cnidBuffer;
     }
 
