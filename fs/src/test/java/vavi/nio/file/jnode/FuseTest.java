@@ -29,14 +29,14 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 
 /**
- * Main4. (fuse)
+ * Fuse (jnode) Test.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2021/12/20 umjammer initial version <br>
  */
 @EnabledIf("localPropertiesExists")
 @PropsEntity(url = "file://${user.dir}/local.properties")
-public class Main4 {
+public class FuseTest {
 
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
@@ -52,7 +52,9 @@ public class Main4 {
 
     @BeforeEach
     public void before() throws Exception {
-        PropsEntity.Util.bind(this);
+        if (localPropertiesExists()) {
+            PropsEntity.Util.bind(this);
+        }
 
         URI uri = URI.create("jnode:" + Paths.get(discImageForFuse).toUri());
 
@@ -91,7 +93,7 @@ public class Main4 {
 //        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.jnrfuse.JnrFuseFuseProvider");
 //        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.fusejna.FuseJnaFuseProvider");
 
-        Main4 app = new Main4();
+        FuseTest app = new FuseTest();
         app.before();
 
 Files.list(app.fs.getRootDirectories().iterator().next()).forEach(System.err::println);

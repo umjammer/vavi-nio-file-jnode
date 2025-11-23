@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -24,14 +25,14 @@ import vavi.util.properties.annotation.PropsEntity;
 
 
 /**
- * JNodeTest.
+ * SPI (jnode) Test.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2021/12/20 umjammer initial version <br>
  */
 @EnabledIf("localPropertiesExists")
 @PropsEntity(url = "file://${user.dir}/local.properties")
-class JNodeTest {
+class SpiTest {
 
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
@@ -47,6 +48,8 @@ class JNodeTest {
     String d88;
     @Property
     String fdi;
+    @Property
+    String qcow2;
 
     @BeforeEach
     void before() throws IOException {
@@ -165,6 +168,24 @@ Debug.println("disc: " + fidPath + ", " + Files.exists(fidPath));
         Path exfatPath = Paths.get(avdsdcard);
 Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
         URI uri = URI.create("jnode:" + exfatPath.toUri());
+        FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
+        Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
+            try {
+                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+            } catch (IOException e) {
+                Debug.printStackTrace(e);
+            }
+        });
+        fs.close();
+    }
+
+    @Test
+    @DisplayName("qcow2")
+    @Disabled("not implemented yet")
+    void test8() throws Exception {
+        Path qcow2 = Paths.get(this.qcow2);
+Debug.println("disc: " + qcow2 + ", " + Files.exists(qcow2));
+        URI uri = URI.create("jnode:" + qcow2.toUri());
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
