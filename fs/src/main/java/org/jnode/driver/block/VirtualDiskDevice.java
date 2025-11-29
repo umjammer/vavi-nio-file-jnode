@@ -12,17 +12,19 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.ByteBuffer;
 
-import org.jnode.driver.Device;
 import org.jnode.partitions.PartitionTableEntry;
 
 
 /**
  * VirtualDiskDevice.
+ * <p>
+ * this device is an alternative of {@link FileDevice}
+ * that can treat offset of virtual disk.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/02/09 umjammer initial version <br>
  */
-public class VirtualDiskDevice extends Device implements FSBlockDeviceAPI {
+public class VirtualDiskDevice extends OffsetedDevice implements FSBlockDeviceAPI {
 
     private static final Logger logger = System.getLogger(VirtualDiskDevice.class.getName());
 
@@ -30,6 +32,7 @@ public class VirtualDiskDevice extends Device implements FSBlockDeviceAPI {
     private long offset = 0;
 
     /** for partition entry */
+    @Override
     public void addOffset(long offset) {
         this.offset += offset;
 logger.log(Level.DEBUG, "offset: %08x + %08x -> %08x".formatted((this.offset - offset), offset, this.offset));
