@@ -582,8 +582,7 @@ public class FileRecord extends NTFSRecord {
 
         // Grab the initialised size (if that is itself initialised)
         long initialisedSize = ((NTFSNonResidentAttribute) attr).getAttributeInitializedSize();
-        if (initialisedSize == 0)
-        {
+        if (initialisedSize == 0) {
             limitToInitialised = false;
         }
 
@@ -670,8 +669,7 @@ public class FileRecord extends NTFSRecord {
                 FileRecord.this, e);
         }
 
-        Map<Integer, NTFSNonResidentAttribute> compressedByType =
-                new LinkedHashMap<>();
+        Map<Integer, NTFSNonResidentAttribute> compressedByType = new LinkedHashMap<>();
 
         while (entryIterator.hasNext()) {
             AttributeListEntry entry = entryIterator.next();

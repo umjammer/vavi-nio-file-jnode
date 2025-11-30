@@ -49,7 +49,7 @@ public class VirtualDiskFactory {
         Disk disk;
         try {
             disk = Disk.read(path);
-logger.log(Logger.Level.DEBUG, "disk: " + disk + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
+logger.log(Logger.Level.DEBUG, "disk: " + disk.getClass().getSimpleName() + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
             // TODO basically jnode has capability of logical disk detection,
             //  but it's for only solid image or header + solid image (= BlockDeviceAPI).
             //  so image that has other info among disk data (e.g. sector info) like "d88"
@@ -58,7 +58,7 @@ logger.log(Logger.Level.DEBUG, "disk: " + disk + ", bps: " + disk.getSectorSize(
 logger.log(Logger.Level.DEBUG, "no sector size, try to post read");
                 try {
                     LogicalDisk logicalDisk = LogicalDisk.read(path, disk);
-logger.log(Logger.Level.DEBUG, "logicalDisk: " + logicalDisk + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
+logger.log(Logger.Level.DEBUG, "logicalDisk: " + logicalDisk.getClass().getSimpleName() + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
                 } catch (IllegalArgumentException e) { // not found for logicalDisk
 logger.log(Logger.Level.DEBUG, "no logicalDisk: " + e);
                 }

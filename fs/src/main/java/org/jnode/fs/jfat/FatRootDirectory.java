@@ -48,7 +48,7 @@ public class FatRootDirectory extends FatDirectory {
 
         BootSector bootSector = getFatFileSystem().getBootSector();
 
-        // Check if this is the end of the root entiries
+        // Check if this is the end of the root entries
         if (index > bootSector.getNrRootDirEntries()) {
             throw new NoSuchElementException();
         }

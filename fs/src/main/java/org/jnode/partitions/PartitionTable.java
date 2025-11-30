@@ -54,10 +54,10 @@ public interface PartitionTable<PTE extends PartitionTableEntry> extends Iterabl
 
         PartitionTableType type = PartitionTableType.lookup(bytes, device);
         PartitionTable<?> table = type.create(bytes, device);
-logger.log(Level.DEBUG, "PARTITION: " + table);
+logger.log(Level.DEBUG, "PARTITION: " + table.getClass().getSimpleName());
         int i = 0;
         for (PartitionTableEntry entry : table) {
-logger.log(Level.DEBUG, "partition entry[" + i + "]: " + entry);
+logger.log(Level.DEBUG, "partition entry[" + i + "]: " + entry.getClass().getSimpleName());
             if (i == n) {
                 if (entry.isValid()) {
                     return entry.getFileSystem(device);

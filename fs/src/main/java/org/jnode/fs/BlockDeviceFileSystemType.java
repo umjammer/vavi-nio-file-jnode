@@ -55,8 +55,9 @@ public interface BlockDeviceFileSystemType<T extends FileSystem<?>> extends File
         ServiceLoader<FileSystemType> sl = ServiceLoader.load(FileSystemType.class);
         for (FileSystemType fst : sl) {
             if (fst instanceof BlockDeviceFileSystemType bdfst) {
-logger.log(Level.TRACE, "filesystem type: " + fst);
+logger.log(Level.TRACE, "try filesystem type: " + fst);
                 if (bdfst.supports(pte, firstSector, devApi)) {
+logger.log(Level.DEBUG, "FILESYSTEM TYPE: " + fst.getClass().getName());
                     return (T) fst;
                 }
             }

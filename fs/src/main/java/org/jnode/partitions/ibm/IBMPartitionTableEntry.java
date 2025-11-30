@@ -102,9 +102,9 @@ log.log(Level.TRACE, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + 
         int v1 = bs[ofs + 1] & 0xff;
         int v2 = bs[ofs + 2] & 0xff;
         int v3 = bs[ofs + 3] & 0xff;
-        /*
-         * h = byte1; s = byte2 & 0x3f; c = ((byte2 & 0xc0) << 2) + byte3;
-         */
+        //
+        // h = byte1; s = byte2 & 0x3f; c = ((byte2 & 0xc0) << 2) + byte3;
+        //
         return new CHS(((v2 & 0xc0) << 2) + v3, v1, v2 & 0x3f);
     }
 
