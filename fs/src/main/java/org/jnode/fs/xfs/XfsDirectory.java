@@ -67,7 +67,7 @@ public class XfsDirectory extends AbstractFSDirectory implements FSDirectoryId {
 
     @Override
     protected FSEntryTable readEntries() throws IOException {
-        List<FSEntry> entries = new ArrayList<FSEntry>();
+        List<FSEntry> entries = new ArrayList<>();
 
         switch (inode.getFormat()) {
             case XfsConstants.XFS_DINODE_FMT_LOCAL:

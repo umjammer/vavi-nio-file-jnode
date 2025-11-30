@@ -5,6 +5,7 @@
 package org.jnode.fs.xfs.directory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.jnode.fs.xfs.XfsObject;
 
@@ -19,7 +20,7 @@ public class ShortFormDirectoryEntry extends XfsObject {
     /**
      * The size of inode entries in this directory (4 or 8 bytes).
      */
-    private int inodeSize;
+    private final int inodeSize;
 
     /**
      * Creates a new short-form directory entry.
@@ -57,11 +58,7 @@ public class ShortFormDirectoryEntry extends XfsObject {
      * @return the entry name.
      */
     public String getName() {
-        try {
-            return new String(getData(), getOffset() + 0x3, getNameLength(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Error reading name bytes", e);
-        }
+        return new String(getData(), getOffset() + 0x3, getNameLength(), StandardCharsets.UTF_8);
     }
 
     /**

@@ -148,8 +148,8 @@ public class UsnJournalEntry extends NTFSStructure {
 
     @Override
     public String toString() {
-        return "MFT: 0x%x parent MFT: 0x%x, %s version: %d.%d, size: %d source: 0x%x security: 0x%x "
-            + "attributes: %s time: %s, name:%s".formatted(getMftReference(), getParentMtfReference(),
+        return "MFT: 0x%x parent MFT: 0x%x, %s version: %d.%d, size: %d source: 0x%x security: 0x%x attributes: %s time: %s, name:%s"
+                .formatted(getMftReference(), getParentMtfReference(),
             Reason.lookupReasons(getReason()), getMajorVersion(), getMinorVersion(), getSize(), getSourceInfo(),
             getSecurityId(), FileAttribute.lookupAttributes(getFileAttributes()), new Date(getTimestamp()),
             getFileName());

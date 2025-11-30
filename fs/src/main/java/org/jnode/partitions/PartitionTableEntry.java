@@ -27,9 +27,7 @@ import java.nio.ByteBuffer;
 
 import org.jnode.driver.ApiNotFoundException;
 import org.jnode.driver.block.FSBlockDeviceAPI;
-import org.jnode.driver.block.FileDevice;
 import org.jnode.driver.block.OffsetedDevice;
-import org.jnode.driver.block.VirtualDiskDevice;
 import org.jnode.fs.BlockDeviceFileSystemType;
 import org.jnode.fs.FileSystem;
 import vavi.util.StringUtil;

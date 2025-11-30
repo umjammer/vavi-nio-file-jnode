@@ -9,13 +9,10 @@ package org.jnode.fs.pc98;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
-
-import javax.xml.validation.Validator;
 
 import org.jnode.driver.Device;
 import org.jnode.driver.block.FSBlockDeviceAPI;
@@ -46,7 +43,7 @@ public class PC98FileSystemType implements BlockDeviceFileSystemType<FatFileSyst
 
     private static final Logger logger = getLogger(PC98FileSystemType.class.getName());
 
-    /** sector value validator */
+    /** boot sector value validator */
     public interface Validator {
 
         Logger logger = PC98FileSystemType.logger;
@@ -66,7 +63,7 @@ public class PC98FileSystemType implements BlockDeviceFileSystemType<FatFileSyst
 
     static {
         validators = ServiceLoader.load(Validator.class).stream().map(Provider::get).sorted(Comparator.comparingInt(Validator::weight)).toList();
-logger.log(Level.TRACE, validators);
+logger.log(Level.TRACE, validators.stream().map(v -> v.getClass().getSimpleName()).toList());
     }
 
     @Override

@@ -25,6 +25,8 @@ import java.util.HashMap;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
+import java.util.Map;
+
 import org.jnode.driver.ApiNotFoundException;
 import org.jnode.driver.Device;
 import org.jnode.driver.block.BlockDeviceAPI;
@@ -43,7 +45,7 @@ import org.jnode.fs.FileSystemException;
 public abstract class AbstractFileSystem<T extends FSEntry> implements FileSystem<T> {
 
     /** My logger */
-    private static final Logger log = System.getLogger(AbstractFileSystem.class.getName());
+    private static final Logger logger = System.getLogger(AbstractFileSystem.class.getName());
 
     /** The device that contains the file system */
     private final Device device;
@@ -56,9 +58,9 @@ public abstract class AbstractFileSystem<T extends FSEntry> implements FileSyste
     /** The file system is closed */
     private boolean closed;
     /** The cache of files */
-    private HashMap<FSEntry, FSFile> files = new HashMap<>();
+    private Map<FSEntry, FSFile> files = new HashMap<>();
     /** The cache of directory */
-    private HashMap<FSEntry, FSDirectory> directories = new HashMap<>();
+    private Map<FSEntry, FSDirectory> directories = new HashMap<>();
 
     /**
      * Construct an AbstractFileSystem in specified readOnly mode
@@ -199,9 +201,9 @@ public abstract class AbstractFileSystem<T extends FSEntry> implements FileSyste
      * @throws IOException if error occurs during write of datas on the device.
      */
     private void flushFiles() throws IOException {
-        log.log(Level.INFO, "flushing files ...");
+        logger.log(Level.INFO, "flushing files ...");
         for (FSFile f : files.values()) {
-            log.log(Level.DEBUG, "flush: flushing file " + f);
+            logger.log(Level.DEBUG, "flush: flushing file " + f);
             f.flush();
         }
     }
@@ -238,9 +240,9 @@ public abstract class AbstractFileSystem<T extends FSEntry> implements FileSyste
      * Save all unsaved files from entry cache.
      */
     private void flushDirectories() {
-        log.log(Level.INFO, "flushing directories ...");
+        logger.log(Level.INFO, "flushing directories ...");
         for (FSDirectory d : directories.values()) {
-            log.log(Level.DEBUG, "flush: flushing directory " + d);
+            logger.log(Level.DEBUG, "flush: flushing directory " + d);
             // TODO uncomment this line
 //            d.flush();
         }

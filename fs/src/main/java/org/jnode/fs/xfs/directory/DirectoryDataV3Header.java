@@ -79,7 +79,7 @@ public class DirectoryDataV3Header extends XfsRecord {
      */
     public List<DirectoryDataEntry> readEntries(int blockSize) {
 
-        List<DirectoryDataEntry> entries = new ArrayList<DirectoryDataEntry>();
+        List<DirectoryDataEntry> entries = new ArrayList<>();
 
         // TODO: implement
 

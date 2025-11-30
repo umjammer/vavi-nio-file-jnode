@@ -119,7 +119,7 @@ public class FatDirectory extends FatEntry implements FSDirectory, FSDirectoryId
 
         FatDirEntry fatDirEntry;
         // 0xffffffff is the end of long file name marker
-        if (attr.isLong() || entry.getUInt32(28) == 0xffffffffL) {
+        if (attr.isLong() || entry.getUInt32(28) == 0xffff_ffffL) {
             fatDirEntry = createLongDirEntry(entry, index);
         } else {
             fatDirEntry = createShortDirEntry(entry, index);

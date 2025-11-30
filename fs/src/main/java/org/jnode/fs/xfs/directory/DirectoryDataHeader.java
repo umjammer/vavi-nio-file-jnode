@@ -51,7 +51,7 @@ public class DirectoryDataHeader extends XfsRecord {
     public List<DirectoryDataEntry> readEntries(int blockSize) {
 
         // Read in the live entry offsets
-        List<Integer> entryOffsets = new ArrayList<Integer>();
+        List<Integer> entryOffsets = new ArrayList<>();
         int count = (int) getUInt32(blockSize - 0x8);
         for (int i = 0; i < count; i++) {
             int tailOffset = blockSize - ((count - i) * 8 + 0x8);
@@ -63,7 +63,7 @@ public class DirectoryDataHeader extends XfsRecord {
         }
 
         // Next read in the entries
-        List<DirectoryDataEntry> entries = new ArrayList<DirectoryDataEntry>();
+        List<DirectoryDataEntry> entries = new ArrayList<>();
         for (int entryOffset : entryOffsets) {
             // The offsets are stored divided by 8 (XFS_DIR2_DATA_ALIGN)
             DirectoryDataEntry entry = new DirectoryDataEntry(getData(), entryOffset * 8);

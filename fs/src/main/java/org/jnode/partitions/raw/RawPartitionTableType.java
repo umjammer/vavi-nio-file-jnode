@@ -14,7 +14,7 @@ import org.jnode.partitions.PartitionTableType;
 
 
 /**
- * RawPartitionTableType.
+ * RawPartitionTableType (dummy for virtual device).
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/02/06 umjammer initial version <br>

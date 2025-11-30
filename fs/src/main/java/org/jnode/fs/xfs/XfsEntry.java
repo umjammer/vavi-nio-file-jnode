@@ -63,7 +63,7 @@ public class XfsEntry extends AbstractFSEntry implements FSEntryCreated, FSEntry
 
     @Override
     public String getId() {
-        return Long.toString(inode.getINodeNr()) + '-' + Long.toString(directoryRecordId);
+        return Long.toString(inode.getINodeNr()) + '-' + directoryRecordId;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class XfsEntry extends AbstractFSEntry implements FSEntryCreated, FSEntry
 
             case XfsConstants.XFS_DINODE_FMT_EXTENTS:
                 if (extentList == null) {
-                    extentList = new ArrayList<DataExtent>();
+                    extentList = new ArrayList<>();
 
                     for (int i = 0; i < inode.getExtentCount(); i++) {
                         int inodeDataOffset = inode.getVersion() >= 3 ? INode.V3_DATA_OFFSET : INode.DATA_OFFSET;

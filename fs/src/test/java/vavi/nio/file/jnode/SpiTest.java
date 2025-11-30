@@ -12,16 +12,19 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+
+import vavi.util.Debug;
+import vavi.util.properties.annotation.Property;
+import vavi.util.properties.annotation.PropsEntity;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
-import vavi.util.Debug;
-import vavi.util.properties.annotation.Property;
-import vavi.util.properties.annotation.PropsEntity;
 
 
 /**
@@ -56,6 +59,12 @@ class SpiTest {
         PropsEntity.Util.bind(this);
     }
 
+    String formattedLMT(Path p) throws IOException {
+        return Files.getLastModifiedTime(p).toInstant()
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
+    }
+
     @Test
     @DisplayName("by scheme, raw disk")
     void test() throws Exception {
@@ -66,7 +75,7 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
 //        Files.list(fs.getRootDirectories().iterator().next()).forEach(System.err::println);
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -83,7 +92,7 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -100,7 +109,7 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -117,7 +126,7 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -135,7 +144,7 @@ Debug.println("disc: " + d88Path + ", " + Files.exists(d88Path));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -152,7 +161,7 @@ Debug.println("disc: " + fidPath + ", " + Files.exists(fidPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
 //                if (!Files.isDirectory(p)) // newInputStream is not supported mark
 //                    System.err.println(StringUtil.getDump(new BufferedInputStream(Files.newInputStream(p)), 0, (int) Math.min(64, Files.size(p))));
             } catch (IOException e) {
@@ -171,7 +180,7 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -189,7 +198,7 @@ Debug.println("disc: " + qcow2 + ", " + Files.exists(qcow2));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }

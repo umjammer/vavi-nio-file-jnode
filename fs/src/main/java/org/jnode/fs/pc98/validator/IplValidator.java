@@ -35,10 +35,10 @@ public class IplValidator implements Validator {
                 firstSectors[0x5] != 'P' ||
                 firstSectors[0x6] != 'L' ||
                 firstSectors[0x7] != '1') {
-logger.log(Level.DEBUG, "Missing magic number 'IPL1': %c%c%c%c".formatted(firstSectors[0x4] & 0xff, firstSectors[0x5] & 0xff, firstSectors[0x6] & 0xff, firstSectors[0x7] & 0xff));
+logger.log(Level.TRACE, "Missing magic number 'IPL1': %c%c%c%c".formatted(firstSectors[0x4] & 0xff, firstSectors[0x5] & 0xff, firstSectors[0x6] & 0xff, firstSectors[0x7] & 0xff));
             return false;
         } else {
-logger.log(Level.DEBUG, "validation (IPL1) passed");
+logger.log(Level.TRACE, "validation (IPL1) passed");
             return true;
         }
     }

@@ -35,10 +35,10 @@ public class FatValidator implements Validator {
     @Override
     public boolean validate(byte[] firstSectors) {
         if (!new String(firstSectors, 0x36, 3, StandardCharsets.US_ASCII).equals("FAT")) {
-logger.log(Level.DEBUG, "strings FAT is not found");
+logger.log(Level.TRACE, "strings FAT is not found");
             return false;
         } else {
-logger.log(Level.DEBUG, "validation (FAT) passed");
+logger.log(Level.TRACE, "validation (FAT) passed");
             return true;
         }
     }

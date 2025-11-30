@@ -45,7 +45,7 @@ public class INodeBTreeHeader extends BTreeHeader<INodeBTreeRecord> {
 
     @Override
     public List<INodeBTreeRecord> readRecords() {
-        List<INodeBTreeRecord> records = new ArrayList<INodeBTreeRecord>();
+        List<INodeBTreeRecord> records = new ArrayList<>();
         int recordCount = getRecordCount();
 
         // Not sure what these extra bytes are for in the CRC case

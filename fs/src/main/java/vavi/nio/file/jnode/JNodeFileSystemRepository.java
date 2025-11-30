@@ -64,7 +64,7 @@ logger.log(Level.DEBUG, "subUri: " + subUri);
 
             // add emu type by special way
             Path path = Paths.get(subUri);
-logger.log(Level.DEBUG, "path: " + path + ", " + Files.exists(path));
+logger.log(Level.DEBUG, "SUB-SCHEME: file: " + path + ", " + Files.exists(path));
             VirtualDisk virtualDisk = VirtualDiskFactory.getInstance().createVirtualDiskFactory(path);
             VirtualDiskDevice device = new VirtualDiskDevice(virtualDisk);
 
@@ -76,7 +76,7 @@ logger.log(Level.DEBUG, "path: " + path + ", " + Files.exists(path));
             // scheme specified
 
             URI subSubUri = URI.create(subUri.toString().substring(scheme.length() + 1));
-logger.log(Level.DEBUG, "subSubUri: " + subSubUri);
+logger.log(Level.DEBUG, "SUB-SCHEME: " + scheme + ": " + subSubUri);
             if (!subSubUri.getScheme().equals("file")) {
                 throw new IllegalArgumentException("only file is supported: " + subSubUri);
             }

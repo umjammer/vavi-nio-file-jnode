@@ -34,10 +34,10 @@ public class MagicValidator implements Validator {
         if (firstSectors[0xfe] != 0x55 ||
                 firstSectors[0xff] != (byte) 0xaa) {
             // Missing magic number
-logger.log(Level.DEBUG, "Missing magic number 0x55, 0xaa");
+logger.log(Level.TRACE, "Missing magic number 0x55, 0xaa");
             return false;
         } else {
-logger.log(Level.DEBUG, "validation (55aa) passed");
+logger.log(Level.TRACE, "validation (55aa) passed");
             return true;
         }
     }

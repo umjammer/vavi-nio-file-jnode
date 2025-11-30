@@ -21,10 +21,15 @@
 package org.jnode.fs.jfat;
 
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 import java.nio.ByteBuffer;
 import java.util.NoSuchElementException;
 
 public class FatRootDirectory extends FatDirectory {
+
+    private static final Logger logger = System.getLogger(FatRootDirectory.class.getName());
+
     /*
      * for root directory
      */
@@ -55,9 +60,11 @@ public class FatRootDirectory extends FatDirectory {
 
         FatMarshal entry = new FatMarshal(32);
         ByteBuffer dest = entry.getByteBuffer();
+        // TODO why using offset instead of cluster
         long rootDirectoryOffset = bootSector.getFirstDataSector() * bootSector.getBytesPerSector();
 
         dest.limit(dest.position() + entry.length());
+logger.log(Level.TRACE, "ofs: %08x, len: %08x".formatted(rootDirectoryOffset + 32L * index, dest.capacity()));
         getFatFileSystem().getApi().read(rootDirectoryOffset + 32L * index, dest);
 
         return createDirEntry(entry, index, allowDeleted);

@@ -44,7 +44,7 @@ public abstract class AbstractFSDirectory extends AbstractFSObject implements FS
     private FSEntryTable entries = FSEntryTable.EMPTY_TABLE;
 
     /* Is this directory a root-directory? */
-    private boolean isRoot;
+    private final boolean isRoot;
 
     /**
      * Constructor for a new non-root directory

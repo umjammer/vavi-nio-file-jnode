@@ -35,7 +35,7 @@ public class VirtualDiskDevice extends OffsetedDevice implements FSBlockDeviceAP
     @Override
     public void addOffset(long offset) {
         this.offset += offset;
-logger.log(Level.DEBUG, "offset: %08x + %08x -> %08x".formatted((this.offset - offset), offset, this.offset));
+logger.log(Level.DEBUG, "OFFSET: diff: %08x + add: %08x -> this: %08x".formatted((this.offset - offset), offset, this.offset));
     }
 
     /** virtual offset */

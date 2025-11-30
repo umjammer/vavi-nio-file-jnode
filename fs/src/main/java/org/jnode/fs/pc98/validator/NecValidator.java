@@ -35,10 +35,10 @@ public class NecValidator implements Validator {
                 firstSectors[0x4] != 'E' ||
                 firstSectors[0x5] != 'C') {
             // Missing magic number
-logger.log(Level.DEBUG, "Missing magic number 'NEC': %c%c%c".formatted(firstSectors[0x3] & 0xff, firstSectors[0x4] & 0xff, firstSectors[0x5] & 0xff));
+logger.log(Level.TRACE, "Missing magic number 'NEC': %c%c%c".formatted(firstSectors[0x3] & 0xff, firstSectors[0x4] & 0xff, firstSectors[0x5] & 0xff));
             return false;
         } else {
-logger.log(Level.DEBUG, "validation (NEC) passed");
+logger.log(Level.TRACE, "validation (NEC) passed");
             return true;
         }
     }

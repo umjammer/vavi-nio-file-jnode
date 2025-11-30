@@ -25,11 +25,8 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.ByteBuffer;
 
-import org.jnode.driver.Device;
 import org.jnode.driver.block.FSBlockDeviceAPI;
-import org.jnode.driver.block.FileDevice;
 import org.jnode.driver.block.OffsetedDevice;
-import org.jnode.driver.block.VirtualDiskDevice;
 import org.jnode.fs.FileSystem;
 
 import static java.lang.System.getLogger;
@@ -53,8 +50,9 @@ public interface PartitionTable<PTE extends PartitionTableEntry> extends Iterabl
         device.getAPI(FSBlockDeviceAPI.class).read(0, ByteBuffer.wrap(bytes));
 
         PartitionTableType type = PartitionTableType.lookup(bytes, device);
+logger.log(Level.DEBUG, "PARTITION-TYPE: " + type.getClass().getSimpleName());
         PartitionTable<?> table = type.create(bytes, device);
-logger.log(Level.DEBUG, "PARTITION: " + table.getClass().getSimpleName());
+logger.log(Level.DEBUG, "PARTITION: " + table.getClass().getSimpleName() + ", ");
         int i = 0;
         for (PartitionTableEntry entry : table) {
 logger.log(Level.DEBUG, "partition entry[" + i + "]: " + entry.getClass().getSimpleName());
