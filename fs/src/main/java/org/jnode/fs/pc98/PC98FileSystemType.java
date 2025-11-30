@@ -9,6 +9,13 @@ package org.jnode.fs.pc98;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.ServiceLoader.Provider;
+
+import javax.xml.validation.Validator;
 
 import org.jnode.driver.Device;
 import org.jnode.driver.block.FSBlockDeviceAPI;
@@ -39,6 +46,29 @@ public class PC98FileSystemType implements BlockDeviceFileSystemType<FatFileSyst
 
     private static final Logger logger = getLogger(PC98FileSystemType.class.getName());
 
+    /** sector value validator */
+    public interface Validator {
+
+        Logger logger = PC98FileSystemType.logger;
+
+        /** validation priority */
+        int weight();
+
+        /** use this validator nor not */
+        boolean enabled();
+
+        /** do validation */
+        boolean validate(byte[] firstSectors);
+    }
+
+    /** */
+    private static final List<Validator> validators;
+
+    static {
+        validators = ServiceLoader.load(Validator.class).stream().map(Provider::get).sorted(Comparator.comparingInt(Validator::weight)).toList();
+logger.log(Level.TRACE, validators);
+    }
+
     @Override
     public String getName() {
         return "PC98";
@@ -50,25 +80,12 @@ public class PC98FileSystemType implements BlockDeviceFileSystemType<FatFileSyst
     }
 
     // TODO
+    // @see vavi-nio-file-discutils:discUtils.core.pc98.Pc98FileSystemFactory
     @Override
     public boolean supports(PartitionTableEntry pte, byte[] firstSectors, FSBlockDeviceAPI devApi) {
 logger.log(Level.TRACE, "\n" + StringUtil.getDump(firstSectors));
-
-        if (firstSectors[0x3] != 'N' ||
-            firstSectors[0x4] != 'E' ||
-            firstSectors[0x5] != 'C') {
-            // Missing magic number
-logger.log(Level.DEBUG, String.format("Missing magic number 'NEC': %c%c%c%n", firstSectors[0x3] & 0xff, firstSectors[0x4] & 0xff, firstSectors[0x5] & 0xff));
-            return false;
-        }
-
-        // TODO fat12 doesn't work
-//        if (!new String(firstSectors, 0x36, 3, StandardCharsets.US_ASCII).equals("FAT")) {
-//logger.log(Level.DEBUG, "strings FAT is not found");
-//            return false;
-//        }
-
-        return true;
+//validators.forEach(v -> logger.log(Level.TRACE, v.getClass().getSimpleName() + ": " + v.validate(firstSectors)));
+        return validators.stream().anyMatch(Validator::enabled);
     }
 
     @Override
