@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
+import java.util.StringJoiner;
 
 import org.jnode.driver.Device;
 import org.jnode.driver.block.FSBlockDeviceAPI;
@@ -33,7 +34,11 @@ import static java.lang.System.getLogger;
  * </p>
  * <p>
  * system property
- * <li>"org.jnode.file.encoding" ... filename encoding for {@link Charset#forName(String)}, default is "MS932"</li>
+ * <li>{@code "org.jnode.file.encoding"} ... filename encoding for {@link Charset#forName(String)}, default is {@code "MS932"}</li>
+ * <li>{@code "org.jnode.fs.pc98.validator.fat"} ... , validator for finding fat literal default is {@code false}</li>
+ * <li>{@code "org.jnode.fs.pc98.validator.ipl"} ... , validator for finding ipl literal default is {@code true}</li>
+ * <li>{@code "org.jnode.fs.pc98.validator.magic"} ... validator for magic at sector end, default is {@code true}</li>
+ * <li>{@code "org.jnode.fs.pc98.validator.nec"} ... , validator for finding nec literal, default is {@code true}</li>
  * </p>
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
@@ -80,9 +85,10 @@ logger.log(Level.TRACE, validators.stream().map(v -> v.getClass().getSimpleName(
     // @see vavi-nio-file-discutils:discUtils.core.pc98.Pc98FileSystemFactory
     @Override
     public boolean supports(PartitionTableEntry pte, byte[] firstSectors, FSBlockDeviceAPI devApi) {
-logger.log(Level.TRACE, "\n" + StringUtil.getDump(firstSectors));
-//validators.forEach(v -> logger.log(Level.TRACE, v.getClass().getSimpleName() + ": " + v.validate(firstSectors)));
-        return validators.stream().anyMatch(Validator::enabled);
+logger.log(Level.TRACE, "firstSectors:\n" + StringUtil.getDump(firstSectors));
+        boolean matches = validators.stream().filter(Validator::enabled).anyMatch(v -> v.validate(firstSectors));
+logger.log(Level.TRACE, "validators any match: " + matches + "\n" + String.join("\n", validators.stream().filter(Validator::enabled).map(v ->  v.getClass().getSimpleName() + ": " + v.validate(firstSectors)).toList()));
+        return matches;
     }
 
     @Override

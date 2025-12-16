@@ -50,6 +50,7 @@ public class FatFileSystem extends AbstractFileSystem<FatRootDirectory> {
         } catch (Exception ex) {
             throw new FileSystemException(ex);
         }
+logger.log(Level.TRACE, "device: " + device.getClass().getSimpleName() + ", bs: " + bs.getClass().getSimpleName() + ", fat: " + getFat().getBootSector().fatType());
 
         cp = CodePage.forName(codePageName);
     }

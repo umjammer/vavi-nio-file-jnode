@@ -21,24 +21,25 @@
 package org.jnode.fs.jfat;
 
 import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
-import java.lang.System.Logger.Level;
-import java.lang.System.Logger;
 import org.jnode.driver.block.BlockDeviceAPI;
 import org.jnode.partitions.ibm.IBMPartitionTable;
 import org.jnode.util.NumberUtils;
-
 import vavi.util.ByteUtil;
 import vavi.util.StringUtil;
+
 
 /**
  * @author gvt
  * @author Tango
  */
 public class ATBootSector implements BootSector {
-    @SuppressWarnings("unused")
-    private static final Logger log = System.getLogger(ATBootSector.class.getName());
+
+    private static final Logger logger = System.getLogger(ATBootSector.class.getName());
 
     private static final int IFAT12 = 12;
     private static final int IFAT16 = 16;
@@ -119,16 +120,50 @@ public class ATBootSector implements BootSector {
     /* @see org.jnode.fs.jfat.BootSector#isaValidBootSector() */
     @Override
     public boolean isaValidBootSector() {
-        return IBMPartitionTable.containsPartitionTable(sector);
+        return validate(sector);
+    }
+
+    /**
+     * true: do default validation,
+     * false: no validation,
+     * else: validation function name "class#method", the method must return boolean and
+     *       w/ an argument PC98BiosParameterBlock and static.
+     */
+    public static final String VALIDATION_KEY = "org.jnode.fs.jfat.ATBootSector.validation";
+
+    /** @see #VALIDATION_KEY */
+    private static boolean validate(byte[] sector) {
+        String validation = System.getProperty(VALIDATION_KEY, "false");
+        if (Boolean.parseBoolean(validation)) {
+logger.log(Level.DEBUG, "default validation");
+            return IBMPartitionTable.containsPartitionTable(sector);
+        } else if (validation.equalsIgnoreCase("false")) {
+logger.log(Level.DEBUG, "no validation, accepting anyway");
+            return true;
+        } else {
+            try {
+                String[] parts = validation.split("#");
+                Class<?> clazz = Class.forName(parts[0]);
+                Method method = clazz.getDeclaredMethod(parts[1], byte[].class);
+                if (method.getReturnType() != Boolean.TYPE) {
+                    throw new IllegalArgumentException("method %s return type is not boolean but %s".formatted(method.getName(), method.getReturnType().getName()));
+                }
+logger.log(Level.DEBUG, "do user validation %s#%s".formatted(clazz.getSimpleName(), method.getName()));
+                return method.invoke(null, sector).equals(Boolean.TRUE);
+            } catch (Exception e) {
+logger.log(Level.WARNING, "validation function error, accepting anyway", e);
+                return true;
+            }
+        }
     }
 
     /* @see org.jnode.fs.jfat.BootSector#read(org.jnode.driver.block.BlockDeviceAPI) */
     @Override
     public synchronized void read(BlockDeviceAPI device) throws IOException {
         device.read(0, ByteBuffer.wrap(sector));
-log.log(Level.DEBUG, "bpb:\n" + StringUtil.getDump(sector, 256));
+logger.log(Level.DEBUG, "bpb:\n" + StringUtil.getDump(sector, 256));
         decode();
-log.log(Level.DEBUG, "bpb:\n" + this);
+logger.log(Level.DEBUG, "bpb:\n" + this);
         dirty = false;
     }
 
@@ -165,7 +200,7 @@ log.log(Level.DEBUG, "bpb:\n" + this);
         else
             type = IFAT32;
 
-log.log(Level.INFO, "type: " + type);
+logger.log(Level.INFO, "type: " + type);
         if (isFat32()) {
             FirstDataSector = BPB_RsvdSecCnt + (BPB_NumFATs * FATSz) + RootDirSectors;
         } else {
@@ -393,7 +428,7 @@ log.log(Level.INFO, "type: " + type);
 
     @Override
     public long getRootDirectoryStartCluster() {
-log.log(Level.INFO, "BPB_RootClus: " + BPB_RootClus);
+logger.log(Level.INFO, "BPB_RootClus: " + BPB_RootClus);
         return BPB_RootClus;
     }
 

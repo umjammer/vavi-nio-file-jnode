@@ -78,6 +78,11 @@ public abstract class Fat {
 
         bs.read(api);
 
+        boolean r = bs.isaValidBootSector();
+        if (!r) {
+            throw new FileSystemException("boot sector validation failed");
+        }
+
         if (bs.isFat32()) {
             return new Fat32(bs, api);
         } else if (bs.isFat16()) {
