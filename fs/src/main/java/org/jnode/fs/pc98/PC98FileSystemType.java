@@ -37,7 +37,6 @@ import static java.lang.System.getLogger;
  * <li>{@code "org.jnode.file.encoding"} ... filename encoding for {@link Charset#forName(String)}, default is {@code "MS932"}</li>
  * <li>{@code "org.jnode.fs.pc98.validator.fat"} ... , validator for finding fat literal default is {@code false}</li>
  * <li>{@code "org.jnode.fs.pc98.validator.ipl"} ... , validator for finding ipl literal default is {@code true}</li>
- * <li>{@code "org.jnode.fs.pc98.validator.magic"} ... validator for magic at sector end, default is {@code true}</li>
  * <li>{@code "org.jnode.fs.pc98.validator.nec"} ... , validator for finding nec literal, default is {@code true}</li>
  * </p>
  *
