@@ -19,12 +19,16 @@ import java.util.Collections;
 import vavi.util.Debug;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
+import vavix.io.fat.PC98BiosParameterBlock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+
+import static org.jnode.fs.pc98.PC98BootSector.VALIDATION_KEY;
 
 
 /**
@@ -35,7 +39,7 @@ import org.junit.jupiter.api.condition.EnabledIf;
  */
 @EnabledIf("localPropertiesExists")
 @PropsEntity(url = "file://${user.dir}/local.properties")
-class SpiTest {
+public class SpiTest {
 
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
@@ -59,7 +63,7 @@ class SpiTest {
         PropsEntity.Util.bind(this);
     }
 
-    String formattedLMT(Path p) throws IOException {
+    static String formattedLMT(Path p) throws IOException {
         return Files.getLastModifiedTime(p).toInstant()
                 .atZone(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
@@ -134,10 +138,18 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         fs.close();
     }
 
+    /** bpb validator specified by a system property {@link  org.jnode.fs.pc98.PC98BootSector#VALIDATION_KEY} */
+    public static boolean validate(PC98BiosParameterBlock bpb) {
+Debug.print(bpb);
+        return bpb.oemLabel.contains("NEC");
+    }
+
     // TODO not (header +) solid image
     @Test
-//    @Disabled("wip d88")
+    @EnabledIfSystemProperty(named = "vavi.test", matches = "ide")
     void test5() throws Exception {
+        System.setProperty(VALIDATION_KEY, "vavi.nio.file.jnode.SpiTest#validate");
+
         Path d88Path = Paths.get(d88);
 Debug.println("disc: " + d88Path + ", " + Files.exists(d88Path));
         URI uri = URI.create("jnode:" + d88Path.toUri());
@@ -155,6 +167,8 @@ Debug.println("disc: " + d88Path + ", " + Files.exists(d88Path));
     @Test
     @DisplayName("fdi fat12")
     void test6() throws Exception {
+        System.setProperty(VALIDATION_KEY, "vavi.nio.file.jnode.SpiTest#validate");
+
         Path fidPath = Paths.get(fdi);
 Debug.println("disc: " + fidPath + ", " + Files.exists(fidPath));
         URI uri = URI.create("jnode:" + fidPath.toUri());

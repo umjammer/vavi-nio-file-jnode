@@ -12,3 +12,4 @@ org.jnode.fs.pc98.PC98FileSystemType
 org.jnode.fs.fat.FatFileSystemType
 #org.jnode.fs.apfs.ApfsFileSystemType
 org.jnode.fs.xfs.XfsFileSystemType
+org.jnode.fs.emu.EmuFileSystemType
