@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class HfsUnicodeString {
 
@@ -38,15 +39,15 @@ public class HfsUnicodeString {
      * @param offset start of data in the array.
      */
     public HfsUnicodeString(final byte[] src, final int offset) {
-        length = BigEndian.getUInt16(src, offset);
+        length = ByteUtil.readBeShort(src, offset) & 0xffff;
         byte[] data = new byte[2 + (length * 2)];
         System.arraycopy(src, offset, data, 0, 2);
-        length = BigEndian.getUInt16(data, 0);
+        length = ByteUtil.readBeShort(data, 0) & 0xffff;
         data = new byte[length * 2];
         System.arraycopy(src, offset + 2, data, 0, length * 2);
         char[] result = new char[length];
         for (int i = 0; i < length; ++i) {
-            result[i] = BigEndian.getChar(data, i * 2);
+            result[i] = (char) (ByteUtil.readBeShort(data, i * 2) & 0xffff);
         }
         string = new String(result);
     }
@@ -72,10 +73,10 @@ public class HfsUnicodeString {
         string.getChars(0, length, result, 0);
         byte[] name = new byte[length * 2];
         for (int i = 0; i < length; ++i) {
-            BigEndian.setChar(name, i * 2, result[i]);
+            ByteUtil.writeBeShort((short) result[i], name, i * 2);
         }
         byte[] data = new byte[(length * 2) + 2];
-        BigEndian.setInt16(data, 0, length);
+        ByteUtil.writeBeShort((short) length, data, 0);
         System.arraycopy(name, 0, data, 2, name.length);
         return data;
     }

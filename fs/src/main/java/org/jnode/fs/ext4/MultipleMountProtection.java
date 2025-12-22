@@ -5,7 +5,9 @@ import java.nio.charset.StandardCharsets;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
-import org.jnode.util.LittleEndian;
+
+import vavi.util.ByteUtil;
+
 
 /**
  * A class for checking the ext4 multiple-mount protection (MMP) status.
@@ -73,17 +75,17 @@ public class MultipleMountProtection {
     private final int checksum;
 
     public MultipleMountProtection(byte[] data) throws IOException {
-        int magic = LittleEndian.getInt32(data, 0);
+        int magic = ByteUtil.readLeInt(data, 0);
         if (magic != MMP_MAGIC) {
             throw new IOException("Invalid MMP magic: " + magic);
         }
 
-        sequenceNumber = LittleEndian.getInt32(data, 0x4);
-        time = LittleEndian.getInt64(data, 0x8);
+        sequenceNumber = ByteUtil.readLeInt(data, 0x4);
+        time = ByteUtil.readLeLong(data, 0x8);
         nodeName = new String(data, 0x10, 64, StandardCharsets.UTF_8).replace("\u0000", "");
         blockDeviceName = new String(data, 0x50, 64, StandardCharsets.UTF_8).replace("\u0000", "");
-        checkInterval = LittleEndian.getInt16(data, 0x70);
-        checksum = LittleEndian.getInt32(data, 0x3fc);
+        checkInterval = ByteUtil.readLeShort(data, 0x70);
+        checksum = ByteUtil.readLeInt(data, 0x3fc);
     }
 
     /**
@@ -93,7 +95,7 @@ public class MultipleMountProtection {
      */
     public boolean isInUse() {
         if (sequenceNumber != MMP_SEQ_CLEAN) {
-            log.log(Level.WARNING, String.format("File system appears to be in use from: %s:%s, seq:%x", nodeName, blockDeviceName,
+            log.log(Level.WARNING, "File system appears to be in use from: %s:%s, seq:%x".formatted(nodeName, blockDeviceName,
                 sequenceNumber));
             return true;
 

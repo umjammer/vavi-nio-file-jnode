@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.jnode.driver.block.VirtualDisk;
+import org.jnode.fs.emu.EmuFileSystemType;
 import vavi.emu.disk.Disk;
 import vavi.emu.disk.LogicalDisk;
 import vavi.emu.disk.phisical.D88;
@@ -49,30 +50,32 @@ public class VirtualDiskFactory {
         Disk disk;
         try {
             disk = Disk.read(path);
-logger.log(Logger.Level.DEBUG, "disk: " + disk + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
+logger.log(Logger.Level.DEBUG, "disk: " + disk.getClass().getSimpleName() + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
             // TODO basically jnode has capability of logical disk detection,
-            //  but it's for only solid image or header + solid image.
+            //  but it's for only solid image or header + solid image (= BlockDeviceAPI).
             //  so image that has other info among disk data (e.g. sector info) like "d88"
-            //  is not available currently
+            //  is available currently using ad-hoc way by Disk#search()
             if (disk.getSectorSize() == -1) {
 logger.log(Logger.Level.DEBUG, "no sector size, try to post read");
                 try {
                     LogicalDisk logicalDisk = LogicalDisk.read(path, disk);
-logger.log(Logger.Level.DEBUG, "logicalDisk: " + logicalDisk + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
+logger.log(Logger.Level.DEBUG, "logicalDisk: " + logicalDisk.getClass().getSimpleName() + ", bps: " + disk.getSectorSize() + ", offset: " + disk.getOffset());
+                    EmuFileSystemType.logicalDisk.set(logicalDisk);
                 } catch (IllegalArgumentException e) { // not found for logicalDisk
+                    EmuFileSystemType.logicalDisk.set(null);
 logger.log(Logger.Level.DEBUG, "no logicalDisk: " + e);
                 }
             }
             assert disk.getSectorSize() != -1 : "bytes per sector should be defined";
         } catch (IllegalArgumentException e) { // not found for disk
 logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
-            disk = createNullDisk(); // TODO ???
+            disk = createNullDisk();
         }
 
         return createByPhysical(disk, Files.newByteChannel(path));
     }
 
-    /** */
+    /** for jnode existing code (for solid disk only, so only {@link Disk#bytesPerSector} is used) */
     private Disk createNullDisk() {
         return new Disk() {
             {
@@ -81,7 +84,7 @@ logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
             }
             @Override protected String imageTypeText() {return null;}
             @Override public void read(SeekableByteChannel sbc) throws IOException {}
-            @Override public void save(Path path) throws IOException {}
+            @Override public void save(SeekableByteChannel sbc) throws IOException {}
             @Override public String imageDescText() { return null; }
             @Override public String filterDesc() { return null; }
             @Override public String filterExt() { return null; }
@@ -104,15 +107,21 @@ logger.log(Logger.Level.DEBUG, "raw disk?: " + e);
 
             @Override
             public void read(long offset, ByteBuffer buffer) throws IOException {
-logger.log(Level.TRACE, () -> String.format("offset: %08x, (+o:%08x o:%08x)", offset, disk.getOffset() + offset, disk.getOffset()));
+logger.log(Level.TRACE, () -> "offset: given: %08x, (+o:%08x o:%08x), sceSize: %08x".formatted(offset, disk.getOffset() + offset, disk.getOffset(), getSectorSize()));
                 if (offset != 0 && disk instanceof D88) {
-                    int[] r = disk.search((int) offset);
-                    if (r == null) {
-logger.log(Level.WARNING, String.format("no such sector of offset: %08x", offset));
-                        throw new IOException(String.format("no such sector of offset: %08x", offset));
+                    // for NOT solid disk (TODO this is ad-hoc because VirtualDisk is for solid disk)
+                    int sectorOffset = (((int) offset / getSectorSize()) * getSectorSize()) + (int) disk.getOffset() - 16;
+                    int[] chs = disk.search(sectorOffset);
+                    if (chs == null) {
+logger.log(Level.TRACE, "no such sector of offset: argument: %08x, actual: %08x".formatted(sectorOffset, sectorOffset + disk.getOffset() - 16));
+                        throw new IOException("no such sector of offset: %08x".formatted(sectorOffset));
                     }
-                    sbc.read(ByteBuffer.wrap(disk.getSector(r[0], r[1], r[2]).data));
+//logger.log(Level.TRACE, "hit sector of offset: argument: %08x, actual: %08x".formatted(sectorOffset, sectorOffset + disk.getOffset() - 16));
+                    byte[] sectorData = disk.getSector(chs[0], chs[1], chs[2]).data;
+                    buffer.put(sectorData, (int) (offset % getSectorSize()), buffer.capacity());
+//logger.log(Level.TRACE, "sector[c: %d, h: %d, s: %s] ofs: %08x, len: %08x%n%s".formatted(chs[0], chs[1], chs[2], (int) (offset % getSectorSize()), buffer.capacity(), StringUtil.getDump(buffer.array(), buffer.capacity())));
                 } else {
+                    // for solid disk (both jnode and vavi-nio-file-emu)
                     sbc.position(disk.getOffset() + offset);
                     sbc.read(buffer);
                 }

@@ -24,8 +24,8 @@ import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.driver.block.CHS;
 import org.jnode.partitions.PartitionTableEntry;
-import org.jnode.util.LittleEndian;
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
 
 
 /**
@@ -52,7 +52,7 @@ public class IBMPartitionTableEntry implements PartitionTableEntry {
     @Override
     public boolean isValid() {
         int bootIndicatorValue = getBootIndicatorValue();
-log.log(Level.DEBUG, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + isEmpty() + ", nrSectors: " + getNrSectors());
+log.log(Level.TRACE, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + isEmpty() + ", nrSectors: " + getNrSectors());
         return
             !isEmpty() &&
             (bootIndicatorValue == 0 || bootIndicatorValue == BOOTABLE) &&
@@ -90,33 +90,32 @@ log.log(Level.DEBUG, "bootIndicatorValue:" + bootIndicatorValue + ", empty: " + 
     }
 
     public int getBootIndicatorValue() {
-log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + LittleEndian.getUInt8(bs, ofs + 0));
-        return LittleEndian.getUInt8(bs, ofs + 0);
+log.log(Level.TRACE, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + (bs[ofs + 0] & 0xff));
+        return bs[ofs + 0] & 0xff;
     }
 
     public void setBootIndicator(boolean active) {
-        LittleEndian.setInt8(bs, ofs + 0, (active) ? BOOTABLE : 0);
+        bs[ofs + 0] = (byte) ((active) ? BOOTABLE : 0);
     }
 
     public CHS getStartCHS() {
-        int v1 = LittleEndian.getUInt8(bs, ofs + 1);
-        int v2 = LittleEndian.getUInt8(bs, ofs + 2);
-        int v3 = LittleEndian.getUInt8(bs, ofs + 3);
-        /*
-         * h = byte1; s = byte2 & 0x3f; c = ((byte2 & 0xc0) << 2) + byte3;
-         */
+        int v1 = bs[ofs + 1] & 0xff;
+        int v2 = bs[ofs + 2] & 0xff;
+        int v3 = bs[ofs + 3] & 0xff;
+        //
+        // h = byte1; s = byte2 & 0x3f; c = ((byte2 & 0xc0) << 2) + byte3;
+        //
         return new CHS(((v2 & 0xc0) << 2) + v3, v1, v2 & 0x3f);
     }
 
     public void setStartCHS(CHS chs) {
-        LittleEndian.setInt8(bs, ofs + 1, Math.min(1023, chs.getHead()));
-        LittleEndian.setInt8(bs, ofs + 2, ((chs.getCylinder() >> 2) & 0xC0) +
-                (chs.getSector() & 0x3f));
-        LittleEndian.setInt8(bs, ofs + 3, chs.getCylinder() & 0xFF);
+        bs[ofs + 1] = (byte) Math.min(1023, chs.getHead());
+        bs[ofs + 2] = (byte) (((chs.getCylinder() >> 2) & 0xC0) + (chs.getSector() & 0x3f));
+        bs[ofs + 3] = (byte) (chs.getCylinder() & 0xFF);
     }
 
     public int getSystemIndicatorCode() {
-        return LittleEndian.getUInt8(bs, ofs + 4);
+        return bs[ofs + 4] & 0xff;
     }
 
     public IBMPartitionTypes getSystemIndicator() {
@@ -124,19 +123,19 @@ log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + 
         try {
             return IBMPartitionTypes.valueOf(code);
         } catch (IllegalArgumentException e) {
-            log.log(Level.DEBUG, "Unknown or invalid system indicator code: 0x" + Integer.toHexString(code));
+            log.log(Level.TRACE, "Unknown or invalid system indicator code: 0x" + Integer.toHexString(code));
             return IBMPartitionTypes.PARTTYPE_UNKNOWN;
         }
     }
 
     public void setSystemIndicator(IBMPartitionTypes type) {
-        LittleEndian.setInt8(bs, ofs + 4, type.getCode());
+        bs[ofs + 4] = (byte) type.getCode();
     }
 
     public CHS getEndCHS() {
-        int v1 = LittleEndian.getUInt8(bs, ofs + 5);
-        int v2 = LittleEndian.getUInt8(bs, ofs + 6);
-        int v3 = LittleEndian.getUInt8(bs, ofs + 7);
+        int v1 = bs[ofs + 5] & 0xff;
+        int v2 = bs[ofs + 6] & 0xff;
+        int v3 = bs[ofs + 7] & 0xff;
         /*
          * h = byte1; s = byte2 & 0x3f; c = ((byte2 & 0xc0) << 2) + byte3;
          */
@@ -144,26 +143,25 @@ log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + 
     }
 
     public void setEndCHS(CHS chs) {
-        LittleEndian.setInt8(bs, ofs + 5, chs.getHead());
-        LittleEndian.setInt8(bs, ofs + 6, ((chs.getCylinder() >> 2) & 0xC0) +
-                (chs.getSector() & 0x3f));
-        LittleEndian.setInt8(bs, ofs + 7, chs.getCylinder() & 0xFF);
+        bs[ofs + 5] = (byte) chs.getHead();
+        bs[ofs + 6] = (byte) (((chs.getCylinder() >> 2) & 0xC0) + (chs.getSector() & 0x3f));
+        bs[ofs + 7] = (byte) (chs.getCylinder() & 0xFF);
     }
 
     public long getStartLba() {
-        return LittleEndian.getUInt32(bs, ofs + 8);
+        return ByteUtil.readLeInt(bs, ofs + 8) & 0xffff_ffffL;
     }
 
     public void setStartLba(long v) {
-        LittleEndian.setInt32(bs, ofs + 8, (int) v);
+        ByteUtil.writeLeInt((int) v, bs, ofs + 8);
     }
 
     public long getNrSectors() {
-        return LittleEndian.getUInt32(bs, ofs + 12);
+        return ByteUtil.readLeInt(bs, ofs + 12) & 0xffff_ffffL;
     }
 
     public void setNrSectors(long v) {
-        LittleEndian.setInt32(bs, ofs + 12, (int) v);
+        ByteUtil.writeLeInt((int) v, bs, ofs + 12);
     }
 
     public long getNbrBlocks(int sectorSize) {
@@ -184,14 +182,14 @@ log.log(Level.DEBUG, "getBootIndicatorValue: ofs: " + (ofs + 0) + ", value: " + 
 
     public void clear() {
         for (int i = 0; i < 16; i++) {
-            LittleEndian.setInt8(bs, ofs + i, 0);
+            bs[ofs + i] = (byte) 0;
         }
     }
 
     public String dump() {
         StringBuilder b = new StringBuilder(64);
         for (int i = 0; i < 16; i++) {
-            b.append(NumberUtils.hex(LittleEndian.getUInt8(bs, ofs + i), 2));
+            b.append(NumberUtils.hex(bs[ofs + i] & 0xff, 2));
             b.append(' ');
         }
         return b.toString();

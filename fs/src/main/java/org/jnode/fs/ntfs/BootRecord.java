@@ -79,15 +79,15 @@ public final class BootRecord extends NTFSStructure {
         this.mftLcn = getUInt32(0x30);
         final int clustersPerMFTRecord = getInt8(0x40);
         final int clustersPerIndexRecord = getInt8(0x44);
-        this.serialNumber = String.format("%02X%02X-%02X%02X", buffer[0x4b], buffer[0x4a], buffer[0x49], buffer[0x48]);
+        this.serialNumber = "%02X%02X-%02X%02X".formatted(buffer[0x4b], buffer[0x4a], buffer[0x49], buffer[0x48]);
 
         this.clusterSize = sectorsPerCluster * bytesPerSector;
         this.fileRecordSize = calcByteSize(clustersPerMFTRecord);
         this.indexRecordSize = calcByteSize(clustersPerIndexRecord);
 
-        log.log(Level.DEBUG, "FileRecordSize  = " + fileRecordSize);
-        log.log(Level.DEBUG, "IndexRecordSize = " + indexRecordSize);
-        log.log(Level.DEBUG, "TotalSectors    = " + totalSectors);
+        log.log(Level.TRACE, "FileRecordSize  = " + fileRecordSize);
+        log.log(Level.TRACE, "IndexRecordSize = " + indexRecordSize);
+        log.log(Level.TRACE, "TotalSectors    = " + totalSectors);
     }
 
     /**

@@ -28,7 +28,6 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.nio.ByteBuffer;
 
-import org.jnode.driver.Device;
 import org.jnode.partitions.PartitionTableEntry;
 import org.jnode.util.ByteBufferUtils;
 
@@ -37,7 +36,7 @@ import org.jnode.util.ByteBufferUtils;
  *
  * @author epr
  */
-public class FileDevice extends Device implements FSBlockDeviceAPI {
+public class FileDevice extends OffsetedDevice implements FSBlockDeviceAPI {
 
     private static final Logger log = System.getLogger(FileDevice.class.getName());
 
@@ -50,9 +49,10 @@ public class FileDevice extends Device implements FSBlockDeviceAPI {
      * for partition entry
      * works! don't touch
      */
+    @Override
     public void addOffset(long offset) {
         this.offset += offset;
-log.log(Level.DEBUG, String.format("offset: %08x + %08x -> %08x", (this.offset - offset), offset, this.offset));
+log.log(Level.DEBUG, "offset: %08x + %08x -> %08x".formatted((this.offset - offset), offset, this.offset));
     }
 
     /**
@@ -90,7 +90,7 @@ log.log(Level.DEBUG, String.format("offset: %08x + %08x -> %08x", (this.offset -
     @Override
     public void read(long devOffset, ByteBuffer destBuf) throws IOException {
         raf.seek(devOffset + offset);
-log.log(Level.DEBUG, String.format("offset: %08x (%08x)", devOffset + offset, offset));
+log.log(Level.TRACE, "offset: %08x (%08x)".formatted(devOffset + offset, offset));
 
         // TODO optimize it also to use ByteBuffer at lower level
         ByteBufferUtils.ByteArray destBA = ByteBufferUtils.toByteArray(destBuf);

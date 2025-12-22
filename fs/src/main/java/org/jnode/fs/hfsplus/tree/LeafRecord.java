@@ -22,7 +22,8 @@ package org.jnode.fs.hfsplus.tree;
 
 import org.jnode.fs.hfsplus.catalog.CatalogFile;
 import org.jnode.fs.hfsplus.catalog.CatalogFolder;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class LeafRecord extends AbstractNodeRecord {
 
@@ -32,14 +33,14 @@ public class LeafRecord extends AbstractNodeRecord {
         this.key = key;
         this.recordData = new byte[recordData.length];
         System.arraycopy(recordData, 0, this.recordData, 0, recordData.length);
-        type = BigEndian.getInt16(this.recordData, 0);
+        type = ByteUtil.readBeShort(this.recordData, 0);
     }
 
     public LeafRecord(final Key key, final byte[] nodeData, final int offset, final int recordDataSize) {
         this.key = key;
         this.recordData = new byte[recordDataSize - key.getKeyLength()];
         System.arraycopy(nodeData, offset + key.getKeyLength(), this.recordData, 0, this.recordData.length);
-        type = BigEndian.getInt16(this.recordData, 0);
+        type = ByteUtil.readBeShort(this.recordData, 0);
     }
 
     public final int getType() {

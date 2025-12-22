@@ -32,6 +32,7 @@ import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 
+
 public class SmbShell extends NtlmAuthenticator {
 
     @Override
@@ -151,17 +152,17 @@ public class SmbShell extends NtlmAuthenticator {
                         for (SmbFile smbFile : list) {
                             StringBuilder sb = new StringBuilder();
                             Date date = new Date(smbFile.lastModified());
-                            Format.print(System.out, "%-40s", smbFile.getName());
+                            System.out.printf("%-40s", smbFile.getName());
                             sb.append(smbFile.isDirectory() ? 'd' : '-');
                             sb.append(smbFile.canRead() ? 'r' : '-');
                             sb.append(smbFile.canWrite() ? 'w' : '-');
                             sb.append(smbFile.isHidden() ? 'h' : '-');
                             sb.append(smbFile.getType() == SmbFile.TYPE_WORKGROUP ? 'g' : '-');
-                            Format.print(System.out, "%-6s", sb.toString());
-                            Format.print(System.out, "%10d ", smbFile.length());
+                            System.out.printf("%-6s", sb);
+                            System.out.printf("%10d ", smbFile.length());
 
                             System.out.print(sdf1.format(date));
-                            Format.print(System.out, "%3s ", sdf2.format(date));
+                            System.out.printf("%3s ", sdf2.format(date));
                             System.out.print(sdf3.format(date));
                             System.out.println();
                         }

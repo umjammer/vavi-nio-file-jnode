@@ -6,7 +6,8 @@ import java.util.Map;
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.fs.ext2.Ext2FileSystem;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An extended attribute entry.
@@ -67,7 +68,7 @@ public class XAttrEntry {
      * @return the name length.
      */
     public int getNameLength() {
-        return LittleEndian.getUInt8(data, offset + 0);
+        return data[offset + 0] & 0xff;
     }
 
     /**
@@ -76,7 +77,7 @@ public class XAttrEntry {
      * @return the name prefix index.
      */
     public int getNameIndex() {
-        return LittleEndian.getUInt8(data, offset + 1);
+        return data[offset + 1] & 0xff;
     }
 
     /**
@@ -86,7 +87,7 @@ public class XAttrEntry {
      * @return the value offset.
      */
     public int getValueOffset() {
-        return LittleEndian.getUInt16(data, offset + 2);
+        return ByteUtil.readLeShort(data, offset + 2) & 0xffff;
     }
 
     /**
@@ -95,7 +96,7 @@ public class XAttrEntry {
      * @return the value block.
      */
     public long getValueBlock() {
-        return LittleEndian.getUInt32(data, offset + 4);
+        return ByteUtil.readLeInt(data, offset + 4) & 0xffff_ffffL;
     }
 
     /**
@@ -104,7 +105,7 @@ public class XAttrEntry {
      * @return the value size.
      */
     public long getValueSize() {
-        return LittleEndian.getUInt32(data, offset + 8);
+        return ByteUtil.readLeInt(data, offset + 8) & 0xffff_ffffL;
     }
 
     /**
@@ -113,7 +114,7 @@ public class XAttrEntry {
      * @return the hash.
      */
     public long getHash() {
-        return LittleEndian.getUInt32(data, offset + 0xc);
+        return ByteUtil.readLeInt(data, offset + 0xc) & 0xffff_ffffL;
     }
 
     /**

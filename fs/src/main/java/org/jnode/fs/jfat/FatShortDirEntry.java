@@ -502,8 +502,7 @@ public class FatShortDirEntry extends FatDirEntry {
 
     @Override
     public String toString() {
-        return String.format(
-            "Short Entry [%s] index:%d attr:%s size:%d",
+        return "Short Entry [%s] index:%d attr:%s size:%d".formatted(
             getShortName(), getIndex(), NumberUtils.hex(lAttr, 2), lFileSize);
     }
 

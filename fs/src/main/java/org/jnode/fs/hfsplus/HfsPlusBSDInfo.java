@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class HfsPlusBSDInfo {
 
@@ -67,12 +68,12 @@ public class HfsPlusBSDInfo {
     private final long special;
 
     public HfsPlusBSDInfo(byte[] data, int offset) {
-        ownerID = BigEndian.getUInt32(data, offset);
-        groupID = BigEndian.getUInt32(data, offset + 4);
-        adminFlags = BigEndian.getUInt8(data, offset + 8);
-        ownerFlags = BigEndian.getUInt8(data, offset + 9);
-        fileMode = BigEndian.getUInt16(data, offset + 10);
-        special = BigEndian.getUInt32(data, offset + 12);
+        ownerID = ByteUtil.readBeInt(data, offset) & 0xffff_ffffL;
+        groupID = ByteUtil.readBeInt(data, offset + 4) & 0xffff_ffffL;
+        adminFlags = data[offset + 8] & 0xff;
+        ownerFlags = data[offset + 9] & 0xff;
+        fileMode = ByteUtil.readBeShort(data, offset + 10) & 0xffff;
+        special = ByteUtil.readBeInt(data, offset + 12) & 0xffff_ffffL;
     }
 
     public long getOwnerID() {

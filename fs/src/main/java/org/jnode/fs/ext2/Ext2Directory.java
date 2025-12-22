@@ -35,7 +35,8 @@ import org.jnode.fs.spi.AbstractFSDirectory;
 import org.jnode.fs.spi.AbstractFileSystem;
 import org.jnode.fs.spi.FSEntryTable;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author Andras Nagy
@@ -63,7 +64,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
             readOnly = true; // force readonly
 
             if ((iNode.getFlags() & Ext2Constants.EXT4_INODE_EXTENTS_FLAG) != 0)
-                log.log(Level.DEBUG, "inode uses extents: " + entry);
+                log.log(Level.TRACE, "inode uses extents: " + entry);
             if ((iNode.getFlags() & Ext2Constants.EXT4_HUGE_FILE_FL) != 0)
                 log.log(Level.INFO, "inode is for a huge-file: " + entry);
             if ((iNode.getFlags() & Ext2Constants.EXT2_INDEX_FL) != 0)
@@ -73,7 +74,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
         }
         setRights(true, !readOnly);
 
-        log.log(Level.DEBUG, "directory size: " + iNode.getSize());
+        log.log(Level.TRACE, "directory size: " + iNode.getSize());
     }
 
     /**
@@ -367,7 +368,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
                     if (index >= iNode.getSize())
                         return false;
 
-                    if (data.capacity() < 8 || LittleEndian.getUInt16(data.array(), index + 4) == 0) {
+                    if (data.capacity() < 8 || (ByteUtil.readLeShort(data.array(), index + 4) & 0xffff) == 0) {
                         return false;
                     }
 
@@ -439,7 +440,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
 
         while (it.hasNext()) {
             final FSEntry entry = it.next();
-            log.log(Level.DEBUG, "readEntries: entry=" + FSUtils.toString(entry, false));
+            log.log(Level.TRACE, "readEntries: entry=" + FSUtils.toString(entry, false));
             entries.add(entry);
         }
 
@@ -458,7 +459,7 @@ public class Ext2Directory extends AbstractFSDirectory implements FSDirectoryId 
 
     @Override
     public String toString() {
-        return String.format("directory-%d['%s' entries:%d]", iNode.getINodeNr(), entry.getName(),
+        return "directory-%d['%s' entries:%d]".formatted(iNode.getINodeNr(), entry.getName(),
             getEntryTable().size());
     }
 }

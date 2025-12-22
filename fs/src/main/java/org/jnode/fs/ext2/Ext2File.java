@@ -181,7 +181,7 @@ public class Ext2File extends AbstractFSFile implements FSFileSlackSpace {
             iNode.incLocked();
         }
 
-        log.log(Level.DEBUG, "File:" + name + " size:" + getLength() + " read offset: " + fileOffset + " len: "
+        log.log(Level.TRACE, "File:" + name + " size:" + getLength() + " read offset: " + fileOffset + " len: "
                 + dest.length);
 
         // a single inode may be represented by more than one Ext2Directory instances,
@@ -201,7 +201,7 @@ public class Ext2File extends AbstractFSFile implements FSFileSlackSpace {
                         long blockOffset = (fileOffset + bytesRead) % blockSize;
                         long copyLength = Math.min(len - bytesRead, blockSize - blockOffset);
 
-                        log.log(Level.DEBUG, "blockNr: " + blockNr + ", blockOffset: " + blockOffset + ", copyLength: "
+                        log.log(Level.TRACE, "blockNr: " + blockNr + ", blockOffset: " + blockOffset + ", copyLength: "
                             + copyLength + ", bytesRead: " + bytesRead);
 
                         System.arraycopy(iNode.getDataBlock(blockNr), (int) blockOffset, dest, off + (int) bytesRead,

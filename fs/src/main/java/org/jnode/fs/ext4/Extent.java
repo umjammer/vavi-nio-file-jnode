@@ -20,7 +20,8 @@
 
 package org.jnode.fs.ext4;
 
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An ext4 extent object.
@@ -55,24 +56,24 @@ public class Extent {
     }
 
     public long getBlockIndex() {
-        return LittleEndian.getUInt32(data, 0);
+        return ByteUtil.readLeInt(data, 0) & 0xffff_ffffL;
     }
 
     public int getBlockCount() {
-        return LittleEndian.getUInt16(data, 4);
+        return ByteUtil.readLeShort(data, 4) & 0xffff;
     }
 
     public long getStartLow() {
-        return LittleEndian.getUInt32(data, 8);
+        return ByteUtil.readLeInt(data, 8) & 0xffff_ffffL;
     }
 
     public int getStartHigh() {
-        return LittleEndian.getUInt16(data, 6);
+        return ByteUtil.readLeShort(data, 6) & 0xffff;
     }
 
     @Override
     public String toString() {
-        return String.format("Extent: blockindex:%d count:%d start(low:%d high:%d)", getBlockIndex(), getBlockCount(),
+        return "Extent: blockindex:%d count:%d start(low:%d high:%d)".formatted(getBlockIndex(), getBlockCount(),
                              getStartLow(), getStartHigh());
     }
 }

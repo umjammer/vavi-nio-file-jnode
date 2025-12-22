@@ -33,8 +33,9 @@ import org.jnode.fs.hfsplus.tree.BTHeaderRecord;
 import org.jnode.fs.hfsplus.tree.IndexRecord;
 import org.jnode.fs.hfsplus.tree.LeafRecord;
 import org.jnode.fs.hfsplus.tree.NodeDescriptor;
-import org.jnode.util.BigEndian;
 import org.jnode.util.ByteBufferUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * The attributes file in the HFS+ volume.
@@ -69,7 +70,7 @@ public class Attributes {
      * @throws IOException if an error occurs.
      */
     public Attributes(HfsPlusFileSystem fs) throws IOException {
-        log.log(Level.DEBUG, "Loading the attributes file B-Tree");
+        log.log(Level.TRACE, "Loading the attributes file B-Tree");
         this.fs = fs;
         SuperBlock sb = fs.getVolumeHeader();
         attributesFile = sb.getAttributesFile();
@@ -80,13 +81,13 @@ public class Attributes {
             attributesFile.read(fs, 0, buffer);
             buffer.rewind();
             byte[] data = ByteBufferUtils.toArray(buffer);
-            log.log(Level.DEBUG, "Load attributes node descriptor.");
+            log.log(Level.TRACE, "Load attributes node descriptor.");
 
             NodeDescriptor btnd = new NodeDescriptor(data, 0);
-            log.log(Level.DEBUG, btnd.toString());
-            log.log(Level.DEBUG, "Load attributes header record.");
+            log.log(Level.TRACE, btnd.toString());
+            log.log(Level.TRACE, "Load attributes header record.");
             bthr = new BTHeaderRecord(data, NodeDescriptor.BT_NODE_DESCRIPTOR_LENGTH);
-            log.log(Level.DEBUG, bthr.toString());
+            log.log(Level.TRACE, bthr.toString());
         }
     }
 
@@ -149,7 +150,7 @@ public class Attributes {
             return null;
         }
 
-        long type = BigEndian.getUInt32(leafRecord.getData(), 0);
+        long type = ByteUtil.readBeInt(leafRecord.getData(), 0) & 0xffff_ffffL;
 
         if (type == AttributeData.ATTRIBUTE_INLINE_DATA) {
             return new AttributeInlineData(leafRecord.getData(), 0);
@@ -158,7 +159,7 @@ public class Attributes {
         } else if (type == AttributeData.ATTRIBUTE_EXTENTS) {
             throw new UnsupportedOperationException();
         } else {
-            log.log(Level.WARNING, String.format("Invalid attribute record type: %d for leaf: %s", type, leafRecord));
+            log.log(Level.WARNING, "Invalid attribute record type: %d for leaf: %s".formatted(type, leafRecord));
             return null;
         }
     }

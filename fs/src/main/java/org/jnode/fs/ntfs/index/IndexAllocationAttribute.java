@@ -61,7 +61,7 @@ public final class IndexAllocationAttribute extends NTFSNonResidentAttribute {
      * @throws IOException when an error occurs
      */
     public IndexBlock getIndexBlock(IndexRoot indexRoot, long vcn) throws IOException {
-        log.log(Level.DEBUG, "getIndexBlock(..," + vcn + ")");
+        log.log(Level.TRACE, "getIndexBlock(..," + vcn + ")");
         final FileRecord fileRecord = getFileRecord();
 
         // VCN passed in is relative to the size of index clusters, not filesystem clusters.

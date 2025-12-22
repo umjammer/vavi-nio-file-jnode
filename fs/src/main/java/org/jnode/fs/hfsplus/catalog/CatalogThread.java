@@ -21,7 +21,8 @@
 package org.jnode.fs.hfsplus.catalog;
 
 import org.jnode.fs.hfsplus.HfsUnicodeString;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class CatalogThread {
 
@@ -51,7 +52,7 @@ public class CatalogThread {
     public CatalogThread(final byte[] src) {
         byte[] data = new byte[512];
         System.arraycopy(src, 0, data, 0, CATALOG_THREAD_SIZE);
-        recordType = BigEndian.getInt16(data, 0);
+        recordType = ByteUtil.readBeShort(data, 0);
         parentId = new CatalogNodeId(data, 4);
         nodeName = new HfsUnicodeString(data, 8);
     }
@@ -76,8 +77,8 @@ public class CatalogThread {
      */
     public byte[] getBytes() {
         byte[] data = new byte[512];
-        BigEndian.setInt16(data, 0, recordType);
-        BigEndian.setInt32(data, 4, (int) parentId.getId());
+        ByteUtil.writeBeShort((short) recordType, data, 0);
+        ByteUtil.writeBeInt((int) parentId.getId(), data, 4);
         System.arraycopy(parentId.getBytes(), 0, data, 4, 4);
         System.arraycopy(nodeName.getBytes(), 0, data, 8, nodeName.getBytes().length);
         return data;

@@ -23,7 +23,8 @@ package org.jnode.fs.hfsplus.catalog;
 import org.jnode.fs.hfsplus.HfsUnicodeString;
 import org.jnode.fs.hfsplus.tree.AbstractKey;
 import org.jnode.fs.hfsplus.tree.Key;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Implementation of catalog file key. The catalog file key is defined as following :
@@ -63,7 +64,7 @@ public class CatalogKey extends AbstractKey {
         byte[] ck = new byte[2];
         System.arraycopy(src, currentOffset, ck, 0, 2);
         // TODO Understand why the +2 is necessary
-        keyLength = BigEndian.getUInt16(ck, 0) + 2;
+        keyLength = (ByteUtil.readBeShort(ck, 0) & 0xffff) + 2;
         currentOffset += 2;
         ck = new byte[4];
         System.arraycopy(src, currentOffset, ck, 0, 4);
@@ -146,7 +147,7 @@ public class CatalogKey extends AbstractKey {
     public byte[] getBytes() {
         int length = this.getKeyLength();
         byte[] data = new byte[length];
-        BigEndian.setInt16(data, 0, length);
+        ByteUtil.writeBeShort((short) length, data, 0);
         System.arraycopy(parentId.getBytes(), 0, data, 2, 4);
         System.arraycopy(nodeName.getBytes(), 0, data, 6, (nodeName.getLength() * 2) + 2);
         return data;

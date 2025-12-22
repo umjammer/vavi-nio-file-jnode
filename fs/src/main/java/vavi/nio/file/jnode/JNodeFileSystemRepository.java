@@ -60,31 +60,38 @@ logger.log(Level.DEBUG, "subUri: " + subUri);
         FileSystem<?> fs;
         if ("file".equals(scheme)) {
 
-            // not specified
+            // scheme not specified
 
+            // add emu type by special way
             Path path = Paths.get(subUri);
-logger.log(Level.DEBUG, "path: " + path + ", " + Files.exists(path));
+logger.log(Level.DEBUG, "SUB-SCHEME: file: " + path + ", " + Files.exists(path));
             VirtualDisk virtualDisk = VirtualDiskFactory.getInstance().createVirtualDiskFactory(path);
             VirtualDiskDevice device = new VirtualDiskDevice(virtualDisk);
 
+            // partition detection by jnode
             fs = PartitionTable.getFileSystem(device, 0); // TODO partition number
 
         } else {
 
             // scheme specified
+
             URI subSubUri = URI.create(subUri.toString().substring(scheme.length() + 1));
-logger.log(Level.DEBUG, "subSubUri: " + subSubUri);
+logger.log(Level.DEBUG, "SUB-SCHEME: " + scheme + ": " + subSubUri);
             if (!subSubUri.getScheme().equals("file")) {
                 throw new IllegalArgumentException("only file is supported: " + subSubUri);
             }
+
+            // add emu type by special way
             Path path = Paths.get(subSubUri);
 logger.log(Level.DEBUG, "path: " + path + ", " + Files.exists(path));
             VirtualDisk virtualDisk = VirtualDiskFactory.getInstance().createVirtualDiskFactory(path);
             VirtualDiskDevice device = new VirtualDiskDevice(virtualDisk);
 
+            // filesystem detection by jnode
             FileSystemType<?> type = FileSystemType.lookup(scheme);
             fs = type.create(device, true); // TODO read only
         }
+logger.log(Level.DEBUG, "FILESYSTEM: " + fs.getClass().getSimpleName());
 
         final JNodeFileStore fileStore = new JNodeFileStore(fs, factoryProvider.getAttributesFactory());
         return new JNodeFileSystemDriver<>(fileStore, factoryProvider, fs, env);

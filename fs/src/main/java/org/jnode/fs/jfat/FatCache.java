@@ -27,7 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 import org.jnode.driver.block.BlockDeviceAPI;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 public class FatCache {
 
@@ -117,7 +118,7 @@ public class FatCache {
         int ofs = (int) (offset % elementSize);
 
         byte[] data = get(addr).getData();
-        return LittleEndian.getUInt16(data, ofs);
+        return ByteUtil.readLeShort(data, ofs) & 0xffff;
     }
 
     private long getUInt32(long offset) throws IOException {
@@ -125,7 +126,7 @@ public class FatCache {
         int ofs = (int) (offset % elementSize);
 
         byte[] data = get(addr).getData();
-        return LittleEndian.getUInt32(data, ofs);
+        return ByteUtil.readLeInt(data, ofs) & 0xffff_ffffL;
     }
 
     private void setInt16(long offset, int value) throws IOException {
@@ -135,7 +136,7 @@ public class FatCache {
         CacheElement c = get(addr);
         byte[] data = c.getData();
 
-        LittleEndian.setInt16(data, ofs, value);
+        ByteUtil.writeLeShort((short) value, data, ofs);
 
         c.setDirty();
     }
@@ -147,7 +148,7 @@ public class FatCache {
         CacheElement c = get(addr);
         byte[] data = c.getData();
 
-        LittleEndian.setInt32(data, ofs, value);
+        ByteUtil.writeLeInt(value, data, ofs);
 
         c.setDirty();
     }

@@ -24,7 +24,9 @@ import java.io.IOException;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
-import org.jnode.util.LittleEndian;
+
+import vavi.util.ByteUtil;
+
 
 /**
  * @author Andras Nagy
@@ -143,7 +145,7 @@ public class GroupDescriptor {
 
     // this field is only written during format (so no synchronization issues here)
     public long getBlockBitmap() {
-        return LittleEndian.getUInt32(data, 0);
+        return ByteUtil.readLeInt(data, 0) & 0xffff_ffffL;
     }
 
     public void setBlockBitmap(long l) {
@@ -153,7 +155,7 @@ public class GroupDescriptor {
 
     // this field is only written during format (so no synchronization issues here)
     public long getInodeBitmap() {
-        return LittleEndian.getUInt32(data, 4);
+        return ByteUtil.readLeInt(data, 4) & 0xffff_ffffL;
     }
 
     public void setInodeBitmap(long l) {
@@ -163,7 +165,7 @@ public class GroupDescriptor {
 
     // this field is only written during format (so no synchronization issues here)
     public long getInodeTable() {
-        return LittleEndian.getUInt32(data, 8);
+        return ByteUtil.readLeInt(data, 8) & 0xffff_ffffL;
     }
 
     public void setInodeTable(long l) {
@@ -172,29 +174,29 @@ public class GroupDescriptor {
     }
 
     public synchronized int getFreeBlocksCount() {
-        return LittleEndian.getUInt16(data, 12);
+        return ByteUtil.readLeShort(data, 12) & 0xffff;
     }
 
     public synchronized void setFreeBlocksCount(int count) {
-        LittleEndian.setInt16(data, 12, count);
+        ByteUtil.writeLeShort((short) count, data, 12);
         setDirty(true);
     }
 
     public synchronized int getFreeInodesCount() {
-        return LittleEndian.getUInt16(data, 14);
+        return ByteUtil.readLeShort(data, 14) & 0xffff;
     }
 
     public synchronized void setFreeInodesCount(int count) {
-        LittleEndian.setInt16(data, 14, count);
+        ByteUtil.writeLeShort((short) count, data, 14);
         setDirty(true);
     }
 
     public synchronized int getUsedDirsCount() {
-        return LittleEndian.getUInt16(data, 16);
+        return ByteUtil.readLeShort(data, 16) & 0xffff;
     }
 
     public synchronized void setUsedDirsCount(int count) {
-        LittleEndian.setInt16(data, 16, count);
+        ByteUtil.writeLeShort((short) count, data, 16);
         setDirty(true);
     }
 

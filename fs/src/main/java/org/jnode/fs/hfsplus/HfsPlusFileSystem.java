@@ -138,12 +138,12 @@ public class HfsPlusFileSystem extends AbstractFileSystem<HfsPlusEntry> {
 
     @Override
     public final HfsPlusEntry createRootEntry() throws IOException {
-        log.log(Level.DEBUG, "Create root entry.");
+        log.log(Level.TRACE, "Create root entry.");
         LeafRecord record = catalog.getRecord(CatalogNodeId.HFSPLUS_POR_CNID);
         if (record != null) {
             return new HfsPlusEntry(this, null, "/", record);
         }
-        log.log(Level.ERROR, "Root entry : No record found.");
+        log.log(Level.TRACE, "Root entry : No record found.");
         return null;
     }
 

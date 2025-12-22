@@ -63,7 +63,10 @@ public interface PartitionTableType {
     /** */
     String getScheme();
 
-    /** factory */
+    /**
+     * factory by class
+     * @return {@link RawPartitionTableType} when no partition table type is found.
+     */
     @SuppressWarnings({ "unchecked" })
     static <T extends PartitionTableType> T lookup(Class<T> clazz) {
         ServiceLoader<PartitionTableType> sl = ServiceLoader.load(PartitionTableType.class);
@@ -75,7 +78,10 @@ public interface PartitionTableType {
         return (T) new RawPartitionTableType();
     }
 
-    /** factory */
+    /**
+     * factory by scheme
+     * @return {@link RawPartitionTableType} when no partition table type is found.
+     */
     @SuppressWarnings({ "unchecked" })
     static <T extends PartitionTableType> T lookup(String scheme) {
         ServiceLoader<PartitionTableType> sl = ServiceLoader.load(PartitionTableType.class);
@@ -87,12 +93,15 @@ public interface PartitionTableType {
         return (T) new RawPartitionTableType();
     }
 
-    /** factory */
+    /**
+     * factory by first sector and device reader
+     * @return {@link RawPartitionTableType} when no partition table type is found.
+     */
     @SuppressWarnings({ "unchecked" })
     static <T extends PartitionTableType> T lookup(byte[] firstSectors, Device device) {
         ServiceLoader<PartitionTableType> sl = ServiceLoader.load(PartitionTableType.class);
         for (PartitionTableType ptt : sl) {
-logger.log(Level.DEBUG, "partition table type: " + ptt);
+logger.log(Level.TRACE, "partition table type: " + ptt.getClass().getSimpleName());
             if (ptt.supports(firstSectors, device.getAPI(BlockDeviceAPI.class))) {
                 return (T) ptt;
             }

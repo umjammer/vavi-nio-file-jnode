@@ -27,7 +27,8 @@ import org.jnode.driver.block.FSBlockDeviceAPI;
 import org.jnode.fs.BlockDeviceFileSystemType;
 import org.jnode.fs.FileSystemException;
 import org.jnode.partitions.PartitionTableEntry;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class HfsPlusFileSystemType implements BlockDeviceFileSystemType<HfsPlusFileSystem> {
 
@@ -67,8 +68,8 @@ public class HfsPlusFileSystemType implements BlockDeviceFileSystemType<HfsPlusF
             return false;
         }
 
-        int magicNumber = BigEndian.getInt16(magic.array(), 0);
-        int version = BigEndian.getInt16(magic.array(), 2);
+        int magicNumber = ByteUtil.readBeShort(magic.array(), 0);
+        int version = ByteUtil.readBeShort(magic.array(), 2);
 
         return (magicNumber == SuperBlock.HFSPLUS_SUPER_MAGIC && version == 4)
             || (magicNumber == SuperBlock.HFSX_SUPER_MAGIC && version == 5);

@@ -101,7 +101,7 @@ Debug.println("source gz: " + file);
 
             Files.move(tempFile, outputFile);
             assertTrue(Files.exists(outputFile),
-                       String.format("Temp data file couldn't be renamed.\nOld name: %s\nNew name: %s", tempFile, outputFile));
+                       "Temp data file couldn't be renamed.\nOld name: %s\nNew name: %s".formatted(tempFile, outputFile));
         }
     }
 }

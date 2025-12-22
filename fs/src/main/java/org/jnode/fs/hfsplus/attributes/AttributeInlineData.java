@@ -3,7 +3,8 @@ package org.jnode.fs.hfsplus.attributes;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Attribute data stored inline in the attributes file b-tree ('HFSPlusAttrData').
@@ -29,8 +30,8 @@ public class AttributeInlineData extends AttributeData {
      * @param offset the offset to read from.
      */
     public AttributeInlineData(byte[] source, int offset) {
-        recordType = BigEndian.getUInt32(source, offset);
-        attributeSize = BigEndian.getUInt32(source, offset + 0xc);
+        recordType = ByteUtil.readBeInt(source, offset) & 0xffff_ffffL;
+        attributeSize = ByteUtil.readBeInt(source, offset + 0xc) & 0xffff_ffffL;
 
         attributeData = new byte[(int) attributeSize];
         System.arraycopy(source, offset + 0x10, attributeData, 0, attributeData.length);
@@ -48,6 +49,6 @@ public class AttributeInlineData extends AttributeData {
 
     @Override
     public String toString() {
-        return String.format("inline-attribute:[length:%d]", attributeSize);
+        return "inline-attribute:[length:%d]".formatted(attributeSize);
     }
 }

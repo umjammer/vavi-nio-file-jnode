@@ -29,8 +29,9 @@ import org.jnode.driver.block.GeometryException;
 import org.jnode.partitions.ibm.IBMPartitionTable;
 import org.jnode.partitions.ibm.IBMPartitionTableEntry;
 import org.jnode.partitions.ibm.IBMPartitionTypes;
-import org.jnode.util.LittleEndian;
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author epr
@@ -291,7 +292,7 @@ public class BootSector {
      * @return int
      */
     protected int get8(int offset) {
-        return LittleEndian.getUInt8(data, offset);
+        return data[offset] & 0xff;
     }
 
     /**
@@ -300,7 +301,7 @@ public class BootSector {
      * @param offset the offset
      */
     protected void set8(int offset, int value) {
-        LittleEndian.setInt8(data, offset, value);
+        data[offset] = (byte) value;
         dirty = true;
     }
 
@@ -311,7 +312,7 @@ public class BootSector {
      * @return int
      */
     protected int get16(int offset) {
-        return LittleEndian.getUInt16(data, offset);
+        return ByteUtil.readLeShort(data, offset) & 0xffff;
     }
 
     /**
@@ -320,7 +321,7 @@ public class BootSector {
      * @param offset the offset
      */
     protected void set16(int offset, int value) {
-        LittleEndian.setInt16(data, offset, value);
+        ByteUtil.writeLeShort((short) value, data, offset);
         dirty = true;
     }
 
@@ -331,7 +332,7 @@ public class BootSector {
      * @return int
      */
     protected long get32(int offset) {
-        return LittleEndian.getUInt32(data, offset);
+        return ByteUtil.readLeInt(data, offset) & 0xffff_ffffL;
     }
 
     /**
@@ -340,7 +341,7 @@ public class BootSector {
      * @param offset the offset
      */
     protected void set32(int offset, long value) {
-        LittleEndian.setInt32(data, offset, (int) value);
+        ByteUtil.writeLeInt((int) value, data, offset);
         dirty = true;
     }
 

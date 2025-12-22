@@ -243,7 +243,7 @@ public class HfsPlusFile implements FSFile, FSFileSlackSpace, FSFileStreams {
 
     @Override
     public final String toString() {
-        return String.format("HfsPlusFile:[%s '%s']", getCatalogFile().getFileId(), entry.getName());
+        return "HfsPlusFile:[%s '%s']".formatted(getCatalogFile().getFileId(), entry.getName());
     }
 
     /**

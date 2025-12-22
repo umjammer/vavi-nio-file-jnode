@@ -377,7 +377,7 @@ public class LogRecord extends NTFSStructure {
                 type += "unknown: " + getRedoOperation();
             }
         }
-        return String.format("log-record:[%d - %d %s]", getLsn(), getTransactionId(), type);
+        return "log-record:[%d - %d %s]".formatted(getLsn(), getTransactionId(), type);
     }
 
     /**

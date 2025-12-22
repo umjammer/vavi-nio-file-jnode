@@ -58,18 +58,12 @@ public class IOUtils {
     }
 
     public static boolean isTTY(Closeable stream) {
-        if (stream instanceof ConsoleStream) {
-            return true;
-        } else if (stream instanceof ProxyStream<?>) {
+        if (stream instanceof ProxyStream<?>) {
             return isTTY(((ProxyStream<?>) stream).getRealStream());
         } else if (stream instanceof OutputStreamWriter) {
             return isTTY(findOutputStream((OutputStreamWriter) stream));
         } else if (stream instanceof InputStreamReader) {
             return isTTY(findInputStream((InputStreamReader) stream));
-        } else if (stream instanceof ReaderInputStream) {
-            return isTTY(((ReaderInputStream) stream).getReader());
-        } else if (stream instanceof WriterOutputStream) {
-            return isTTY(((WriterOutputStream) stream).getWriter());
         } else if (stream instanceof FilterInputStream) {
             return isTTY(findInputStream((FilterInputStream) stream));
         } else if (stream instanceof FilterOutputStream) {
@@ -88,10 +82,6 @@ public class IOUtils {
             return isPipe(findOutputStream((OutputStreamWriter) stream));
         } else if (stream instanceof InputStreamReader) {
             return isPipe(findInputStream((InputStreamReader) stream));
-        } else if (stream instanceof ReaderInputStream) {
-            return isPipe(((ReaderInputStream) stream).getReader());
-        } else if (stream instanceof WriterOutputStream) {
-            return isPipe(((WriterOutputStream) stream).getWriter());
         } else if (stream instanceof FilterInputStream) {
             return isPipe(findInputStream((FilterInputStream) stream));
         } else if (stream instanceof FilterOutputStream) {
@@ -102,18 +92,12 @@ public class IOUtils {
     }
 
     public static Closeable findBaseStream(Closeable stream) {
-        if (stream instanceof ConsoleStream) {
-            return stream;
-        } else if (stream instanceof ProxyStream<?>) {
+        if (stream instanceof ProxyStream<?>) {
             return findBaseStream(((ProxyStream<?>) stream).getRealStream());
         } else if (stream instanceof OutputStreamWriter) {
             return findBaseStream(findOutputStream((OutputStreamWriter) stream));
         } else if (stream instanceof InputStreamReader) {
             return findBaseStream(findInputStream((InputStreamReader) stream));
-        } else if (stream instanceof ReaderInputStream) {
-            return findBaseStream(((ReaderInputStream) stream).getReader());
-        } else if (stream instanceof WriterOutputStream) {
-            return findBaseStream(((WriterOutputStream) stream).getWriter());
         } else if (stream instanceof FilterInputStream) {
             return findBaseStream(findInputStream((FilterInputStream) stream));
         } else if (stream instanceof FilterOutputStream) {

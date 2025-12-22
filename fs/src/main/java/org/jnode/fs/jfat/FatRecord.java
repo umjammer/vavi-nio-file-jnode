@@ -200,10 +200,9 @@ public class FatRecord {
     @Override
     public String toString() {
         if (shortEntry == null) {
-            return String.format("FatRecord (Open) %s", longEntries);
+            return "FatRecord (Open) %s".formatted(longEntries);
         } else {
-            return String.format(
-                "FatRecord (Closed) ['%s' %s] index:%d chksum:%s size:%d",
+            return "FatRecord (Closed) ['%s' %s] index:%d chksum:%s size:%d".formatted(
                 getLongName(), getShortName(), getShortEntry().getIndex(), NumberUtils.hex(getChkSum(), 2), size());
         }
     }

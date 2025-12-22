@@ -27,8 +27,7 @@ import java.nio.ByteBuffer;
 
 import org.jnode.driver.ApiNotFoundException;
 import org.jnode.driver.block.FSBlockDeviceAPI;
-import org.jnode.driver.block.FileDevice;
-import org.jnode.driver.block.VirtualDiskDevice;
+import org.jnode.driver.block.OffsetedDevice;
 import org.jnode.fs.BlockDeviceFileSystemType;
 import org.jnode.fs.FileSystem;
 import vavi.util.StringUtil;
@@ -70,42 +69,19 @@ public interface PartitionTableEntry {
 
     /**
      * works! don't touch
-     * @param device TODO only {@link FileDevice}
+     * @param device TODO only {@link OffsetedDevice}
      */
-    default FileSystem<?> getFileSystem(FileDevice device) throws IOException {
+    default FileSystem<?> getFileSystem(OffsetedDevice device) throws IOException {
         try {
             int sectorSize = device.getAPI(FSBlockDeviceAPI.class).getSectorSize();
 
             long offset = getStartOffset(sectorSize);
-logger.log(Level.DEBUG, String.format("entry offset: %08x", offset));
+logger.log(Level.DEBUG, "entry offset: %08x".formatted(offset));
             device.addOffset(offset);
 
             byte[] bytes = new byte[sectorSize];
             device.getAPI(FSBlockDeviceAPI.class).read(0, ByteBuffer.wrap(bytes));
 logger.log(Level.DEBUG, "entry heads\n" + StringUtil.getDump(bytes, 128));
-
-            BlockDeviceFileSystemType<?> bdfst = BlockDeviceFileSystemType.lookup(this, bytes, device.getAPI(FSBlockDeviceAPI.class));
-            return bdfst.create(device, true);
-        } catch (ApiNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    /**
-     * works! don't touch
-     * @param device TODO only {@link VirtualDiskDevice}
-     */
-    default FileSystem<?> getFileSystem(VirtualDiskDevice device) throws IOException {
-        try {
-            int sectorSize = device.getAPI(FSBlockDeviceAPI.class).getSectorSize();
-
-            long offset = getStartOffset(sectorSize);
-logger.log(Level.DEBUG, String.format("entry offset: %08x", offset));
-            device.addOffset(offset);
-
-            byte[] bytes = new byte[sectorSize];
-            device.getAPI(FSBlockDeviceAPI.class).read(0, ByteBuffer.wrap(bytes));
-logger.log(Level.TRACE, "entry heads\n" + StringUtil.getDump(bytes, 128));
 
             BlockDeviceFileSystemType<?> bdfst = BlockDeviceFileSystemType.lookup(this, bytes, device.getAPI(FSBlockDeviceAPI.class));
             return bdfst.create(device, true);

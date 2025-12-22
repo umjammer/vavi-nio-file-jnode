@@ -23,7 +23,7 @@ package org.jnode.fs.ntfs.security;
 import java.util.ArrayList;
 import java.util.List;
 import org.jnode.fs.ntfs.NTFSStructure;
-import org.jnode.util.BigEndian;
+
 
 /**
  * Security related utilities.
@@ -54,7 +54,7 @@ public class SecurityUtils {
         int subAuthorityCount = structure.getInt8(offset + 1);
         byte[] authorityBuffer = new byte[6];
         structure.getData(offset + 2, authorityBuffer, 0, authorityBuffer.length);
-        long authority = BigEndian.getUInt48(authorityBuffer, 0); // Why is this big endian??
+        long authority = getUInt48(authorityBuffer, 0); // Why is this big endian??
         List<Long> subAuthorities = new ArrayList<>();
 
         for (int i = 0; i < subAuthorityCount; i++) {
@@ -62,5 +62,21 @@ public class SecurityUtils {
         }
 
         return new SecurityIdentifier(authority, subAuthorities);
+    }
+
+    /**
+     * Gets a 48-bit unsigned integer from the given byte array at the given offset.
+     *
+     * @param src the src
+     * @param offset the offset
+     */
+    private static long getUInt48(byte[] src, int offset) {
+        final long v5 = src[offset + 0] & 0xFF;
+        final long v4 = src[offset + 1] & 0xFF;
+        final long v3 = src[offset + 2] & 0xFF;
+        final long v2 = src[offset + 3] & 0xFF;
+        final long v1 = src[offset + 4] & 0xFF;
+        final long v0 = src[offset + 5] & 0xFF;
+        return ((v5 << 40) | (v4 << 32) | (v3 << 24) | (v2 << 16) | (v1 << 8) | v0);
     }
 }

@@ -53,10 +53,12 @@ public interface BlockDeviceFileSystemType<T extends FileSystem<?>> extends File
     @SuppressWarnings({ "rawtypes", "unchecked" })
     static <T extends FileSystemType> T lookup(PartitionTableEntry pte, byte[] firstSector, FSBlockDeviceAPI devApi) {
         ServiceLoader<FileSystemType> sl = ServiceLoader.load(FileSystemType.class);
+logger.log(Level.TRACE, sl.stream().map(fs -> fs.get().getClass().getSimpleName()).toList());
         for (FileSystemType fst : sl) {
             if (fst instanceof BlockDeviceFileSystemType bdfst) {
-logger.log(Level.DEBUG, "filesystem type: " + fst);
+logger.log(Level.TRACE, "try filesystem type: " + fst.getClass().getName());
                 if (bdfst.supports(pte, firstSector, devApi)) {
+logger.log(Level.DEBUG, "FILESYSTEM TYPE: " + fst.getClass().getName());
                     return (T) fst;
                 }
             }

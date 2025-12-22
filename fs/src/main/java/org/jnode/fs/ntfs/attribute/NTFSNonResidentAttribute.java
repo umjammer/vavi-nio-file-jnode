@@ -161,7 +161,7 @@ public class NTFSNonResidentAttribute extends NTFSAttribute {
         while (getUInt8(offset) != 0x0) {
             final DataRun dataRun = new DataRun(this, offset, vcn, previousLCN);
 
-            log.log(Level.DEBUG, "Data run at offset: " + offset  + " " + dataRun);
+            log.log(Level.TRACE, "Data run at offset: " + offset  + " " + dataRun);
 
             if (compressed) {
                 if (dataRun.isSparse() && (expectingSparseRunNext || firstDataRun)) {
@@ -273,7 +273,7 @@ public class NTFSNonResidentAttribute extends NTFSAttribute {
             throw new IOException("Reading encrypted files is not supported");
         }
 
-        log.log(Level.DEBUG, "readVCN: wants start " + vcn + " length " + nrClusters +
+        log.log(Level.TRACE, "readVCN: wants start " + vcn + " length " + nrClusters +
                 ", we have start " + getStartVCN() + " length " + getNumberOfVCNs());
 
         final NTFSVolume volume = getFileRecord().getVolume();
@@ -286,7 +286,7 @@ public class NTFSNonResidentAttribute extends NTFSAttribute {
             }
         }
 
-        log.log(Level.DEBUG, "readVCN: read " + readClusters);
+        log.log(Level.TRACE, "readVCN: read " + readClusters);
 
         return readClusters;
     }
@@ -312,7 +312,7 @@ public class NTFSNonResidentAttribute extends NTFSAttribute {
 
     @Override
     public String toString() {
-        return String.format("[attribute (non-res) type=x%x name'%s' size=%d runs=%d]", getAttributeType(),
+        return "[attribute (non-res) type=x%x name'%s' size=%d runs=%d]".formatted(getAttributeType(),
             getAttributeName(), getAttributeActualSize(), getDataRuns().size());
     }
 
@@ -329,6 +329,6 @@ public class NTFSNonResidentAttribute extends NTFSAttribute {
             builder.append("Error: ").append(e);
         }
 
-        return String.format("%s\nData runs:\n%s\nData: %s", this, builder, hexDump());
+        return "%s\nData runs:\n%s\nData: %s".formatted(this, builder, hexDump());
     }
 }

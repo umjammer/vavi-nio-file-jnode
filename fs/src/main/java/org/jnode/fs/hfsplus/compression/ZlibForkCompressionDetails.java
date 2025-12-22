@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
 import org.jnode.fs.hfsplus.HfsPlusForkData;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Contains the details of the ZLIB compression fork details.
@@ -41,7 +42,7 @@ public class ZlibForkCompressionDetails {
         // Read in the number of chunks
         ByteBuffer header = ByteBuffer.allocate(0x108);
         forkData.read(fs, 0, header);
-        chunkCount = LittleEndian.getInt32(header.array(), 0x104);
+        chunkCount = ByteUtil.readLeInt(header.array(), 0x104);
 
         // Read in the offset length array data
         ByteBuffer offsetLengthArrayData = ByteBuffer.allocate(8 * chunkCount);
@@ -49,8 +50,8 @@ public class ZlibForkCompressionDetails {
 
         // Each chunk has an offset from the end of the header and a length stored
         for (int i = 0; i < chunkCount; i++) {
-            long chunkOffset = 0x104 + LittleEndian.getUInt32(offsetLengthArrayData.array(), 8 * i);
-            int chunkLength = LittleEndian.getInt32(offsetLengthArrayData.array(), 4 + 8 * i);
+            long chunkOffset = 0x104 + (ByteUtil.readLeInt(offsetLengthArrayData.array(), 8 * i) & 0xffff_ffffL);
+            int chunkLength = ByteUtil.readLeInt(offsetLengthArrayData.array(), 4 + 8 * i);
             offsetArray.add(chunkOffset);
             lengthArray.add(chunkLength);
         }

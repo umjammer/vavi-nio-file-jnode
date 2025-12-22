@@ -5,7 +5,7 @@
   <parent>
     <groupId>vavi</groupId>
     <artifactId>vavi-nio-file-jnode</artifactId>
-    <version>0.2.13</version>
+    <version>0.2.14</version>
   </parent>
 
   <artifactId>jnode-fs</artifactId>
@@ -24,7 +24,6 @@
         <configuration>
           <argLine>
             -Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties
-            -Dvavi.util.logging.VaviFormatter.extraClassMethod=vavi\.emu\.disk\.Disk\$1#log
           </argLine>
           <trimStackTrace>false</trimStackTrace>
         </configuration>
@@ -38,7 +37,7 @@
       <url>https://jitpack.io</url>
     </repository>
     <repository>
-      <id>gitlab-maven</id>
+      <id>gitlab-maven</id> <!-- vavi-nio-file-emu -->
       <url>https://gitlab.com/api/v4/projects/31203504/packages/maven</url>
     </repository>
   </repositories>
@@ -47,24 +46,24 @@
     <dependency>
       <groupId>vavi</groupId>
       <artifactId>jnode-core</artifactId>
-      <version>0.2.13</version>
+      <version>0.2.14</version>
     </dependency>
     <dependency>
       <!--for nfs -->
       <groupId>vavi</groupId>
       <artifactId>jnode-net</artifactId>
-      <version>0.2.13</version>
+      <version>0.2.14</version>
     </dependency>
 
     <dependency>
       <groupId>com.github.umjammer</groupId>
       <artifactId>vavi-nio-file-base</artifactId>
-      <version>0.0.14v</version>
+      <version>0.0.17</version>
     </dependency>
     <dependency>
       <groupId>vavi</groupId>
       <artifactId>vavi-nio-file-emu</artifactId>
-      <version>2.0.4</version>
+      <version>2.0.6</version>
       <exclusions>
         <exclusion>
           <groupId>com.github.umjammer</groupId>
@@ -77,11 +76,28 @@
       <groupId>eu.agno3.jcifs</groupId>
       <artifactId>jcifs-ng</artifactId>
       <version>2.1.10</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk18on</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+<dependency>
+  <groupId>org.bouncycastle</groupId>
+  <artifactId>bcprov-jdk18on</artifactId>
+  <version>1.80</version>
+</dependency>
     <dependency>
       <groupId>com.enterprisedt</groupId>
       <artifactId>edtFTPj</artifactId>
       <version>1.5.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.umjammer</groupId> <!-- vavi / com.github.umjammer -->
+      <artifactId>vavi-nio-file-qcow2</artifactId>
+      <version>0.0.1</version>
     </dependency>
 
     <dependency>
@@ -116,6 +132,13 @@
       <artifactId>vavi-net-fuse</artifactId>
       <version>${vavi-net-fuse.version}</version>
       <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.7.36</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

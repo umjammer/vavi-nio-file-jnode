@@ -9,8 +9,8 @@ import org.jnode.fs.hfsplus.HfsPlusFile;
 import org.jnode.fs.hfsplus.HfsPlusFileSystem;
 import org.jnode.fs.hfsplus.attributes.AttributeData;
 import org.jnode.fs.util.FSUtils;
-import org.jnode.util.BigEndian;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * LZVN compressed data stored off in the file's resource fork.
@@ -149,14 +149,14 @@ public class LzvnForkCompression implements HfsPlusCompression {
         }
 
         long sourceOffset = 0;
-        long sourceValue = LittleEndian.getInt64(compressedBuffer, 0);
+        long sourceValue = ByteUtil.readLeLong(compressedBuffer, 0);
         caseTableIndex = compressedBuffer[0] & 255;
 
         do {
             switch (jmpTo) {
                 case LZVN_CASE_TABLE:
-                    log.log(Level.DEBUG, String
-                        .format("caseTable[%d]", LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]));
+                    log.log(Level.DEBUG,
+                        "caseTable[%d]".formatted(LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]));
 
                     switch (LzvnForkCompression.CASE_TABLE[FSUtils.checkedCast(caseTableIndex)]) {
                         case 0:
@@ -208,7 +208,7 @@ public class LzvnForkCompression implements HfsPlusCompression {
                         case 4:
                             sourceOffset++;
                             sourceValue =
-                                LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(sourceOffset));
+                                    ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(sourceOffset));
                             caseTableIndex = (sourceValue & 255);
 
                             jmpTo = LZVN_CASE_TABLE;
@@ -291,17 +291,17 @@ public class LzvnForkCompression implements HfsPlusCompression {
 
                     do {
                         address = sourceOffset + sourceValue;
-                        caseTableIndex = LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(address));
+                        caseTableIndex = ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(address));
 
                         address = currentLength + sourceValue;
-                        LittleEndian.setInt64(uncompressedBuffer, FSUtils.checkedCast(address), caseTableIndex);
+                        ByteUtil.writeLeLong(caseTableIndex, uncompressedBuffer, FSUtils.checkedCast(address));
                         sourceValue += 8;
 
                     } while ((0xffffffffffffffffL - (sourceValue - 8)) >= 8);
 
                     destOffset = currentLength;
 
-                    sourceValue = LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(sourceOffset));
+                    sourceValue = ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(sourceOffset));
                     caseTableIndex = (sourceValue & 255);
 
                     jmpTo = LZVN_CASE_TABLE;
@@ -330,7 +330,7 @@ public class LzvnForkCompression implements HfsPlusCompression {
 
                     } while (sourceValue != 0);
 
-                    sourceValue = LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(sourceOffset));
+                    sourceValue = ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(sourceOffset));
                     caseTableIndex = (sourceValue & 255);
 
                     jmpTo = LZVN_CASE_TABLE;
@@ -348,17 +348,17 @@ public class LzvnForkCompression implements HfsPlusCompression {
 
                     do {
                         address = sourceValue;
-                        caseTableIndex = LittleEndian.getInt64(uncompressedBuffer, FSUtils.checkedCast(address));
+                        caseTableIndex = ByteUtil.readLeLong(uncompressedBuffer, FSUtils.checkedCast(address));
 
                         sourceValue += 8;
-                        LittleEndian.setInt64(uncompressedBuffer, FSUtils.checkedCast(destOffset), caseTableIndex);
+                        ByteUtil.writeLeLong(caseTableIndex, uncompressedBuffer, FSUtils.checkedCast(destOffset));
                         destOffset += 8;
                         byteCount -= 8;
 
                     } while ((byteCount + 8) > 8);
 
                     destOffset += byteCount;
-                    sourceValue = LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(sourceOffset));
+                    sourceValue = ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(sourceOffset));
                     caseTableIndex = (sourceValue & 255);
 
                     jmpTo = LZVN_CASE_TABLE;
@@ -424,7 +424,7 @@ public class LzvnForkCompression implements HfsPlusCompression {
 
                     } while (byteCount != 0);
 
-                    sourceValue = LittleEndian.getInt64(compressedBuffer, FSUtils.checkedCast(sourceOffset));
+                    sourceValue = ByteUtil.readLeLong(compressedBuffer, FSUtils.checkedCast(sourceOffset));
                     caseTableIndex = (sourceValue & 255);
 
                     jmpTo = LZVN_CASE_TABLE;
@@ -437,7 +437,7 @@ public class LzvnForkCompression implements HfsPlusCompression {
                     currentLength += byteCount;
 
                     if (currentLength < decompressedSize) {
-                        LittleEndian.setInt64(uncompressedBuffer, FSUtils.checkedCast(destOffset), sourceValue);
+                        ByteUtil.writeLeLong(sourceValue, uncompressedBuffer, FSUtils.checkedCast(destOffset));
                         destOffset += caseTableIndex;
                         sourceValue = destOffset;
 
@@ -488,8 +488,8 @@ public class LzvnForkCompression implements HfsPlusCompression {
      */
     private static long ReverseInt64(long value) {
         byte[] swapBuffer = new byte[8];
-        LittleEndian.setInt64(swapBuffer, 0, value);
-        return BigEndian.getInt64(swapBuffer, 0);
+        ByteUtil.writeLeLong(value, swapBuffer, 0);
+        return ByteUtil.readBeLong(swapBuffer, 0);
     }
 
     /**

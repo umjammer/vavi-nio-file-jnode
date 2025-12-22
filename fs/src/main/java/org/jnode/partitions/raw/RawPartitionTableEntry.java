@@ -15,7 +15,7 @@ import static java.lang.System.getLogger;
 
 
 /**
- * RawPartitionTableEntry.
+ * RawPartitionTableEntry (dummy for virtual device).
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/02/06 umjammer initial version <br>
@@ -28,7 +28,7 @@ public class RawPartitionTableEntry implements PartitionTableEntry {
      * Creates a new entry.
      */
     public RawPartitionTableEntry() {
-logger.log(Level.DEBUG, "virtual raw partition");
+logger.log(Level.TRACE, "virtual raw partition");
     }
 
     @Override

@@ -22,8 +22,8 @@ package org.jnode.fs.iso9660;
 
 import java.io.UnsupportedEncodingException;
 
-import org.jnode.util.BigEndian;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * Base class for descriptors. All helper methods in this class used to read the
@@ -41,7 +41,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned byte
      */
     protected static int getUInt8(byte[] buffer, int bp) {
-        return LittleEndian.getUInt8(buffer, bp - 1);
+        return buffer[bp - 1] & 0xff;
     }
 
     /**
@@ -52,7 +52,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return a signed byte
      */
     protected static int getInt8(byte[] buffer, int bp) {
-        return LittleEndian.getInt8(buffer, bp - 1);
+        return buffer[bp - 1];
     }
 
     /**
@@ -63,7 +63,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned little-endian short
      */
     protected static int getUInt16LE(byte[] buffer, int bp) {
-        return LittleEndian.getUInt16(buffer, bp - 1);
+        return ByteUtil.readLeShort(buffer, bp - 1) & 0xffff;
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned big-endian short
      */
     protected static int getUInt16BE(byte[] buffer, int bp) {
-        return BigEndian.getUInt16(buffer, bp - 1);
+        return ByteUtil.readBeShort(buffer, bp - 1) & 0xffff;
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned short
      */
     protected static int getUInt16Both(byte[] buffer, int bp) {
-        return LittleEndian.getUInt16(buffer, bp - 1);
+        return ByteUtil.readLeShort(buffer, bp - 1) & 0xffff;
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned little-endian int
      */
     protected static long getUInt32LE(byte[] buffer, int bp) {
-        return LittleEndian.getUInt32(buffer, bp - 1);
+        return ByteUtil.readLeInt(buffer, bp - 1) & 0xffff_ffffL;
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned big-endian int
      */
     protected static long getUInt32BE(byte[] buffer, int bp) {
-        return BigEndian.getUInt32(buffer, bp - 1);
+        return ByteUtil.readBeInt(buffer, bp - 1) & 0xffff_ffffL;
     }
 
     /**
@@ -118,7 +118,7 @@ public abstract class Descriptor implements ISO9660Constants {
      * @return an unsigned int
      */
     protected static long getUInt32Both(byte[] buffer, int bp) {
-        return LittleEndian.getUInt32(buffer, bp - 1);
+        return ByteUtil.readLeInt(buffer, bp - 1) & 0xffff_ffffL;
     }
 
     /**

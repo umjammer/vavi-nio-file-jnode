@@ -22,7 +22,8 @@ package org.jnode.fs.ext4;
 
 import java.io.IOException;
 import org.jnode.fs.ext2.Ext2FileSystem;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An ext4 extent header.
@@ -69,19 +70,19 @@ public class ExtentHeader {
     }
 
     public int getMagic() {
-        return LittleEndian.getUInt16(data, 0);
+        return ByteUtil.readLeShort(data, 0) & 0xffff;
     }
 
     public int getEntryCount() {
-        return LittleEndian.getUInt16(data, 2);
+        return ByteUtil.readLeShort(data, 2) & 0xffff;
     }
 
     public int getMaximumEntryCount() {
-        return LittleEndian.getUInt16(data, 4);
+        return ByteUtil.readLeShort(data, 4) & 0xffff;
     }
 
     public int getDepth() {
-        return LittleEndian.getUInt16(data, 6);
+        return ByteUtil.readLeShort(data, 6) & 0xffff;
     }
 
     public ExtentIndex[] getIndexEntries() {
@@ -193,7 +194,6 @@ public class ExtentHeader {
 
     @Override
     public String toString() {
-        return String.format(
-                "ExtentHeader: depth:%d entries:%d/%d", getDepth(), getEntryCount(), getMaximumEntryCount());
+        return "ExtentHeader: depth:%d entries:%d/%d".formatted(getDepth(), getEntryCount(), getMaximumEntryCount());
     }
 }

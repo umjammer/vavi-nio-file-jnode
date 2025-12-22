@@ -113,7 +113,7 @@ public class AccessControlEntry extends NTFSStructure {
             }
 
             if (type != 0) {
-                names.add(String.format("Unknown Type: 0x%x", type));
+                names.add("Unknown Type: 0x%x".formatted(type));
             }
 
             return names;
@@ -157,7 +157,7 @@ public class AccessControlEntry extends NTFSStructure {
             }
 
             if (flags != 0) {
-                names.add(String.format("Unknown Flags: 0x%x", flags));
+                names.add("Unknown Flags: 0x%x".formatted(flags));
             }
 
             return names;
@@ -227,7 +227,7 @@ public class AccessControlEntry extends NTFSStructure {
             }
 
             if (mask != 0) {
-                names.add(String.format("Unknown Access Mask: 0x%x", mask));
+                names.add("Unknown Access Mask: 0x%x".formatted(mask));
             }
 
             return names;

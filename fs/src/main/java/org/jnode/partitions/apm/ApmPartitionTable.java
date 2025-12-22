@@ -29,7 +29,8 @@ import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.driver.Device;
 import org.jnode.partitions.PartitionTable;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * The main Apple Partition Map (APM) partition table class.
@@ -52,7 +53,7 @@ public class ApmPartitionTable implements PartitionTable<ApmPartitionTableEntry>
      */
     public ApmPartitionTable(byte[] first16KiB, Device device) {
 
-        long entries = BigEndian.getUInt32(first16KiB, 0x204);
+        long entries = ByteUtil.readBeInt(first16KiB, 0x204) & 0xffff_ffffL;
 
         for (int partitionNumber = 0; partitionNumber < entries; partitionNumber++) {
             log.log(Level.DEBUG, "try part " + partitionNumber);

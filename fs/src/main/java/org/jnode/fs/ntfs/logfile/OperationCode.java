@@ -72,6 +72,6 @@ public enum OperationCode {
             }
         }
 
-        return String.format("Unknown operation: 0x%x", code);
+        return "Unknown operation: 0x%x".formatted(code);
     }
 }

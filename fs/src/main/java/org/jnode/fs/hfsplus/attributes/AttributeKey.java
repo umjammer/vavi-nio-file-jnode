@@ -4,7 +4,8 @@ import org.jnode.fs.hfsplus.HfsUnicodeString;
 import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
 import org.jnode.fs.hfsplus.tree.AbstractKey;
 import org.jnode.fs.hfsplus.tree.Key;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An attributes file key (HFSPlusAttrKey).
@@ -45,10 +46,10 @@ public class AttributeKey extends AbstractKey {
      * @param offset the offset to read from.
      */
     public AttributeKey(byte[] src, int offset) {
-        keyLength = BigEndian.getUInt16(src, offset) + 2;
-        pad = BigEndian.getUInt16(src, offset + 2);
+        keyLength = (ByteUtil.readBeShort(src, offset) & 0xffff) + 2;
+        pad = ByteUtil.readBeShort(src, offset + 2) & 0xffff;
         fileId = new CatalogNodeId(src, offset + 4);
-        startBlock = BigEndian.getUInt32(src, offset + 8);
+        startBlock = ByteUtil.readBeInt(src, offset + 8) & 0xffff_ffffL;
         attributeName = new HfsUnicodeString(src, offset + 0xc);
     }
 
@@ -107,17 +108,17 @@ public class AttributeKey extends AbstractKey {
     public byte[] getBytes() {
         int length = this.getKeyLength();
         byte[] data = new byte[length];
-        BigEndian.setInt16(data, 0, length);
-        BigEndian.setInt16(data, 2, pad);
+        ByteUtil.writeBeShort((short) length, data, 0);
+        ByteUtil.writeBeShort((short) pad, data, 2);
         System.arraycopy(fileId.getBytes(), 0, data, 4, 4);
-        BigEndian.setInt32(data, 8, (int) startBlock);
+        ByteUtil.writeBeInt((int) startBlock, data, 8);
         System.arraycopy(attributeName.getBytes(), 0, data, 0xc, (attributeName.getLength() * 2) + 2);
         return data;
     }
 
     @Override
     public String toString() {
-        return String.format("[length: %d, file-id: %d, attribute-name: '%s']", getKeyLength(), getFileId().getId(),
+        return "[length: %d, file-id: %d, attribute-name: '%s']".formatted(getKeyLength(), getFileId().getId(),
             getAttributeName());
     }
 }

@@ -194,7 +194,7 @@ public class MasterFileTable extends FileRecord {
      * @return the file record.
      */
     public FileRecord getRecordUnchecked(long index) throws IOException {
-        log.log(Level.DEBUG, "getRecord(" + index + ")");
+        log.log(Level.TRACE, "getRecord(" + index + ")");
 
         final NTFSVolume volume = getVolume();
 

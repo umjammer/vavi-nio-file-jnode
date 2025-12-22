@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class FileInfo {
     private final int fileType;
@@ -28,9 +29,9 @@ public class FileInfo {
     private final int finderFlags;
 
     public FileInfo(byte[] data, int offset) {
-        fileType = BigEndian.getInt32(data, offset);
-        fileCreator = BigEndian.getInt32(data, offset + 4);
-        finderFlags = BigEndian.getUInt16(data, offset + 8);
+        fileType = ByteUtil.readBeInt(data, offset);
+        fileCreator = ByteUtil.readBeInt(data, offset + 4);
+        finderFlags = ByteUtil.readBeShort(data, offset + 8) & 0xffff;
     }
 
     public int getFileType() {

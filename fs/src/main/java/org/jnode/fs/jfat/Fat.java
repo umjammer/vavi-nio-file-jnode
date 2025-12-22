@@ -44,9 +44,9 @@ public abstract class Fat {
 
     private final FatCache cache;
 
-    private int lastfree;
+    private int lastFree;
 
-    private final ByteBuffer clearbuf;
+    private final ByteBuffer clearBuf;
 
     protected Fat(BootSector bs, BlockDeviceAPI api) {
         this.bs = bs;
@@ -65,18 +65,23 @@ public abstract class Fat {
         /*
          * and blank the clear buffer
          */
-        byte[] cleardata = new byte[getClusterSize()];
-        Arrays.fill(cleardata, 0, cleardata.length, (byte) 0x00);
+        byte[] clearData = new byte[getClusterSize()];
+        Arrays.fill(clearData, 0, clearData.length, (byte) 0x00);
 
         /*
          * setup the clear buffer
          */
-        clearbuf = ByteBuffer.wrap(cleardata).asReadOnlyBuffer();
+        clearBuf = ByteBuffer.wrap(clearData).asReadOnlyBuffer();
     }
 
     public static Fat create(BlockDeviceAPI api, BootSector bs) throws IOException {
 
         bs.read(api);
+
+        boolean r = bs.isaValidBootSector();
+        if (!r) {
+            throw new FileSystemException("boot sector validation failed");
+        }
 
         if (bs.isFat32()) {
             return new Fat32(bs, api);
@@ -101,39 +106,38 @@ public abstract class Fat {
         return getBootSector().getBytesPerSector() * getBootSector().getSectorsPerCluster();
     }
 
-    public final long getFirstSector(int fatnum) {
-        if (fatnum < 0 || fatnum >= getBootSector().getNrFats()) {
-            throw new IndexOutOfBoundsException("illegal fat: " + fatnum);
+    public final long getFirstSector(int fatNum) {
+        if (fatNum < 0 || fatNum >= getBootSector().getNrFats()) {
+            throw new IndexOutOfBoundsException("illegal fat: " + fatNum);
         }
-        return (long) getBootSector().getNrReservedSectors() + getBootSector().getSectorsPerFat() *
-            (long) fatnum;
+        return (long) getBootSector().getNrReservedSectors() + getBootSector().getSectorsPerFat() * (long) fatNum;
     }
 
-    public final boolean isFirstSector(int fatnum, long sector) {
-        return (sector == getFirstSector(fatnum));
+    public final boolean isFirstSector(int fatNum, long sector) {
+        return (sector == getFirstSector(fatNum));
     }
 
-    public final long getLastSector(int fatnum) {
-        return getFirstSector(fatnum) + getBootSector().getSectorsPerFat() - 1;
+    public final long getLastSector(int fatNum) {
+        return getFirstSector(fatNum) + getBootSector().getSectorsPerFat() - 1;
     }
 
-    public final boolean isLastSector(int fatnum, long sector) {
-        return (sector == getLastSector(fatnum));
+    public final boolean isLastSector(int fatNum, long sector) {
+        return (sector == getLastSector(fatNum));
     }
 
-    public final long getFirst(int fatnum) {
-        return getFirstSector(fatnum) * (long) getBootSector().getBytesPerSector();
+    public final long getFirst(int fatNum) {
+        return getFirstSector(fatNum) * (long) getBootSector().getBytesPerSector();
     }
 
-    public final long getLast(int fatnum) {
-        return getLastSector(fatnum) + offset(size() - 1);
+    public final long getLast(int fatNum) {
+        return getLastSector(fatNum) + offset(size() - 1);
     }
 
-    protected final long position(int fatnum, int index) throws IOException {
+    protected final long position(int fatNum, int index) throws IOException {
         if (index < 0 || index >= size()) {
             throw new IllegalArgumentException("illegal entry: " + index);
         }
-        return getFirst(fatnum) + offset(index);
+        return getFirst(fatNum) + offset(index);
     }
 
     public void readCluster(int cluster, int offset, ByteBuffer dst) throws IOException {
@@ -176,10 +180,10 @@ logger.log(Logger.Level.TRACE, "cluster: " + cluster);
                 getClusterSize() + "]");
         }
 
-        clearbuf.clear();
-        clearbuf.limit(end - start);
+        clearBuf.clear();
+        clearBuf.limit(end - start);
 
-        writeCluster(cluster, start, clearbuf);
+        writeCluster(cluster, start, clearBuf);
     }
 
     public void clearCluster(int cluster) throws IOException {
@@ -203,6 +207,7 @@ logger.log(Level.TRACE, "sector: " + (long) (index - firstCluster()) * (long) bs
 
     public abstract long getClusterPosition(int index);
 
+    /** count of clusters (w/ first cluster) */
     public final int size() {
         return (int) (bs.getCountOfClusters() + firstCluster());
     }
@@ -258,15 +263,15 @@ logger.log(Level.TRACE, "sector: " + (long) (index - firstCluster()) * (long) bs
     }
 
     public final int getLastFree() {
-        return lastfree;
+        return lastFree;
     }
 
     public final void setLastFree(int value) {
-        lastfree = value;
+        lastFree = value;
     }
 
     public final void rewindFree() {
-        lastfree = firstCluster();
+        lastFree = firstCluster();
     }
 
     public final int freeEntries() throws IOException {
@@ -300,7 +305,7 @@ logger.log(Level.TRACE, "sector: " + (long) (index - firstCluster()) * (long) bs
     }
 
     public String toString() {
-        return String.format("FAT cluster:%d\nboot sector:\n%s", getClusterSize(), getBootSector());
+        return "FAT cluster:%d\nboot sector:\n%s".formatted(getClusterSize(), getBootSector());
     }
 
     public String toDebugString() {

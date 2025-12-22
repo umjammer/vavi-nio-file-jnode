@@ -20,7 +20,8 @@
 
 package org.jnode.fs.fat;
 
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author gbin
@@ -48,59 +49,55 @@ public class FatLfnDirEntry extends FatBasicDirEntry {
         char[] unicodeChar = new char[13];
         subName.getChars(0, subName.length(), unicodeChar, 0);
         if (isLast) {
-            LittleEndian.setInt8(rawData, 0, ordinal + (1 << 6)); // set the
-                                                                    // 6th
-            // security ending
-            // bit
+            rawData[0] = (byte) (ordinal + (1 << 6)); // set the 6th security ending bit
         } else {
-            LittleEndian.setInt8(rawData, 0, ordinal);
+            rawData[0] = (byte) ordinal;
         }
 
-        LittleEndian.setInt16(rawData, 1, unicodeChar[0]);
-        LittleEndian.setInt16(rawData, 3, unicodeChar[1]);
-        LittleEndian.setInt16(rawData, 5, unicodeChar[2]);
-        LittleEndian.setInt16(rawData, 7, unicodeChar[3]);
-        LittleEndian.setInt16(rawData, 9, unicodeChar[4]);
-        LittleEndian.setInt8(rawData, 11, 0x0f); // this is the hidden
-                                                    // attribute tag for
-        // lfn
-        LittleEndian.setInt8(rawData, 12, 0); // reserved
-        LittleEndian.setInt8(rawData, 13, checkSum); // checksum
-        LittleEndian.setInt16(rawData, 14, unicodeChar[5]);
-        LittleEndian.setInt16(rawData, 16, unicodeChar[6]);
-        LittleEndian.setInt16(rawData, 18, unicodeChar[7]);
-        LittleEndian.setInt16(rawData, 20, unicodeChar[8]);
-        LittleEndian.setInt16(rawData, 22, unicodeChar[9]);
-        LittleEndian.setInt16(rawData, 24, unicodeChar[10]);
-        LittleEndian.setInt16(rawData, 26, 0); // sector... unused
-        LittleEndian.setInt16(rawData, 28, unicodeChar[11]);
-        LittleEndian.setInt16(rawData, 30, unicodeChar[12]);
+        ByteUtil.writeLeShort((short) unicodeChar[0], rawData, 1);
+        ByteUtil.writeLeShort((short) unicodeChar[1], rawData, 3);
+        ByteUtil.writeLeShort((short) unicodeChar[2], rawData, 5);
+        ByteUtil.writeLeShort((short) unicodeChar[3], rawData, 7);
+        ByteUtil.writeLeShort((short) unicodeChar[4], rawData, 9);
+        rawData[11] = (byte) 0x0f; // this is the hidden attribute tag for lfn
+        rawData[12] = (byte) 0; // reserved
+        rawData[13] = (byte) (int) checkSum; // checksum
+        ByteUtil.writeLeShort((short) unicodeChar[5], rawData, 14);
+        ByteUtil.writeLeShort((short) unicodeChar[6], rawData, 16);
+        ByteUtil.writeLeShort((short) unicodeChar[7], rawData, 18);
+        ByteUtil.writeLeShort((short) unicodeChar[8], rawData, 20);
+        ByteUtil.writeLeShort((short) unicodeChar[9], rawData, 22);
+        ByteUtil.writeLeShort((short) unicodeChar[10], rawData, 24);
+        // sector... unused
+        ByteUtil.writeLeShort((short) 0, rawData, 26);
+        ByteUtil.writeLeShort((short) unicodeChar[11], rawData, 28);
+        ByteUtil.writeLeShort((short) unicodeChar[12], rawData, 30);
 
     }
 
     public byte getOrdinal() {
-        return (byte) LittleEndian.getUInt8(rawData, 0);
+        return (byte) (rawData[0] & 0xff);
     }
 
     public byte getCheckSum() {
-        return (byte) LittleEndian.getUInt8(rawData, 13);
+        return (byte) (rawData[13] & 0xff);
     }
 
     public String getSubstring() {
         char[] unicodechar = new char[13];
-        unicodechar[0] = (char) LittleEndian.getUInt16(rawData, 1);
-        unicodechar[1] = (char) LittleEndian.getUInt16(rawData, 3);
-        unicodechar[2] = (char) LittleEndian.getUInt16(rawData, 5);
-        unicodechar[3] = (char) LittleEndian.getUInt16(rawData, 7);
-        unicodechar[4] = (char) LittleEndian.getUInt16(rawData, 9);
-        unicodechar[5] = (char) LittleEndian.getUInt16(rawData, 14);
-        unicodechar[6] = (char) LittleEndian.getUInt16(rawData, 16);
-        unicodechar[7] = (char) LittleEndian.getUInt16(rawData, 18);
-        unicodechar[8] = (char) LittleEndian.getUInt16(rawData, 20);
-        unicodechar[9] = (char) LittleEndian.getUInt16(rawData, 22);
-        unicodechar[10] = (char) LittleEndian.getUInt16(rawData, 24);
-        unicodechar[11] = (char) LittleEndian.getUInt16(rawData, 28);
-        unicodechar[12] = (char) LittleEndian.getUInt16(rawData, 30);
+        unicodechar[0] = (char) (ByteUtil.readLeShort(rawData, 1) & 0xffff);
+        unicodechar[1] = (char) (ByteUtil.readLeShort(rawData, 3) & 0xffff);
+        unicodechar[2] = (char) (ByteUtil.readLeShort(rawData, 5) & 0xffff);
+        unicodechar[3] = (char) (ByteUtil.readLeShort(rawData, 7) & 0xffff);
+        unicodechar[4] = (char) (ByteUtil.readLeShort(rawData, 9) & 0xffff);
+        unicodechar[5] = (char) (ByteUtil.readLeShort(rawData, 14) & 0xffff);
+        unicodechar[6] = (char) (ByteUtil.readLeShort(rawData, 16) & 0xffff);
+        unicodechar[7] = (char) (ByteUtil.readLeShort(rawData, 18) & 0xffff);
+        unicodechar[8] = (char) (ByteUtil.readLeShort(rawData, 20) & 0xffff);
+        unicodechar[9] = (char) (ByteUtil.readLeShort(rawData, 22) & 0xffff);
+        unicodechar[10] = (char) (ByteUtil.readLeShort(rawData, 24) & 0xffff);
+        unicodechar[11] = (char) (ByteUtil.readLeShort(rawData, 28) & 0xffff);
+        unicodechar[12] = (char) (ByteUtil.readLeShort(rawData, 30) & 0xffff);
         int index = 0;
         while (index < 13 && unicodechar[index] != '\0')
             index++;

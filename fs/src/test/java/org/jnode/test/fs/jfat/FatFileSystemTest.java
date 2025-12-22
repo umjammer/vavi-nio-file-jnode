@@ -109,6 +109,7 @@ public class FatFileSystemTest {
     @Test
     @EnabledIf("localPropertiesExists")
     public void testReadFromPartition() throws Exception {
+Debug.println(dmg);
 //        File file = new File(nhd);
         File file = new File(dmg);
 //        File file = FileSystemTestUtils.getTestFile("org/jnode/test/fs/jfat/test.fat32");

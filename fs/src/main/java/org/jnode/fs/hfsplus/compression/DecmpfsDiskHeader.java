@@ -1,6 +1,7 @@
 package org.jnode.fs.hfsplus.compression;
 
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * The header for HFS+ compressed data (decmpfs_disk_header), stored as little endian on disk.
@@ -73,9 +74,9 @@ public class DecmpfsDiskHeader {
      * @param offset the offset to read from.
      */
     public DecmpfsDiskHeader(byte[] source, int offset) {
-        magic = LittleEndian.getUInt32(source, offset);
-        type = LittleEndian.getUInt32(source, offset + 4);
-        uncompressedSize = LittleEndian.getInt64(source, offset + 8);
+        magic = ByteUtil.readLeInt(source, offset) & 0xffff_ffffL;
+        type = ByteUtil.readLeInt(source, offset + 4) & 0xffff_ffffL;
+        uncompressedSize = ByteUtil.readLeLong(source, offset + 8);
     }
 
     /**
@@ -98,6 +99,6 @@ public class DecmpfsDiskHeader {
 
     @Override
     public String toString() {
-        return String.format("decmpfs-disk-header:[type:%d, length:%d]", type, uncompressedSize);
+        return "decmpfs-disk-header:[type:%d, length:%d]".formatted(type, uncompressedSize);
     }
 }

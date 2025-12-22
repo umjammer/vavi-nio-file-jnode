@@ -25,7 +25,9 @@ import java.util.List;
 
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
-import org.jnode.util.BigEndian;
+
+import vavi.util.ByteUtil;
+
 
 public abstract class AbstractNode<K extends Key, T extends NodeRecord> implements Node<T> {
 
@@ -51,11 +53,11 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
         this.offsets = new ArrayList<>(this.descriptor.getNumRecords() + 1);
         int offset;
         for (int i = 0; i < this.descriptor.getNumRecords() + 1; i++) {
-            offset = BigEndian.getUInt16(nodeData, size - ((i + 1) * 2));
+            offset = ByteUtil.readBeShort(nodeData, size - ((i + 1) * 2)) & 0xffff;
             offsets.add(offset);
         }
 
-        log.log(Level.DEBUG, "Creating node for: " + descriptor + " offsets: " + offsets);
+        log.log(Level.TRACE, "Creating node for: " + descriptor + " offsets: " + offsets);
 
         loadRecords(nodeData);
     }
@@ -73,7 +75,7 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
             int recordSize = offsets.get(i + 1) - offset;
             records.add(createRecord(key, nodeData, offset, recordSize));
 
-            log.log(Level.DEBUG, "Loading record: " + key);
+            log.log(Level.TRACE, "Loading record: " + key);
         }
     }
 
@@ -120,7 +122,7 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
      */
     public final T find(K key) {
         for (T record : records) {
-            log.log(Level.DEBUG, "Record: " + record.toString() + " Key: " + key);
+            log.log(Level.TRACE, "Record: " + record.toString() + " Key: " + key);
             @SuppressWarnings("unchecked")
             K recordKey = (K) record.getKey();
             if (recordKey != null && recordKey.equals(key)) {
@@ -176,11 +178,11 @@ public abstract class AbstractNode<K extends Key, T extends NodeRecord> implemen
         for (NodeRecord record : records) {
             offset = offsets.get(offsetIndex);
             System.arraycopy(record.getBytes(), 0, datas, offset, record.getSize());
-            BigEndian.setInt16(datas, size - ((offsetIndex + 1) * 2), offset);
+            ByteUtil.writeBeShort((short) offset, datas, size - ((offsetIndex + 1) * 2));
             offsetIndex++;
         }
         offset = offsets.get(offsets.size() - 1);
-        BigEndian.setInt16(datas, size - ((offsetIndex + 1) * 2), offset);
+        ByteUtil.writeBeShort((short) offset, datas, size - ((offsetIndex + 1) * 2));
         return datas;
     }
 

@@ -22,8 +22,10 @@ package org.jnode.fs.jfat;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import org.jnode.util.LittleEndian;
+
 import org.jnode.util.NumberUtils;
+import vavi.util.ByteUtil;
+
 
 /**
  * @author gvt
@@ -98,34 +100,34 @@ public class FatMarshal {
 
     public int getUInt8(int offset) {
         checkOffset(offset, 1);
-        return LittleEndian.getUInt8(array, offset);
+        return array[offset] & 0xff;
     }
 
     public void setUInt8(int offset, int value) {
         checkOffset(offset, 1);
-        LittleEndian.setInt8(array, offset, value);
+        array[offset] = (byte) value;
         setDirty();
     }
 
     public int getUInt16(int offset) {
         checkOffset(offset, 2);
-        return LittleEndian.getUInt16(array, offset);
+        return ByteUtil.readLeShort(array, offset) & 0xffff;
     }
 
     public void setUInt16(int offset, int value) {
         checkOffset(offset, 2);
-        LittleEndian.setInt16(array, offset, value);
+        ByteUtil.writeLeShort((short) value, array, offset);
         setDirty();
     }
 
     public long getUInt32(int offset) {
         checkOffset(offset, 4);
-        return LittleEndian.getUInt32(array, offset);
+        return ByteUtil.readLeInt(array, offset) & 0xffff_ffffL;
     }
 
     public void setUInt32(int offset, long value) {
         checkOffset(offset, 4);
-        LittleEndian.setInt32(array, offset, (int) value);
+        ByteUtil.writeLeInt((int) value, array, offset);
         setDirty();
     }
 
@@ -149,7 +151,7 @@ public class FatMarshal {
                 ch = value.charAt(i);
             else
                 ch = (char) 0;
-            LittleEndian.setInt8(array, offset + i, ch);
+            array[offset + i] = (byte) (int) ch;
         }
         setDirty();
     }
@@ -160,7 +162,7 @@ public class FatMarshal {
         char[] value = new char[length];
 
         for (int i = 0; i < length; i++)
-            value[i] = (char) LittleEndian.getUInt8(array, offset + i);
+            value[i] = (char) (array[offset + i] & 0xff);
 
         return value;
     }
@@ -169,7 +171,7 @@ public class FatMarshal {
         checkOffset(offset, length);
 
         for (int i = 0; i < length; i++)
-            LittleEndian.setInt8(array, offset + i, value[i]);
+            array[offset + i] = (byte) (int) value[i];
 
         setDirty();
     }
@@ -197,7 +199,7 @@ public class FatMarshal {
 
     @Override
     public String toString() {
-        return String.format("FatMarshal %s", NumberUtils.hex(array));
+        return "FatMarshal %s".formatted(NumberUtils.hex(array));
     }
 
     public String toDebugString() {

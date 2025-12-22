@@ -12,26 +12,34 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import vavi.util.Debug;
 import vavi.util.properties.annotation.Property;
 import vavi.util.properties.annotation.PropsEntity;
+import vavix.io.fat.PC98BiosParameterBlock;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+
+import static org.jnode.fs.pc98.PC98BootSector.VALIDATION_KEY;
 
 
 /**
- * JNodeTest.
+ * SPI (jnode) Test.
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2021/12/20 umjammer initial version <br>
  */
 @EnabledIf("localPropertiesExists")
 @PropsEntity(url = "file://${user.dir}/local.properties")
-class JNodeTest {
+public class SpiTest {
 
     static boolean localPropertiesExists() {
         return Files.exists(Paths.get("local.properties"));
@@ -47,10 +55,18 @@ class JNodeTest {
     String d88;
     @Property
     String fdi;
+    @Property
+    String qcow2;
 
     @BeforeEach
     void before() throws IOException {
         PropsEntity.Util.bind(this);
+    }
+
+    static String formattedLMT(Path p) throws IOException {
+        return Files.getLastModifiedTime(p).toInstant()
+                .atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
 
     @Test
@@ -63,7 +79,7 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
 //        Files.list(fs.getRootDirectories().iterator().next()).forEach(System.err::println);
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -80,7 +96,7 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -97,7 +113,7 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -114,7 +130,7 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -122,17 +138,25 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         fs.close();
     }
 
+    /** bpb validator specified by a system property {@link  org.jnode.fs.pc98.PC98BootSector#VALIDATION_KEY} */
+    public static boolean validate(PC98BiosParameterBlock bpb) {
+Debug.print(bpb);
+        return bpb.oemLabel.contains("NEC");
+    }
+
     // TODO not (header +) solid image
     @Test
-//    @Disabled("wip d88")
+    @EnabledIfSystemProperty(named = "vavi.test", matches = "ide")
     void test5() throws Exception {
+        System.setProperty(VALIDATION_KEY, "vavi.nio.file.jnode.SpiTest#validate");
+
         Path d88Path = Paths.get(d88);
 Debug.println("disc: " + d88Path + ", " + Files.exists(d88Path));
         URI uri = URI.create("jnode:" + d88Path.toUri());
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }
@@ -143,13 +167,15 @@ Debug.println("disc: " + d88Path + ", " + Files.exists(d88Path));
     @Test
     @DisplayName("fdi fat12")
     void test6() throws Exception {
+        System.setProperty(VALIDATION_KEY, "vavi.nio.file.jnode.SpiTest#validate");
+
         Path fidPath = Paths.get(fdi);
 Debug.println("disc: " + fidPath + ", " + Files.exists(fidPath));
         URI uri = URI.create("jnode:" + fidPath.toUri());
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
 //                if (!Files.isDirectory(p)) // newInputStream is not supported mark
 //                    System.err.println(StringUtil.getDump(new BufferedInputStream(Files.newInputStream(p)), 0, (int) Math.min(64, Files.size(p))));
             } catch (IOException e) {
@@ -168,7 +194,25 @@ Debug.println("disc: " + exfatPath + ", " + Files.exists(exfatPath));
         FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
         Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
             try {
-                System.err.println(p + ", " + Files.getLastModifiedTime(p));
+                System.err.println(p + ", " + formattedLMT(p));
+            } catch (IOException e) {
+                Debug.printStackTrace(e);
+            }
+        });
+        fs.close();
+    }
+
+    @Test
+    @DisplayName("qcow2")
+    @Disabled("not implemented yet")
+    void test8() throws Exception {
+        Path qcow2 = Paths.get(this.qcow2);
+Debug.println("disc: " + qcow2 + ", " + Files.exists(qcow2));
+        URI uri = URI.create("jnode:" + qcow2.toUri());
+        FileSystem fs = new JNodeFileSystemProvider().newFileSystem(uri, Collections.emptyMap());
+        Files.walk(fs.getRootDirectories().iterator().next()).forEach(p -> {
+            try {
+                System.err.println(p + ", " + formattedLMT(p));
             } catch (IOException e) {
                 Debug.printStackTrace(e);
             }

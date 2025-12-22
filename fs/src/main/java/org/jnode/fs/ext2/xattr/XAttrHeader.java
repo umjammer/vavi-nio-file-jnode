@@ -1,6 +1,7 @@
 package org.jnode.fs.ext2.xattr;
 
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * An extended attribute header.
@@ -39,7 +40,7 @@ public class XAttrHeader {
      * @return the magic number.
      */
     public long getMagic() {
-        return LittleEndian.getUInt32(data, 0);
+        return ByteUtil.readLeInt(data, 0) & 0xffff_ffffL;
     }
 
     /**
@@ -48,7 +49,7 @@ public class XAttrHeader {
      * @return the reference count.
      */
     public long getRefCount() {
-        return LittleEndian.getUInt32(data, 0x4);
+        return ByteUtil.readLeInt(data, 0x4) & 0xffff_ffffL;
     }
 
     /**
@@ -57,7 +58,7 @@ public class XAttrHeader {
      * @return the number of blocks used.
      */
     public long getBlocks() {
-        return LittleEndian.getUInt32(data, 0x8);
+        return ByteUtil.readLeInt(data, 0x8) & 0xffff_ffffL;
     }
 
     /**
@@ -66,7 +67,7 @@ public class XAttrHeader {
      * @return the hash value of all the attributes.
      */
     public long getHash() {
-        return LittleEndian.getUInt32(data, 0xc);
+        return ByteUtil.readLeInt(data, 0xc) & 0xffff_ffffL;
     }
 
     /**
@@ -75,6 +76,6 @@ public class XAttrHeader {
      * @return the checksum.
      */
     public long getChecksum() {
-        return LittleEndian.getUInt32(data, 0x10);
+        return ByteUtil.readLeInt(data, 0x10) & 0xffff_ffffL;
     }
 }

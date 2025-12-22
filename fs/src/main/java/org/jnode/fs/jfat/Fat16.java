@@ -66,7 +66,7 @@ public class Fat16 extends Fat {
         BootSector bootSector = getBootSector();
 
         long rootDirectoryOffset = bootSector.getFirstDataSector() * bootSector.getBytesPerSector();
-logger.log(Level.TRACE, () -> String.format("fat[" + index + "]: offset: %08x", rootDirectoryOffset));
+logger.log(Level.TRACE, () -> "fat[" + index + "]: offset: %08x".formatted(rootDirectoryOffset));
         if (index == 0) {
             return rootDirectoryOffset;
         }

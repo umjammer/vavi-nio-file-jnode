@@ -36,7 +36,7 @@ import org.jnode.fs.spi.AbstractFileSystem;
  */
 public class FatFileSystem extends AbstractFileSystem<FatRootDirectory> {
 
-    private static final Logger log = System.getLogger(FatFileSystem.class.getName());
+    private static final Logger logger = System.getLogger(FatFileSystem.class.getName());
 
     private final Fat fat;
     private final CodePage cp;
@@ -50,6 +50,7 @@ public class FatFileSystem extends AbstractFileSystem<FatRootDirectory> {
         } catch (Exception ex) {
             throw new FileSystemException(ex);
         }
+logger.log(Level.TRACE, "device: " + device.getClass().getSimpleName() + ", bs: " + bs.getClass().getSimpleName() + ", fat: " + getFat().getBootSector().fatType());
 
         cp = CodePage.forName(codePageName);
     }
@@ -93,12 +94,12 @@ public class FatFileSystem extends AbstractFileSystem<FatRootDirectory> {
     public void flush() throws IOException {
         super.flush();
         fat.flush();
-        log.log(Level.DEBUG, getFat().getCacheStat());
+        logger.log(Level.DEBUG, getFat().getCacheStat());
     }
 
     @Override
     public String toString() {
-        return String.format("FAT File System: %s", fat);
+        return "FAT File System: %s".formatted(fat);
     }
 
     @Override

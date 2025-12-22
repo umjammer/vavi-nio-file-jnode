@@ -58,7 +58,7 @@ public abstract class AbstractLeafNode<K extends Key> extends AbstractNode<K, Le
     public final LeafRecord[] findAll(K key) {
         List<LeafRecord> list = new LinkedList<>();
         for (LeafRecord record : records) {
-            log.log(Level.DEBUG, "Record: " + record.toString() + " Key: " + key);
+            log.log(Level.TRACE, "Record: " + record.toString() + " Key: " + key);
             @SuppressWarnings("unchecked")
             K recordKey = (K) record.getKey();
             if (recordKey != null && recordKey.equals(key)) {

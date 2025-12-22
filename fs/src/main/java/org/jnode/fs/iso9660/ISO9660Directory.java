@@ -26,7 +26,7 @@ import org.jnode.fs.FSDirectory;
 import org.jnode.fs.FSEntry;
 import org.jnode.fs.FileSystem;
 import org.jnode.fs.ReadOnlyFileSystemException;
-import org.jnode.util.LittleEndian;
+
 
 /**
  * @author Chira
@@ -55,7 +55,7 @@ public final class ISO9660Directory implements FSDirectory {
 
             @Override
             public boolean hasNext() {
-                return ((offset < buffer.length) && LittleEndian.getUInt8(buffer, offset) > 0);
+                return offset < buffer.length && ((buffer[offset] & 0xff) > 0);
             }
 
             @Override

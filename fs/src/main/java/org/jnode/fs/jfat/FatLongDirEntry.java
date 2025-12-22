@@ -304,8 +304,7 @@ public class FatLongDirEntry extends FatDirEntry {
 
     @Override
     public String toString() {
-        return String.format(
-            "Long Entry [%s] index:%d attr:%s type:%d ckhsum:%s last:%b",
+        return "Long Entry [%s] index:%d attr:%s type:%d ckhsum:%s last:%b".formatted(
             component, getIndex(), NumberUtils.hex(lAttr, 2), lType, NumberUtils.hex(lChksum, 2), isLast());
     }
 

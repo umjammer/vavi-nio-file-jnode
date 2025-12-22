@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class JournalInfoBlock {
 
@@ -45,10 +46,10 @@ public class JournalInfoBlock {
     public JournalInfoBlock(final byte[] src) {
         byte[] data = new byte[180];
         System.arraycopy(src, 0, data, 0, 180);
-        flag = BigEndian.getInt32(data, 0);
-        deviceSignature = BigEndian.getInt32(data, 4);
-        offset = BigEndian.getInt64(data, 36);
-        size = BigEndian.getInt64(data, 44);
+        flag = ByteUtil.readBeInt(data, 0);
+        deviceSignature = ByteUtil.readBeInt(data, 4);
+        offset = ByteUtil.readBeLong(data, 36);
+        size = ByteUtil.readBeLong(data, 44);
     }
 
     public final String toString() {

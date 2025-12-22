@@ -25,7 +25,8 @@ import java.util.Arrays;
 import java.lang.System.Logger.Level;
 import java.lang.System.Logger;
 import org.jnode.fs.FileSystemException;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 
 /**
  * A single directory record, i.e. the inode number and name of an entry in a
@@ -116,7 +117,7 @@ public class Ext2DirectoryRecord {
      * @return short
      */
     public synchronized int getType() {
-        return LittleEndian.getUInt8(data, offset + 7);
+        return data[offset + 7] & 0xff;
     }
 
     private synchronized void setType(int type) {
@@ -131,7 +132,7 @@ public class Ext2DirectoryRecord {
      * @return long
      */
     public synchronized long getINodeNr() {
-        return LittleEndian.getUInt32(data, offset);
+        return ByteUtil.readLeInt(data, offset) & 0xffff_ffffL;
     }
 
     private synchronized void setINodeNr(long nr) {
@@ -147,7 +148,7 @@ public class Ext2DirectoryRecord {
         String name = "";
         if (getINodeNr() != 0) {
             name = new String(data, offset + 8, getNameLen(), Ext2FileSystem.ENTRY_NAME_CHARSET);
-            log.log(Level.DEBUG, "Ext2DirectoryRecord(): iNode=" + getINodeNr() + ", name=" + name);
+            log.log(Level.TRACE, "Ext2DirectoryRecord(): iNode=" + getINodeNr() + ", name=" + name);
         }
         return name;
     }
@@ -164,15 +165,15 @@ public class Ext2DirectoryRecord {
      * @return int
      */
     public synchronized int getRecLen() {
-        return LittleEndian.getUInt16(data, offset + 4);
+        return ByteUtil.readLeShort(data, offset + 4) & 0xffff;
     }
 
     private synchronized void setRecLen(int len) {
-        LittleEndian.setInt16(data, offset + 4, len);
+        ByteUtil.writeLeShort((short) len, data, offset + 4);
     }
 
     public synchronized int getNameLen() {
-        return LittleEndian.getUInt8(data, offset + 6);
+        return data[offset + 6] & 0xff;
     }
 
     private synchronized void setNameLen(int len) {

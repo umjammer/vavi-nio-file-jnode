@@ -199,7 +199,7 @@ public class FSUtils {
         for (int i = offset; i < length; i += 16) {
             int bytes = Math.min(16, length - i);
 
-            builder.append(String.format("0x%08x - ", i));
+            builder.append("0x%08x - ".formatted(i));
 
             for (int j = 0; j < 16; j++) {
                 if (j < bytes) {

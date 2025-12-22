@@ -23,7 +23,8 @@ package org.jnode.fs.hfsplus.extent;
 import org.jnode.fs.hfsplus.catalog.CatalogNodeId;
 import org.jnode.fs.hfsplus.tree.AbstractKey;
 import org.jnode.fs.hfsplus.tree.Key;
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class ExtentKey extends AbstractKey {
 
@@ -45,11 +46,11 @@ public class ExtentKey extends AbstractKey {
         byte[] ek = new byte[KEY_LENGTH];
         System.arraycopy(src, offset, ek, 0, KEY_LENGTH);
         // TODO Understand why the +2 is necessary
-        keyLength = BigEndian.getUInt16(ek, 0) + 2;
-        forkType = BigEndian.getUInt8(ek, 2);
-        pad = BigEndian.getUInt8(ek, 3);
+        keyLength = (ByteUtil.readBeShort(ek, 0) & 0xffff) + 2;
+        forkType = ek[2] & 0xff;
+        pad = ek[3] & 0xff;
         fileId = new CatalogNodeId(ek, 4);
-        startBlock = BigEndian.getUInt32(ek, 8);
+        startBlock = ByteUtil.readBeInt(ek, 8) & 0xffff_ffffL;
     }
 
     /**
@@ -133,6 +134,6 @@ public class ExtentKey extends AbstractKey {
 
     @Override
     public final String toString() {
-        return String.format("[%s type:%s start:%d]", fileId, forkType == DATA_FORK ? "data" : "resource", startBlock);
+        return "[%s type:%s start:%d]".formatted(fileId, forkType == DATA_FORK ? "data" : "resource", startBlock);
     }
 }

@@ -182,16 +182,16 @@ public class HfsPlusDirectory implements FSDirectory, FSDirectoryId {
      */
     protected final void checkEntriesLoaded() {
         if (!isEntriesLoaded()) {
-            log.log(Level.DEBUG, "checkEntriesLoaded : loading");
+            log.log(Level.TRACE, "checkEntriesLoaded : loading");
             try {
                 if (entry.getAccessRights().canRead()) {
                     entries = readEntries();
-                    log.log(Level.DEBUG, "Load " + entries.size() + " entrie(s).");
+                    log.log(Level.TRACE, "Load " + entries.size() + " entrie(s).");
                 } else {
                     // the next time, we will call checkEntriesLoaded()
                     // we will retry to load entries
                     entries = FSEntryTable.EMPTY_TABLE;
-                    log.log(Level.DEBUG, "checkEntriesLoaded : can't read, using EMPTY_TABLE");
+                    log.log(Level.TRACE, "checkEntriesLoaded : can't read, using EMPTY_TABLE");
                 }
                 entry.resetDirty();
             } catch (IOException e) {

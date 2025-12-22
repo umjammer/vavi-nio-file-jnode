@@ -113,7 +113,7 @@ public class FatDirEntry {
 
     @Override
     public String toString() {
-        return String.format("FatDirEntry [%s] index:%d", entry, index);
+        return "FatDirEntry [%s] index:%d".formatted(entry, index);
     }
 
     public String toDebugString() {

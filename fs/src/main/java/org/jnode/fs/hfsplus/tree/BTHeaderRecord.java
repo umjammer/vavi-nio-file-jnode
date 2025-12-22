@@ -20,7 +20,8 @@
 
 package org.jnode.fs.hfsplus.tree;
 
-import org.jnode.util.BigEndian;
+import vavi.util.ByteUtil;
+
 
 public class BTHeaderRecord {
 
@@ -112,37 +113,37 @@ public class BTHeaderRecord {
     public BTHeaderRecord(final byte[] src, int offset) {
         byte[] data = new byte[BT_HEADER_RECORD_LENGTH];
         System.arraycopy(src, offset, data, 0, BT_HEADER_RECORD_LENGTH);
-        treeDepth = BigEndian.getUInt16(data, 0);
-        rootNode = BigEndian.getUInt32(data, 2);
-        leafRecords = BigEndian.getUInt32(data, 6);
-        firstLeafNode = BigEndian.getUInt32(data, 10);
-        lastLeafNode = BigEndian.getUInt32(data, 14);
-        nodeSize = BigEndian.getUInt16(data, 18);
-        maxKeyLength = BigEndian.getUInt16(data, 20);
-        totalNodes = BigEndian.getUInt32(data, 22);
-        freeNodes = BigEndian.getUInt32(data, 26);
+        treeDepth = ByteUtil.readBeShort(data, 0) & 0xffff;
+        rootNode = ByteUtil.readBeInt(data, 2) & 0xffff_ffffL;
+        leafRecords = ByteUtil.readBeInt(data, 6) & 0xffff_ffffL;
+        firstLeafNode = ByteUtil.readBeInt(data, 10) & 0xffff_ffffL;
+        lastLeafNode = ByteUtil.readBeInt(data, 14) & 0xffff_ffffL;
+        nodeSize = ByteUtil.readBeShort(data, 18) & 0xffff;
+        maxKeyLength = ByteUtil.readBeShort(data, 20) & 0xffff;
+        totalNodes = ByteUtil.readBeInt(data, 22) & 0xffff_ffffL;
+        freeNodes = ByteUtil.readBeInt(data, 26) & 0xffff_ffffL;
         // UInt16 reserved1 - offset 30
-        clumpSize = BigEndian.getUInt32(data, 32);
-        treeType = BigEndian.getUInt8(data, 36);
-        keyCompareType = BigEndian.getUInt8(data, 37);
-        attributes = BigEndian.getUInt32(data, 38);
+        clumpSize = ByteUtil.readBeInt(data, 32) & 0xffff_ffffL;
+        treeType = data[36] & 0xff;
+        keyCompareType = data[37] & 0xff;
+        attributes = ByteUtil.readBeInt(data, 38) & 0xffff_ffffL;
     }
 
     public byte[] getBytes() {
         byte[] data = new byte[BT_HEADER_RECORD_LENGTH];
-        BigEndian.setInt16(data, 0, treeDepth);
-        BigEndian.setInt32(data, 2, (int) rootNode);
-        BigEndian.setInt32(data, 6, (int) leafRecords);
-        BigEndian.setInt32(data, 10, (int) firstLeafNode);
-        BigEndian.setInt32(data, 14, (int) lastLeafNode);
-        BigEndian.setInt16(data, 18, nodeSize);
-        BigEndian.setInt16(data, 20, maxKeyLength);
-        BigEndian.setInt32(data, 22, (int) totalNodes);
-        BigEndian.setInt32(data, 26, (int) freeNodes);
-        BigEndian.setInt32(data, 32, (int) clumpSize);
-        BigEndian.setInt8(data, 36, treeType);
-        BigEndian.setInt8(data, 37, keyCompareType);
-        BigEndian.setInt32(data, 38, (int) attributes);
+        ByteUtil.writeBeShort((short) treeDepth, data, 0);
+        ByteUtil.writeBeInt((int) rootNode, data, 2);
+        ByteUtil.writeBeInt((int) leafRecords, data, 6);
+        ByteUtil.writeBeInt((int) firstLeafNode, data, 10);
+        ByteUtil.writeBeInt((int) lastLeafNode, data, 14);
+        ByteUtil.writeBeShort((short) nodeSize, data, 18);
+        ByteUtil.writeBeShort((short) maxKeyLength, data, 20);
+        ByteUtil.writeBeInt((int) totalNodes, data, 22);
+        ByteUtil.writeBeInt((int) freeNodes, data, 26);
+        ByteUtil.writeBeInt((int) clumpSize, data, 32);
+        data[36] = (byte) treeType;
+        data[37] = (byte) keyCompareType;
+        ByteUtil.writeBeInt((int) attributes, data, 38);
         return data;
     }
 

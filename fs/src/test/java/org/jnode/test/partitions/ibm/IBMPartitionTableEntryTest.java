@@ -21,7 +21,8 @@
 package org.jnode.test.partitions.ibm;
 
 import org.jnode.partitions.ibm.IBMPartitionTableEntry;
-import org.jnode.util.LittleEndian;
+import vavi.util.ByteUtil;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,7 +33,7 @@ public class IBMPartitionTableEntryTest {
     @Test
     public void testHasChildPartitionTable() {
         byte[] bootSector = getBootSector();
-        LittleEndian.setInt8(bootSector, 450, 0x85);
+        bootSector[450] = (byte) 0x85;
         IBMPartitionTableEntry pte = new IBMPartitionTableEntry(null, bootSector, 0);
         assertTrue(pte.hasChildPartitionTable());
     }
@@ -40,7 +41,7 @@ public class IBMPartitionTableEntryTest {
     @Test
     public void testHasNoChildPartitionTable() {
         byte[] bootSector = getBootSector();
-        LittleEndian.setInt8(bootSector, 450, 0x84);
+        bootSector[450] = (byte) 0x84;
         IBMPartitionTableEntry pte = new IBMPartitionTableEntry(null, bootSector, 0);
         assertFalse(pte.hasChildPartitionTable());
     }
@@ -48,9 +49,9 @@ public class IBMPartitionTableEntryTest {
     @Test
     public void testIsValid() {
         byte[] bootSector = getBootSector();
-        LittleEndian.setInt32(bootSector, 446, 0x80); // bootable
-        LittleEndian.setInt32(bootSector, 450, 0x85); // valid system id
-        LittleEndian.setInt32(bootSector, 458, 1); // has sectors
+        ByteUtil.writeLeInt(0x80, bootSector, 446); // bootable
+        ByteUtil.writeLeInt(0x85, bootSector, 450); // valid system id
+        ByteUtil.writeLeInt(1, bootSector, 458); // has sectors
         IBMPartitionTableEntry pte = new IBMPartitionTableEntry(null, bootSector, 0);
         assertTrue(pte.isValid());
     }

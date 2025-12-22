@@ -44,27 +44,6 @@ public class NumberUtils {
     }
 
     /**
-     * Converts a byte to an unsigned value.
-     */
-    public static int toUnsigned(final byte b) {
-        return b & 0xFF;
-    }
-
-    /**
-     * Converts a short to an unsigned value.
-     */
-    public static int toUnsigned(final short s) {
-        return s & 0xFFFF;
-    }
-
-    /**
-     * Converts an int to an unsigned value.
-     */
-    public static long toUnsigned(final int i) {
-        return i & 0xFFFFFFFFL;
-    }
-
-    /**
      * Gets the hexadecimal representation of the given number. The result is
      * prefixed with '0' until the given length is reached.
      *
@@ -130,27 +109,6 @@ public class NumberUtils {
                     buf.append('\n');
                 } else {
                     buf.append(' ');
-                }
-            }
-            buf.append(hex(data[offset + i] & 0xFF, 2));
-        }
-        return buf.toString();
-    }
-
-    /**
-     * Convert a byte array to a string of hex-numbers without spaces.
-     *
-     * @param data the byte array to convert
-     * @param offset start offset
-     * @param length the number of bytes to convert
-     * @return String the result
-     */
-    public static String hexCompact(byte[] data, int offset, int length) {
-        final StringBuilder buf = new StringBuilder(length * 2);
-        for (int i = 0; i < length; i++) {
-            if (i > 0) {
-                if ((i % 16) == 0) {
-                    buf.append('\n');
                 }
             }
             buf.append(hex(data[offset + i] & 0xFF, 2));
@@ -246,6 +204,7 @@ public class NumberUtils {
      * @return the text for of the size
      * @deprecated use toDecimalByte() or toBinaryByte() instead
      */
+    @Deprecated
     public static String size(long v) {
         for (SizeUnit unit : SizeUnit.values()) {
             if ((v < 1024) && (v >= 0)) {
