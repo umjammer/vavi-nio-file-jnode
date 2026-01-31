@@ -59,10 +59,11 @@ you can also mount all formats using fuse.
 ### system properties
 
 * `org.jnode.file.encoding` ... filename encoding for `Charset#forName(String)`, default is `MS932`
-* `org.jnode.fs.pc98.validator.fat` ... , validator for finding fat literal default is `false`
-* `org.jnode.fs.pc98.validator.ipl` ... , validator for finding ipl literal default is `true`
-* `org.jnode.fs.pc98.validator.nec` ... , validator for finding nec literal, default is `true`
-* `org.jnode.fs.pc98.PC98BootSector.validation` ... `true`: do default validation, `false`: no validation, *else*: validation function name `class#method`, the method must return `boolean`
+* `vavix.io.partition.validator.fat` ... , validator for finding fat literal default is `false`
+* `vavix.io.partition.validator.ipl` ... , validator for finding ipl literal default is `true`
+* `vavix.io.partition.validator.nec` ... , validator for finding nec literal, default is `true`
+* `vavix.io.fat.PC98BiosParameterBlock.validation` ... `true`: do default validation, `false`: no validation, *else*: validation function name `class#method`, the method must return `boolean`
+* `org.jnode.fs.jfat.ATBootSector.validation` ... `true`: do default validation, `false`: no validation, *else*: validation function name `class#method`, the method must return `boolean`
 
 ### for emulator user
 
