@@ -13,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
-import java.util.StringJoiner;
 
 import org.jnode.driver.Device;
 import org.jnode.driver.block.FSBlockDeviceAPI;
@@ -23,6 +22,7 @@ import org.jnode.fs.jfat.BootSector;
 import org.jnode.fs.jfat.FatFileSystem;
 import org.jnode.partitions.PartitionTableEntry;
 import vavi.util.StringUtil;
+import vavix.io.partition.Validator;
 
 import static java.lang.System.getLogger;
 
@@ -35,9 +35,9 @@ import static java.lang.System.getLogger;
  * <p>
  * system property
  * <li>{@code "org.jnode.file.encoding"} ... filename encoding for {@link Charset#forName(String)}, default is {@code "MS932"}</li>
- * <li>{@code "org.jnode.fs.pc98.validator.fat"} ... , validator for finding fat literal default is {@code false}</li>
- * <li>{@code "org.jnode.fs.pc98.validator.ipl"} ... , validator for finding ipl literal default is {@code true}</li>
- * <li>{@code "org.jnode.fs.pc98.validator.nec"} ... , validator for finding nec literal, default is {@code true}</li>
+ * <li>{@code "vavix.io.partition.validator.fat"} ... , validator for finding fat literal default is {@code false}</li>
+ * <li>{@code "vavix.io.partition.validator.ipl"} ... , validator for finding ipl literal default is {@code true}</li>
+ * <li>{@code "vavix.io.partition.validator.nec"} ... , validator for finding nec literal, default is {@code true}</li>
  * </p>
  *
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
@@ -46,21 +46,6 @@ import static java.lang.System.getLogger;
 public class PC98FileSystemType implements BlockDeviceFileSystemType<FatFileSystem> {
 
     private static final Logger logger = getLogger(PC98FileSystemType.class.getName());
-
-    /** boot sector value validator */
-    public interface Validator {
-
-        Logger logger = PC98FileSystemType.logger;
-
-        /** validation priority */
-        int weight();
-
-        /** use this validator nor not */
-        boolean enabled();
-
-        /** do validation */
-        boolean validate(byte[] firstSectors);
-    }
 
     /** */
     private static final List<Validator> validators;

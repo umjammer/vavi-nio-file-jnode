@@ -34,6 +34,10 @@ import vavi.util.StringUtil;
 
 
 /**
+ * <p>
+ * system property
+ * <li>{@code org.jnode.fs.jfat.ATBootSector.validation} ... {@code class#method}, {@code true}, {@code false}, default {@code false}</li>
+ * </p>
  * @author gvt
  * @author Tango
  */

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
-import static org.jnode.fs.pc98.PC98BootSector.VALIDATION_KEY;
+import static vavix.io.fat.PC98BiosParameterBlock.VALIDATION_KEY;
 
 
 /**
@@ -138,7 +138,7 @@ Debug.println("disc: " + dmgPath + ", " + Files.exists(dmgPath));
         fs.close();
     }
 
-    /** bpb validator specified by a system property {@link  org.jnode.fs.pc98.PC98BootSector#VALIDATION_KEY} */
+    /** bpb validator specified by a system property {@link PC98BiosParameterBlock#VALIDATION_KEY} */
     public static boolean validate(PC98BiosParameterBlock bpb) {
 Debug.print(bpb);
         return bpb.oemLabel.contains("NEC");

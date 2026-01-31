@@ -10,11 +10,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
 import org.jnode.driver.block.BlockDeviceAPI;
-import org.jnode.fs.FileSystemException;
 import org.jnode.fs.jfat.BootSector;
 import vavi.util.serdes.Serdes;
 import vavix.io.fat.PC98BiosParameterBlock;
@@ -24,7 +22,10 @@ import static java.lang.System.getLogger;
 
 /**
  * PC98BootSector.
- *
+ * <p>
+ * system property
+ * <li>{@link PC98BiosParameterBlock#VALIDATION_KEY} ... default {@code true}</li>
+ * </p>
  * @author <a href="mailto:umjammer@gmail.com">Naohide Sano</a> (umjammer)
  * @version 0.00 2022/02/08 umjammer initial version <br>
  */
@@ -43,44 +44,9 @@ public class PC98BootSector implements BootSector {
     @Override
     public boolean isaValidBootSector() {
 logger.log(Level.DEBUG, "bpb.fileSystem: " + bpb.fileSystem);
-        boolean r = validate(bpb);
+        boolean r = bpb.validate();
 if (!r) { logger.log(Level.DEBUG, "validation failed: " + bpb); }
         return r;
-    }
-
-    /**
-     * true: do default validation,
-     * false: no validation,
-     * else: validation function name "class#method", the method must return boolean and
-     *       w/ an argument PC98BiosParameterBlock and static.
-     */
-    public static final String VALIDATION_KEY = "org.jnode.fs.pc98.PC98BootSector.validation";
-
-    /** @see #VALIDATION_KEY */
-    private static boolean validate(PC98BiosParameterBlock bpb) {
-        String validation = System.getProperty(VALIDATION_KEY, "true");
-        if (Boolean.parseBoolean(validation)) {
-            logger.log(Level.DEBUG, "default validation");
-            return bpb.fileSystem.contains("FAT");
-        } else if (validation.equalsIgnoreCase("false")) {
-            logger.log(Level.DEBUG, "no validation, accepting anyway");
-            return true;
-        } else {
-            try {
-                String[] parts = validation.split("#");
-                Class<?> clazz = Class.forName(parts[0]);
-                Method method = clazz.getDeclaredMethod(parts[1], PC98BiosParameterBlock.class);
-                if (method.getReturnType() != Boolean.TYPE) {
-                    throw new IllegalArgumentException("method %s return type is not boolean but %s".formatted(method.getName(), method.getReturnType().getName()));
-                }
-                boolean r = method.invoke(null, bpb).equals(Boolean.TRUE);
-                logger.log(Level.DEBUG, "do user bpb validation %s#%s: %s".formatted(clazz.getSimpleName(), method.getName(), r));
-                return r;
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "validation function error, accepting anyway", e);
-                return true;
-            }
-        }
     }
 
     @Override

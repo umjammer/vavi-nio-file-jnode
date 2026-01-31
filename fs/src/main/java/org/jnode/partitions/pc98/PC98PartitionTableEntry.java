@@ -15,6 +15,7 @@ import org.jnode.partitions.PartitionTableEntry;
 import vavix.io.partition.PC98PartitionEntry;
 
 import static java.lang.System.getLogger;
+import static vavix.io.fat.PC98BiosParameterBlock.toLBA;
 
 
 /**
@@ -42,12 +43,6 @@ public class PC98PartitionTableEntry implements PartitionTableEntry {
             secs = ((VirtualDiskDevice) device).getSectors();
         }
 logger.log(Level.DEBUG, "heads: %d, secs: %d, device: %s".formatted(heads, secs, device.getClass().getName()));
-    }
-
-    // @see "https://github.com/aaru-dps/Aaru.Helpers/blob/4640bb88d3eb907d0f0617d5ee5159fbc13c5653/CHS.cs"
-    private static int toLBA(int cyl, int head, int sector, int maxHead, int maxSector) {
-        return maxHead == 0 || maxSector == 0 ? (((cyl * 16)      + head) * 63)        + sector - 1
-                                              : (((cyl * maxHead) + head) * maxSector) + sector - 1;
     }
 
     @Override
