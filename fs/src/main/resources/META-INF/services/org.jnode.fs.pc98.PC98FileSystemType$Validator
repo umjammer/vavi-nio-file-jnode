@@ -1,4 +1,0 @@
-org.jnode.fs.pc98.validator.MagicValidator
-org.jnode.fs.pc98.validator.NecValidator
-org.jnode.fs.pc98.validator.FatValidator
-org.jnode.fs.pc98.validator.IplValidator
