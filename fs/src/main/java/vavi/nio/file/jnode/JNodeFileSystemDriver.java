@@ -168,9 +168,10 @@ public final class JNodeFileSystemDriver<T extends FSEntry> extends ExtendedFile
 
     @Override
     protected T copyEntry(T sourceEntry, T targetParentEntry, Path source, Path target, Set<CopyOption> options) throws IOException {
-        OutputStream out = uploadEntry(sourceEntry, source, null); // TODO options
-        InputStream in = downloadEntry(targetParentEntry, target, null); // TODO options
-        FileUtils.copy(in, out, new byte[8192], false);
+        try (InputStream in = downloadEntry(sourceEntry, source, null); // TODO options
+             OutputStream out = uploadEntry(targetParentEntry, target, null)) { // TODO options
+            FileUtils.copy(in, out, new byte[8192], false);
+        }
         return getEntry(target);
     }
 
@@ -178,11 +179,7 @@ public final class JNodeFileSystemDriver<T extends FSEntry> extends ExtendedFile
     protected T moveEntry(T sourceEntry, T targetParentEntry, Path source, Path target, boolean targetIsParent) throws IOException {
         copyEntry(sourceEntry, targetParentEntry, source, target, null);
         removeEntry(sourceEntry, source);
-        if (targetIsParent) {
-            return getEntry(target.resolve(source.getFileName()));
-        } else {
-            return getEntry(target);
-        }
+        return getEntry(target);
     }
 
     @Override
@@ -193,7 +190,8 @@ public final class JNodeFileSystemDriver<T extends FSEntry> extends ExtendedFile
 
     @Override
     protected T renameEntry(T sourceEntry, T targetParentEntry, Path source, Path target) throws IOException {
-        return moveEntry(sourceEntry, targetParentEntry, source, target, false);
+        sourceEntry.setName(target.getFileName().toString());
+        return getEntry(target);
     }
 
     @Override
