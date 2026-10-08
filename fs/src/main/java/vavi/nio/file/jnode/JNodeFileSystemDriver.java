@@ -6,7 +6,6 @@
 
 package vavi.nio.file.jnode;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +18,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -36,7 +36,6 @@ import com.github.fge.filesystem.provider.FileSystemFactoryProvider;
 
 import vavi.nio.file.Util;
 
-import static vavi.nio.file.Util.toPathString;
 
 
 /**
@@ -58,9 +57,7 @@ public final class JNodeFileSystemDriver<T extends FSEntry> extends ExtendedFile
         setEnv(env);
     }
 
-    private static String toJNodePathString(Path path) throws IOException {
-        return toPathString(path).replace(File.separator, "\\").substring(1);
-    }
+
 
     @Override
     protected String getFilenameString(T entry) {
@@ -107,34 +104,77 @@ public final class JNodeFileSystemDriver<T extends FSEntry> extends ExtendedFile
 
     @Override
     protected InputStream downloadEntry(T entry, Path path, Set<? extends OpenOption> options) throws IOException {
-        FSFile file = entry.getFile();
+        return newInputStream(entry.getFile());
+    }
+
+    /** sequential input stream for the jnode file */
+    static InputStream newInputStream(FSFile file) {
         return new InputStream() {
+            private long position;
+
             @Override
             public int read() throws IOException {
                 byte[] b = new byte[1];
-                return read(b ,0, 1);
+                return read(b, 0, 1) == -1 ? -1 : b[0] & 0xff;
             }
+
             @Override
             public int read(byte[] b, int ofs, int len) throws IOException {
-                ByteBuffer bb = ByteBuffer.wrap(b, ofs, len);
-                file.read(0, bb);
-                return len;
+                Objects.checkFromIndexSize(ofs, len, b.length);
+                if (len == 0) {
+                    return 0;
+                }
+                long remaining = file.getLength() - position;
+                if (remaining <= 0) {
+                    return -1;
+                }
+                int n = (int) Math.min(len, remaining);
+                file.read(position, ByteBuffer.wrap(b, ofs, n));
+                position += n;
+                return n;
+            }
+
+            @Override
+            public int available() {
+                return (int) Math.min(Integer.MAX_VALUE, Math.max(0, file.getLength() - position));
             }
         };
     }
 
     @Override
     protected OutputStream uploadEntry(T parentEntry, Path path, Set<? extends OpenOption> options) throws IOException {
-        FSFile file = parentEntry.getDirectory().addFile(toJNodePathString(path)).getFile();
+        FSFile file = parentEntry.getDirectory().addFile(path.getFileName().toString()).getFile();
+        return newOutputStream(file);
+    }
+
+    /** sequential output stream for the jnode file */
+    static OutputStream newOutputStream(FSFile file) {
         return new OutputStream() {
+            private long position;
+
             @Override
             public void write(int b) throws IOException {
-                write(new byte[] { (byte) b } ,0, 1);
+                write(new byte[] {(byte) b}, 0, 1);
             }
+
             @Override
             public void write(byte[] b, int ofs, int len) throws IOException {
-                ByteBuffer bb = ByteBuffer.wrap(b, ofs, len);
-                file.write(0, bb);
+                Objects.checkFromIndexSize(ofs, len, b.length);
+                if (len == 0) {
+                    return;
+                }
+                file.write(position, ByteBuffer.wrap(b, ofs, len));
+                position += len;
+            }
+
+            @Override
+            public void flush() throws IOException {
+                file.flush();
+            }
+
+            @Override
+            public void close() throws IOException {
+                flush();
             }
         };
     }
