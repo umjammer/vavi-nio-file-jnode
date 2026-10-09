@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import com.github.fge.filesystem.driver.CachedFileSystemDriver;
 import vavi.net.fuse.Base;
@@ -89,8 +90,8 @@ public class FuseTest {
 
     // nhd pc98 fat16 ok
     public static void main(String[] args) throws Exception {
-        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.javafs.JavaFSFuseProvider");
-//        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.jnrfuse.JnrFuseFuseProvider");
+//        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.javafs.JavaFSFuseProvider");
+        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.jnrfuse.JnrFuseFuseProvider");
 //        System.setProperty("vavi.net.fuse.FuseProvider.class", "vavi.net.fuse.fusejna.FuseJnaFuseProvider");
 
         FuseTest app = new FuseTest();
@@ -100,6 +101,9 @@ Files.list(app.fs.getRootDirectories().iterator().next()).forEach(System.err::pr
 
         Fuse fuse = Fuse.getFuse();
         fuse.mount(app.fs, app.mountPoint, app.options);
+
+        CountDownLatch cdl = new CountDownLatch(1);
+        cdl.await();
 Debug.println("EXIT");
     }
 }
