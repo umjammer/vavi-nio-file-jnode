@@ -3,7 +3,7 @@
 
   <groupId>vavi</groupId>
   <artifactId>vavi-nio-file-jnode</artifactId>
-  <version>0.2.15</version>
+  <version>0.2.16</version>
   <packaging>pom</packaging>
 
   <name>JNode Parent Module</name>
